@@ -16,6 +16,9 @@ if ($token !== '' && !preg_match('/^[a-f0-9]{64}$/', $token)) {
 }
 
 if ($token !== '') {
+    $pdo->prepare("UPDATE convites_cliente SET status = 'expirado' WHERE token = :token AND status = 'pendente' AND expira_em <= NOW()")
+        ->execute([':token' => $token]);
+
     $stmt = $pdo->prepare(
         "SELECT * FROM convites_cliente
          WHERE token = :token
@@ -60,6 +63,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $convite) {
             throw new RuntimeException('Já existe um cadastro com este e-mail.');
         }
 
+        $paginasConvite = json_decode((string) ($convite['paginas_json'] ?? ''), true);
+
+        if (!is_array($paginasConvite) || !$paginasConvite) {
+            $paginasConvite = paginas_padrao();
+        }
+
+        $paginasConvite = array_values(array_unique(array_filter(array_map(
+            static fn ($pagina) => trim((string) $pagina),
+            $paginasConvite
+        ))));
+
+        if (!$paginasConvite) {
+            throw new RuntimeException('O convite nao possui paginas configuradas.');
+        }
+
         $pdo->beginTransaction();
 
         $stmtInserir = $pdo->prepare(
@@ -74,12 +92,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $convite) {
             ':telefone' => $convite['telefone'],
         ]);
 
+        $clienteId = (int) $pdo->lastInsertId();
+
+        $stmtProjeto = $pdo->prepare(
+            'INSERT INTO projetos (cliente_id, nome, dominio, descricao, status)
+             VALUES (:cliente_id, :nome, :dominio, :descricao, "ativo")'
+        );
+        $stmtProjeto->execute([
+            ':cliente_id' => $clienteId,
+            ':nome' => $convite['projeto_nome'] ?: 'Projeto RWDEV',
+            ':dominio' => $convite['projeto_dominio'] ?? '',
+            ':descricao' => $convite['projeto_descricao'] ?? '',
+        ]);
+
+        $projetoId = (int) $pdo->lastInsertId();
+
+        $stmtValidarProjeto = $pdo->prepare('SELECT id FROM projetos WHERE id = :id AND cliente_id = :cliente_id LIMIT 1');
+        $stmtValidarProjeto->execute([':id' => $projetoId, ':cliente_id' => $clienteId]);
+
+        if (!$stmtValidarProjeto->fetch()) {
+            throw new RuntimeException('Nao foi possivel vincular o projeto ao cliente.');
+        }
+
+        $stmtPagina = $pdo->prepare('INSERT INTO paginas_projeto (projeto_id, nome_pagina) VALUES (:projeto_id, :nome_pagina)');
+        foreach ($paginasConvite as $pagina) {
+            $stmtPagina->execute([':projeto_id' => $projetoId, ':nome_pagina' => $pagina]);
+        }
+
         $stmtAtualizar = $pdo->prepare(
             "UPDATE convites_cliente
-             SET status = 'usado', usado_em = NOW()
+             SET status = 'usado', email = :email, usado_em = NOW()
              WHERE id = :id AND status = 'pendente'"
         );
-        $stmtAtualizar->execute([':id' => $convite['id']]);
+        $stmtAtualizar->execute([':id' => $convite['id'], ':email' => $email]);
 
         if ($stmtAtualizar->rowCount() !== 1) {
             throw new RuntimeException('Este convite não está mais disponível.');
@@ -128,6 +173,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $convite) {
         <p><b>Nome:</b> <?= e($convite['nome']) ?></p>
         <p><b>Empresa:</b> <?= e($convite['empresa']) ?></p>
         <p><b>WhatsApp:</b> <?= e($convite['telefone']) ?></p>
+        <p><b>Projeto/site:</b> <?= e($convite['projeto_nome'] ?: 'Projeto RWDEV') ?></p>
+        <p><b>Dominio:</b> <?= e($convite['projeto_dominio'] ?: 'Nao informado') ?></p>
       </div>
 
       <form method="post">

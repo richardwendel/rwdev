@@ -407,6 +407,46 @@ button:hover,
   grid-column: 1 / -1;
 }
 
+.form-section-title {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--line);
+  color: var(--primary-dark);
+  font-size: 18px;
+  margin: 8px 0 0;
+  padding-top: 18px;
+}
+
+.form-section-title:first-of-type {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.checkbox-grid label {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  font-weight: 700;
+  gap: 9px;
+  margin: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.checkbox-grid input {
+  flex: 0 0 auto;
+  width: auto;
+}
+
 .hint {
   font-size: 13px;
   margin: -8px 0 0;
@@ -509,6 +549,19 @@ th {
   font-size: 12px;
 }
 
+.copy-feedback {
+  color: var(--success);
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 18px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.copy-feedback.visivel {
+  opacity: 1;
+}
+
 .btn.small {
   min-height: 36px;
   padding: 9px 12px;
@@ -574,6 +627,7 @@ th {
 
   .metrics-grid,
   .cards-grid,
+  .checkbox-grid,
   .form-grid.two-cols,
   .app-container.split,
   .app-shell {

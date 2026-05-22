@@ -16,3 +16,9 @@ CREATE TABLE IF NOT EXISTS convites_cliente (
 
 ALTER TABLE convites_cliente
   MODIFY email VARCHAR(160) NULL;
+
+ALTER TABLE convites_cliente
+  ADD COLUMN projeto_nome VARCHAR(160) NULL AFTER telefone,
+  ADD COLUMN projeto_dominio VARCHAR(180) NULL AFTER projeto_nome,
+  ADD COLUMN projeto_descricao TEXT NULL AFTER projeto_dominio,
+  ADD COLUMN paginas_json TEXT NULL AFTER projeto_descricao;

@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($admin && password_verify($senha, $admin['senha'])) {
         session_regenerate_id(true);
+        unset($_SESSION['cliente_id'], $_SESSION['cliente_nome']);
         $_SESSION['admin_id'] = (int) $admin['id'];
         $_SESSION['admin_nome'] = $admin['nome'];
         redirect('dashboard.php');

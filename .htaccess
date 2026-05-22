@@ -1,8 +1,8 @@
 RewriteEngine On
 DirectoryIndex index.php index.html
 
-RewriteCond %{HTTPS} off [OR]
-RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC,OR]
+RewriteCond %{HTTP_HOST} !^www\.rwdev\.com\.br$ [NC]
 RewriteRule ^ https://www.rwdev.com.br%{REQUEST_URI} [L,R=301]
 
 RewriteCond %{THE_REQUEST} \s/([^.]+)\.html [NC]

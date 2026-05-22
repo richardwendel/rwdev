@@ -5,6 +5,8 @@ require_once __DIR__ . '/../includes/auth.php';
 exigir_cliente();
 
 $clienteId = (int) $_SESSION['cliente_id'];
+$sucesso = $_SESSION['flash_solicitacao'] ?? '';
+unset($_SESSION['flash_solicitacao']);
 
 $stmt = $pdo->prepare(
     'SELECT s.*, p.nome AS projeto_nome
@@ -53,6 +55,8 @@ if ($ids) {
       <span>Acompanhamento</span>
       <h1>Minhas solicitações</h1>
     </section>
+
+    <?php if ($sucesso): ?><div class="alerta sucesso"><?= e($sucesso) ?></div><?php endif; ?>
 
     <section class="panel">
       <?php foreach ($solicitacoes as $solicitacao): ?>

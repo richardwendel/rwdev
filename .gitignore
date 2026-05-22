@@ -1,0 +1,29 @@
+# Sistema operacional e editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Pacotes e instaladores grandes
+*.exe
+*.zip
+
+# Materiais fora do site publico
+arquivos-fora-do-site/
+deploy-hosting/
+rwdev-site-hosting.zip
+
+# Uploads reais enviados por clientes
+portal/uploads/solicitacoes/*
+!portal/uploads/solicitacoes/.gitkeep
+
+# Logs e arquivos temporarios
+*.log
+*.tmp
+*.temp

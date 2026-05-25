@@ -579,6 +579,83 @@ th {
   color: var(--gold-dark);
 }
 
+.btn.danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn.danger:hover {
+  background: #9f2424;
+  color: #fff;
+}
+
+.testimonial-review {
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 18px;
+  padding: 18px 0;
+}
+
+.testimonial-review:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.testimonial-review-photo {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: flex;
+  height: 96px;
+  justify-content: center;
+  overflow: hidden;
+  width: 96px;
+}
+
+.testimonial-review-photo img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.testimonial-review-photo span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.testimonial-review-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.testimonial-review-head h3 {
+  margin-bottom: 4px;
+}
+
+.testimonial-review-text {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  padding: 14px;
+}
+
+.testimonial-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.testimonial-review-actions form {
+  margin: 0;
+}
+
 .invite-summary {
   background: #f8fafc;
   border: 1px solid var(--line);
@@ -628,6 +705,7 @@ th {
   .metrics-grid,
   .cards-grid,
   .checkbox-grid,
+  .testimonial-review,
   .form-grid.two-cols,
   .app-container.split,
   .app-shell {

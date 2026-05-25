@@ -80,44 +80,8 @@
           </p>
         </div>
 
-        <div class="depoimentos-grid">
-
-          <article class="depoimento-card">
-            <div class="depoimento-avatar" aria-hidden="true">RW</div>
-            <div class="depoimento-conteudo">
-              <p>
-                "Profissional dedicado, atento aos detalhes e sempre buscando entregar uma solução
-                clara, funcional e bem apresentada."
-              </p>
-              <h3>Depoimento em aprovação</h3>
-              <span>Espaço reservado para publicação manual</span>
-            </div>
-          </article>
-
-          <article class="depoimento-card">
-            <div class="depoimento-avatar" aria-hidden="true">RT</div>
-            <div class="depoimento-conteudo">
-              <p>
-                "A RWDEV transmite confiança por unir atendimento próximo, conhecimento técnico
-                e compromisso com a evolução de cada projeto."
-              </p>
-              <h3>Depoimento em aprovação</h3>
-              <span>Espaço reservado para publicação manual</span>
-            </div>
-          </article>
-
-          <article class="depoimento-card">
-            <div class="depoimento-avatar" aria-hidden="true">DV</div>
-            <div class="depoimento-conteudo">
-              <p>
-                "Um trabalho sério, com visão prática de tecnologia e cuidado para transformar
-                ideias em presença digital profissional."
-              </p>
-              <h3>Depoimento em aprovação</h3>
-              <span>Espaço reservado para publicação manual</span>
-            </div>
-          </article>
-
+        <div class="depoimentos-grid" id="depoimentosLista">
+          <p class="mensagem-formulario depoimentos-carregando">Carregando depoimentos aprovados...</p>
         </div>
       </div>
     </section>
@@ -156,7 +120,7 @@
 
         <div class="contato-formulario">
 
-          <form id="formDepoimento">
+          <form id="formDepoimento" enctype="multipart/form-data">
 
             <div class="campo-form">
               <label for="nome">Nome completo</label>
@@ -199,7 +163,7 @@
             </label>
 
             <p class="aviso-privacidade">
-              Este formulário está preparado para envio simulado e aprovação manual futura.
+              Este formulário salva sua mensagem como pendente para aprovação manual.
               Nenhum depoimento será publicado automaticamente.
             </p>
 
@@ -246,18 +210,96 @@
     </audio>
   </div>
 
-  <!-- Envio simulado para futura aprovação manual dos depoimentos. -->
+  <!-- Integração do formulário com o banco e carregamento dos depoimentos aprovados. -->
   <script>
     const formDepoimento = document.getElementById("formDepoimento");
     const mensagemDepoimento = document.getElementById("mensagemDepoimento");
+    const depoimentosLista = document.getElementById("depoimentosLista");
+
+    function escaparHtml(valor) {
+      return String(valor || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function iniciais(nome) {
+      return String(nome || "RW")
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((parte) => parte.charAt(0).toUpperCase())
+        .join("") || "RW";
+    }
+
+    async function carregarDepoimentos() {
+      if (!depoimentosLista) {
+        return;
+      }
+
+      try {
+        const resposta = await fetch("listar_depoimentos.php", {
+          headers: { "Accept": "application/json" },
+        });
+        const dados = await resposta.json();
+
+        if (!dados.sucesso || !Array.isArray(dados.depoimentos) || dados.depoimentos.length === 0) {
+          depoimentosLista.innerHTML = '<p class="mensagem-formulario depoimentos-carregando">Os depoimentos aprovados aparecerão aqui em breve.</p>';
+          return;
+        }
+
+        depoimentosLista.innerHTML = dados.depoimentos.map((item) => {
+          const foto = item.foto
+            ? `<img class="depoimento-foto" src="${escaparHtml(item.foto)}" alt="Foto de ${escaparHtml(item.nome)}" loading="lazy">`
+            : `<div class="depoimento-avatar" aria-hidden="true">${escaparHtml(iniciais(item.nome))}</div>`;
+          const rede = item.rede_social
+            ? `<a href="${escaparHtml(item.rede_social)}" target="_blank" rel="noopener noreferrer">Ver perfil</a>`
+            : "";
+
+          return `
+            <article class="depoimento-card">
+              ${foto}
+              <div class="depoimento-conteudo">
+                <p>"${escaparHtml(item.depoimento)}"</p>
+                <h3>${escaparHtml(item.nome)}</h3>
+                <span>${escaparHtml(item.cidade)} • Conhece há ${escaparHtml(item.tempo_conhece)}</span>
+                ${rede}
+              </div>
+            </article>
+          `;
+        }).join("");
+      } catch (erro) {
+        depoimentosLista.innerHTML = '<p class="mensagem-formulario depoimentos-carregando">Não foi possível carregar os depoimentos agora.</p>';
+      }
+    }
 
     if (formDepoimento && mensagemDepoimento) {
-      formDepoimento.addEventListener("submit", (evento) => {
+      formDepoimento.addEventListener("submit", async (evento) => {
         evento.preventDefault();
-        formDepoimento.reset();
-        mensagemDepoimento.textContent = "Depoimento enviado com sucesso. A mensagem ficará aguardando aprovação manual da RWDEV.";
+        mensagemDepoimento.textContent = "Enviando depoimento...";
+
+        try {
+          const resposta = await fetch("salvar_depoimento.php", {
+            method: "POST",
+            body: new FormData(formDepoimento),
+            headers: { "Accept": "application/json" },
+          });
+          const dados = await resposta.json();
+
+          mensagemDepoimento.textContent = dados.mensagem || "Seu depoimento foi enviado e aguarda aprovação.";
+
+          if (dados.sucesso) {
+            formDepoimento.reset();
+          }
+        } catch (erro) {
+          mensagemDepoimento.textContent = "Não foi possível enviar o depoimento agora. Tente novamente em instantes.";
+        }
       });
     }
+
+    carregarDepoimentos();
   </script>
   <script src="js/menu.js"></script>
   <script src="js/player.js"></script>

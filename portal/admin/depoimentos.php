@@ -1,0 +1,130 @@
+<?php
+declare(strict_types=1);
+
+// Tela administrativa para revisar depoimentos enviados pelo site.
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+exigir_admin();
+
+// Mensagem de retorno exibida depois de aprovar, recusar ou excluir.
+$sucesso = $_SESSION['flash_depoimento'] ?? '';
+unset($_SESSION['flash_depoimento']);
+
+// Lista todos os depoimentos pendentes, conforme regra de aprovação manual.
+$stmt = $pdo->prepare(
+    'SELECT *
+     FROM depoimentos
+     WHERE status = "pendente"
+     ORDER BY criado_em DESC'
+);
+$stmt->execute();
+$depoimentos = $stmt->fetchAll();
+
+// Gera URL segura para foto salva no diretório público de uploads.
+function foto_depoimento_admin(?string $foto): string
+{
+    if (!$foto) {
+        return '';
+    }
+
+    return '../../' . ltrim($foto, '/');
+}
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Depoimentos | Admin RWDEV</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="app-header admin">
+    <a href="dashboard.php" class="marca">RWDEV Admin</a>
+    <nav>
+      <a href="dashboard.php">Dashboard</a>
+      <a href="clientes.php">Clientes</a>
+      <a href="convites.php">Convites</a>
+      <a href="projetos.php">Projetos</a>
+      <a href="solicitacoes.php">Solicitações</a>
+      <a href="depoimentos.php">Depoimentos</a>
+      <a href="../logout.php">Sair</a>
+    </nav>
+  </header>
+
+  <main class="app-container">
+    <section class="page-title">
+      <span>Administração</span>
+      <h1>Depoimentos pendentes</h1>
+      <p>Revise as mensagens enviadas antes de liberar a exibição pública no site.</p>
+    </section>
+
+    <?php if ($sucesso): ?><div class="alerta sucesso"><?= e($sucesso) ?></div><?php endif; ?>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Fila de aprovação</h2>
+        <span class="status status-pendente"><?= count($depoimentos) ?> pendente(s)</span>
+      </div>
+
+      <?php if (!$depoimentos): ?>
+        <p class="empty">Nenhum depoimento pendente no momento.</p>
+      <?php endif; ?>
+
+      <?php foreach ($depoimentos as $depoimento): ?>
+        <article class="testimonial-review">
+          <div class="testimonial-review-photo">
+            <?php if ($depoimento['foto']): ?>
+              <img src="<?= e(foto_depoimento_admin($depoimento['foto'])) ?>" alt="Foto de <?= e($depoimento['nome']) ?>">
+            <?php else: ?>
+              <span>Sem foto</span>
+            <?php endif; ?>
+          </div>
+
+          <div class="testimonial-review-content">
+            <div class="testimonial-review-head">
+              <div>
+                <h3><?= e($depoimento['nome']) ?></h3>
+                <p><?= e($depoimento['cidade']) ?></p>
+              </div>
+              <span class="status status-pendente"><?= e($depoimento['status']) ?></span>
+            </div>
+
+            <p><b>Rede social:</b>
+              <?php if ($depoimento['rede_social']): ?>
+                <a href="<?= e($depoimento['rede_social']) ?>" target="_blank" rel="noopener noreferrer"><?= e($depoimento['rede_social']) ?></a>
+              <?php else: ?>
+                Não informado
+              <?php endif; ?>
+            </p>
+            <p><b>Tempo que conhece:</b> <?= e($depoimento['tempo_conhece']) ?></p>
+            <p><b>Data de envio:</b> <?= date('d/m/Y H:i', strtotime($depoimento['criado_em'])) ?></p>
+            <p class="testimonial-review-text"><?= nl2br(e($depoimento['depoimento'])) ?></p>
+
+            <div class="testimonial-review-actions">
+              <form method="post" action="aprovar_depoimento.php">
+                <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                <input type="hidden" name="id" value="<?= (int) $depoimento['id'] ?>">
+                <button type="submit">Aprovar</button>
+              </form>
+
+              <form method="post" action="recusar_depoimento.php">
+                <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                <input type="hidden" name="id" value="<?= (int) $depoimento['id'] ?>">
+                <button type="submit" class="btn outline">Recusar</button>
+              </form>
+
+              <form method="post" action="excluir_depoimento.php" onsubmit="return confirm('Excluir este depoimento definitivamente?');">
+                <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                <input type="hidden" name="id" value="<?= (int) $depoimento['id'] ?>">
+                <button type="submit" class="btn danger">Excluir</button>
+              </form>
+            </div>
+          </div>
+        </article>
+      <?php endforeach; ?>
+    </section>
+  </main>
+</body>
+</html>

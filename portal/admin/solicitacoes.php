@@ -81,6 +81,7 @@ if ($idSelecionado) {
       <a href="convites.php">Convites</a>
       <a href="projetos.php">Projetos</a>
       <a href="solicitacoes.php">Solicitações</a>
+      <a href="depoimentos.php">Depoimentos</a>
       <a href="../logout.php">Sair</a>
     </nav>
   </header>

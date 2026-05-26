@@ -3,10 +3,28 @@ declare(strict_types=1);
 
 date_default_timezone_set('America/Sao_Paulo');
 
-$host = 'localhost';
-$banco = 'u724577237_rwdev_portal';
-$usuario = 'u724577237_rwdev_admin';
-$senha = 'M@luf307';
+$envPath = dirname(__DIR__, 2) . '/.env';
+$env = [];
+
+if (is_file($envPath)) {
+    $linhasEnv = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
+
+    foreach ($linhasEnv as $linhaEnv) {
+        $linhaEnv = trim($linhaEnv);
+
+        if ($linhaEnv === '' || str_starts_with($linhaEnv, '#') || !str_contains($linhaEnv, '=')) {
+            continue;
+        }
+
+        [$chaveEnv, $valorEnv] = explode('=', $linhaEnv, 2);
+        $env[trim($chaveEnv)] = trim($valorEnv, " \t\n\r\0\x0B\"'");
+    }
+}
+
+$host = $env['DB_HOST'] ?? (getenv('DB_HOST') ?: 'localhost');
+$banco = $env['DB_NAME'] ?? (getenv('DB_NAME') ?: 'u724577237_rwdev_portal');
+$usuario = $env['DB_USER'] ?? (getenv('DB_USER') ?: 'u724577237_rwdev_admin');
+$senha = $env['DB_PASS'] ?? (getenv('DB_PASS') ?: '0V+ssN1wLSKp');
 
 define('BASE_URL', 'https://www.rwdev.com.br');
 define('ADMIN_EMAIL_NOTIFICACAO', 'rwdevtech@gmail.com');

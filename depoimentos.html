@@ -245,12 +245,16 @@
         });
         const dados = await resposta.json();
 
-        if (!dados.sucesso || !Array.isArray(dados.depoimentos) || dados.depoimentos.length === 0) {
+        const depoimentos = Array.isArray(dados.depoimentos) ? dados.depoimentos : [];
+
+        if (!dados.sucesso || depoimentos.length === 0) {
           depoimentosLista.innerHTML = '<p class="mensagem-formulario depoimentos-carregando">Os depoimentos aprovados aparecerão aqui em breve.</p>';
           return;
         }
 
-        depoimentosLista.innerHTML = dados.depoimentos.map((item) => {
+        const htmlDepoimentos = [];
+
+        depoimentos.forEach((item) => {
           const foto = item.foto
             ? `<img class="depoimento-foto" src="${escaparHtml(item.foto)}" alt="Foto de ${escaparHtml(item.nome)}" loading="lazy">`
             : `<div class="depoimento-avatar" aria-hidden="true">${escaparHtml(iniciais(item.nome))}</div>`;
@@ -258,7 +262,7 @@
             ? `<a href="${escaparHtml(item.rede_social)}" target="_blank" rel="noopener noreferrer">Ver perfil</a>`
             : "";
 
-          return `
+          htmlDepoimentos.push(`
             <article class="depoimento-card">
               ${foto}
               <div class="depoimento-conteudo">
@@ -268,8 +272,10 @@
                 ${rede}
               </div>
             </article>
-          `;
-        }).join("");
+          `);
+        });
+
+        depoimentosLista.innerHTML = htmlDepoimentos.join("");
       } catch (erro) {
         depoimentosLista.innerHTML = '<p class="mensagem-formulario depoimentos-carregando">Não foi possível carregar os depoimentos agora.</p>';
       }

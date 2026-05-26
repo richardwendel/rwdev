@@ -29,8 +29,74 @@ function resposta_json(array $dados, int $status = 200): never
 {
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode($dados, JSON_UNESCAPED_UNICODE);
+    $json = json_encode($dados, JSON_UNESCAPED_UNICODE);
+
+    if ($json === false) {
+        error_log('Erro de JSON: ' . json_last_error_msg());
+        http_response_code(500);
+        echo json_encode([
+            'sucesso' => false,
+            'mensagem' => 'Nao foi possivel gerar a resposta JSON.',
+        ]);
+        exit;
+    }
+
+    echo $json;
     exit;
+}
+
+// Registra eventos em logs_seguranca quando a tabela existir no banco.
+function registrar_log_seguranca(PDO $pdo, string $evento, string $detalhes = ''): void
+{
+    try {
+        $colunas = $pdo->query('SHOW COLUMNS FROM logs_seguranca')->fetchAll(PDO::FETCH_COLUMN);
+
+        if (!$colunas) {
+            return;
+        }
+
+        $dados = [];
+
+        foreach (['acao', 'evento', 'tipo'] as $colunaEvento) {
+            if (in_array($colunaEvento, $colunas, true)) {
+                $dados[$colunaEvento] = $evento;
+                break;
+            }
+        }
+
+        foreach (['detalhes', 'descricao', 'mensagem'] as $colunaDetalhes) {
+            if (in_array($colunaDetalhes, $colunas, true)) {
+                $dados[$colunaDetalhes] = $detalhes;
+                break;
+            }
+        }
+
+        foreach (['ip', 'ip_usuario'] as $colunaIp) {
+            if (in_array($colunaIp, $colunas, true)) {
+                $dados[$colunaIp] = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+                break;
+            }
+        }
+
+        foreach (['criado_em', 'data_criacao', 'created_at'] as $colunaData) {
+            if (in_array($colunaData, $colunas, true)) {
+                $dados[$colunaData] = date('Y-m-d H:i:s');
+                break;
+            }
+        }
+
+        if (!$dados) {
+            return;
+        }
+
+        $colunasSql = array_keys($dados);
+        $campos = implode(', ', $colunasSql);
+        $marcadores = ':' . implode(', :', $colunasSql);
+        $stmt = $pdo->prepare("INSERT INTO logs_seguranca ({$campos}) VALUES ({$marcadores})");
+        $stmt->execute($dados);
+    } catch (Throwable $erro) {
+        error_log('Falha ao registrar logs_seguranca: ' . $erro->getMessage());
+    }
 }
 
 // Remove espaços extras e limita o tamanho de campos de texto simples.

@@ -24,5 +24,13 @@ try {
 } catch (PDOException $erro) {
     error_log('Erro de conexao PDO: ' . $erro->getMessage());
     http_response_code(500);
+    if (defined('RWDEV_JSON_ENDPOINT') && RWDEV_JSON_ENDPOINT === true) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'sucesso' => false,
+            'mensagem' => 'Erro ao conectar ao banco de dados.',
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
     die('Erro ao conectar ao banco de dados.');
 }

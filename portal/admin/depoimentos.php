@@ -11,6 +11,9 @@ exigir_admin();
 $sucesso = $_SESSION['flash_depoimento'] ?? '';
 unset($_SESSION['flash_depoimento']);
 
+$colunasDepoimentos = $pdo->query('SHOW COLUMNS FROM depoimentos')->fetchAll(PDO::FETCH_COLUMN);
+$temRespostaAdmin = in_array('resposta_admin', $colunasDepoimentos, true);
+
 // Lista todos os depoimentos pendentes, conforme regra de aprovação manual.
 $stmt = $pdo->prepare(
     'SELECT *
@@ -102,12 +105,24 @@ function foto_depoimento_admin(?string $foto): string
             <p><b>Data de envio:</b> <?= date('d/m/Y H:i', strtotime($depoimento['criado_em'])) ?></p>
             <p class="testimonial-review-text"><?= nl2br(e($depoimento['depoimento'])) ?></p>
 
-            <div class="testimonial-review-actions">
-              <form method="post" action="aprovar_depoimento.php">
+            <?php if ($temRespostaAdmin): ?>
+              <form class="testimonial-response-form" method="post" action="aprovar_depoimento.php">
                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="id" value="<?= (int) $depoimento['id'] ?>">
-                <button type="submit">Aprovar</button>
+                <label for="resposta_admin_<?= (int) $depoimento['id'] ?>">Resposta da RWDEV (opcional)</label>
+                <textarea id="resposta_admin_<?= (int) $depoimento['id'] ?>" name="resposta_admin" rows="4" placeholder="Escreva uma resposta curta para aparecer abaixo do depoimento aprovado."></textarea>
+                <button type="submit">Aprovar com resposta</button>
               </form>
+            <?php endif; ?>
+
+            <div class="testimonial-review-actions">
+              <?php if (!$temRespostaAdmin): ?>
+                <form method="post" action="aprovar_depoimento.php">
+                  <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                  <input type="hidden" name="id" value="<?= (int) $depoimento['id'] ?>">
+                  <button type="submit">Aprovar</button>
+                </form>
+              <?php endif; ?>
 
               <form method="post" action="recusar_depoimento.php">
                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">

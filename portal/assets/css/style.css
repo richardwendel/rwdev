@@ -656,6 +656,26 @@ th {
   margin: 0;
 }
 
+.testimonial-response-form {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin: 14px 0;
+  padding: 14px;
+}
+
+.testimonial-response-form label {
+  color: var(--primary-dark);
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.testimonial-response-form textarea {
+  margin-bottom: 12px;
+}
+
 .invite-summary {
   background: #f8fafc;
   border: 1px solid var(--line);

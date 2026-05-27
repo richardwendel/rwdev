@@ -67,25 +67,6 @@
       </div>
     </section>
 
-    <!-- DEPOIMENTOS PUBLICADOS -->
-    <section class="depoimentos-pagina">
-      <div class="container">
-
-        <div class="titulo-secao">
-          <span class="subtitulo">Mensagens recebidas</span>
-          <h2>Opiniões de quem acompanha ou conhece nosso trabalho</h2>
-          <p>
-            Os depoimentos exibidos nesta área são revisados antes da publicação para manter
-            clareza, segurança e autorização de uso no site.
-          </p>
-        </div>
-
-        <div class="depoimentos-grid" id="depoimentosLista">
-          <p class="mensagem-formulario depoimentos-carregando">Carregando depoimentos aprovados...</p>
-        </div>
-      </div>
-    </section>
-
     <!-- FORMULÁRIO DE ENVIO -->
     <section class="depoimento-envio">
       <div class="container contato-grid">
@@ -180,6 +161,25 @@
       </div>
     </section>
 
+    <!-- DEPOIMENTOS PUBLICADOS -->
+    <section class="depoimentos-pagina">
+      <div class="container">
+
+        <div class="titulo-secao">
+          <span class="subtitulo">Mensagens recebidas</span>
+          <h2>Opiniões de quem acompanha ou conhece nosso trabalho</h2>
+          <p>
+            Os depoimentos exibidos nesta área são revisados antes da publicação para manter
+            clareza, segurança e autorização de uso no site.
+          </p>
+        </div>
+
+        <div class="depoimentos-grid" id="depoimentosLista">
+          <p class="mensagem-formulario depoimentos-carregando">Carregando depoimentos aprovados...</p>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- RODAPÉ -->
@@ -215,6 +215,12 @@
     const formDepoimento = document.getElementById("formDepoimento");
     const mensagemDepoimento = document.getElementById("mensagemDepoimento");
     const depoimentosLista = document.getElementById("depoimentosLista");
+    const reacoesDisponiveis = [
+      { tipo: "like", rotulo: "Gostei", icone: "👍" },
+      { tipo: "love", rotulo: "Amei", icone: "❤️" },
+      { tipo: "haha", rotulo: "Engraçado", icone: "😂" },
+      { tipo: "sad", rotulo: "Triste", icone: "😢" },
+    ];
 
     function escaparHtml(valor) {
       return String(valor || "")
@@ -232,6 +238,93 @@
         .slice(0, 2)
         .map((parte) => parte.charAt(0).toUpperCase())
         .join("") || "RW";
+    }
+
+    function textoComQuebras(valor) {
+      return escaparHtml(valor).replaceAll("\n", "<br>");
+    }
+
+    function identificadorReacoes() {
+      const chave = "rwdev_depoimentos_identificador";
+      let identificador = localStorage.getItem(chave);
+
+      if (!identificador) {
+        const aleatorio = window.crypto && window.crypto.getRandomValues
+          ? Array.from(window.crypto.getRandomValues(new Uint32Array(4))).map((item) => item.toString(16)).join("")
+          : String(Date.now()) + String(Math.random()).slice(2);
+        identificador = "rwdev_" + aleatorio;
+        localStorage.setItem(chave, identificador);
+      }
+
+      return identificador;
+    }
+
+    function chaveReacao(depoimentoId) {
+      return "rwdev_depoimento_reacao_" + depoimentoId;
+    }
+
+    function reacaoSelecionada(depoimentoId) {
+      return localStorage.getItem(chaveReacao(depoimentoId)) || "";
+    }
+
+    function htmlReacoes(item) {
+      const depoimentoId = Number(item.id || 0);
+      const reacoes = item.reacoes || {};
+      const selecionada = reacaoSelecionada(depoimentoId);
+
+      return `
+        <div class="depoimento-reacoes" aria-label="Reações do depoimento">
+          ${reacoesDisponiveis.map((reacao) => {
+            const quantidade = Number(reacoes[reacao.tipo] || 0);
+            const ativo = selecionada === reacao.tipo ? " depoimento-reacao-ativa" : "";
+
+            return `
+              <button
+                class="depoimento-reacao${ativo}"
+                type="button"
+                data-depoimento-id="${depoimentoId}"
+                data-tipo="${reacao.tipo}"
+                aria-pressed="${selecionada === reacao.tipo ? "true" : "false"}"
+              >
+                <span aria-hidden="true">${reacao.icone}</span>
+                <span>${reacao.rotulo}</span>
+                <strong>${quantidade}</strong>
+              </button>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function atualizarCardReacoes(depoimentoId, reacoes, tipoSelecionado) {
+      const botoes = depoimentosLista.querySelectorAll(`[data-depoimento-id="${depoimentoId}"]`);
+
+      botoes.forEach((botao) => {
+        const tipo = botao.dataset.tipo || "";
+        const contador = botao.querySelector("strong");
+
+        botao.classList.toggle("depoimento-reacao-ativa", tipo === tipoSelecionado);
+        botao.setAttribute("aria-pressed", tipo === tipoSelecionado ? "true" : "false");
+
+        if (contador) {
+          contador.textContent = String(Number(reacoes[tipo] || 0));
+        }
+      });
+    }
+
+    async function salvarReacao(depoimentoId, tipo) {
+      const dados = new FormData();
+      dados.append("depoimento_id", depoimentoId);
+      dados.append("tipo", tipo);
+      dados.append("identificador_usuario", identificadorReacoes());
+
+      const resposta = await fetch("salvar_reacao_depoimento.php", {
+        method: "POST",
+        body: dados,
+        headers: { "Accept": "application/json" },
+      });
+
+      return resposta.json();
     }
 
     async function carregarDepoimentos() {
@@ -261,15 +354,20 @@
           const rede = item.rede_social
             ? `<a href="${escaparHtml(item.rede_social)}" target="_blank" rel="noopener noreferrer">Ver perfil</a>`
             : "";
+          const respostaAdmin = item.resposta_admin
+            ? `<div class="depoimento-resposta"><h4>Resposta da RWDEV</h4><p>${textoComQuebras(item.resposta_admin)}</p></div>`
+            : "";
 
           htmlDepoimentos.push(`
-            <article class="depoimento-card">
+            <article class="depoimento-card" data-card-depoimento="${escaparHtml(item.id)}">
               ${foto}
               <div class="depoimento-conteudo">
-                <p>"${escaparHtml(item.depoimento)}"</p>
+                <p>"${textoComQuebras(item.depoimento)}"</p>
                 <h3>${escaparHtml(item.nome)}</h3>
                 <span>${escaparHtml(item.cidade)} • Conhece há ${escaparHtml(item.tempo_conhece)}</span>
                 ${rede}
+                ${respostaAdmin}
+                ${htmlReacoes(item)}
               </div>
             </article>
           `);
@@ -301,6 +399,38 @@
           }
         } catch (erro) {
           mensagemDepoimento.textContent = "Não foi possível enviar o depoimento agora. Tente novamente em instantes.";
+        }
+      });
+    }
+
+    if (depoimentosLista) {
+      depoimentosLista.addEventListener("click", async (evento) => {
+        const botao = evento.target.closest(".depoimento-reacao");
+
+        if (!botao) {
+          return;
+        }
+
+        const depoimentoId = botao.dataset.depoimentoId || "";
+        const tipo = botao.dataset.tipo || "";
+
+        if (!depoimentoId || !tipo || botao.disabled) {
+          return;
+        }
+
+        botao.disabled = true;
+
+        try {
+          const dados = await salvarReacao(depoimentoId, tipo);
+
+          if (dados.sucesso) {
+            localStorage.setItem(chaveReacao(depoimentoId), tipo);
+            atualizarCardReacoes(depoimentoId, dados.reacoes || {}, tipo);
+          }
+        } catch (erro) {
+          console.error("Não foi possível salvar a reação.", erro);
+        } finally {
+          botao.disabled = false;
         }
       });
     }

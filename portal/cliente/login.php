@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit">Entrar</button>
     </form>
 
-    <a class="auth-link" href="../../">Voltar para o site RWDEV</a>
+    <a class="auth-link" href="../../index.html">← Voltar para o site</a>
   </main>
 </body>
 </html>

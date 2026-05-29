@@ -143,11 +143,21 @@ button:hover,
 }
 
 .auth-link {
-  display: block;
-  margin-top: 18px;
+  display: table;
+  margin: 18px auto 0;
   text-align: center;
-  color: var(--muted);
+  color: var(--primary);
   font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.auth-link:hover {
+  color: var(--gold-dark);
+  text-decoration: none;
+  transform: translateX(-3px);
 }
 
 .app-header {

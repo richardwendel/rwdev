@@ -21,10 +21,13 @@ if (is_file($envPath)) {
     }
 }
 
-$host = $env['DB_HOST'] ?? (getenv('DB_HOST') ?: 'localhost');
-$banco = $env['DB_NAME'] ?? (getenv('DB_NAME') ?: 'u724577237_rwdev_portal');
-$usuario = $env['DB_USER'] ?? (getenv('DB_USER') ?: 'u724577237_rwdev_admin');
-$senha = $env['DB_PASS'] ?? (getenv('DB_PASS') ?: '0V+ssN1wLSKp');
+$host = $env['DB_HOST'] ?? getenv('DB_HOST') ?: 'localhost';
+
+$banco = $env['DB_NAME'] ?? getenv('DB_NAME') ?: '';
+
+$usuario = $env['DB_USER'] ?? getenv('DB_USER') ?: '';
+
+$senha = $env['DB_PASS'] ?? getenv('DB_PASS') ?: '';
 
 define('BASE_URL', 'https://www.rwdev.com.br');
 define('ADMIN_EMAIL_NOTIFICACAO', 'rwdevtech@gmail.com');

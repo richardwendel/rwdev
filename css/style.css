@@ -1587,8 +1587,10 @@ section {
 }
 
 .contato-card .btn {
+  width: 100%;
   align-self: flex-start;
   margin-top: auto;
+  text-align: center;
 }
 
 .contato-formulario {

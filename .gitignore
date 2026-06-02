@@ -27,3 +27,8 @@ portal/uploads/solicitacoes/*
 *.log
 *.tmp
 *.temp
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example

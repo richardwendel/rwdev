@@ -141,11 +141,111 @@ function salvar_foto_depoimento(array $arquivo): ?string
         throw new RuntimeException('Não foi possível criar a pasta de uploads.');
     }
 
-    $nomeSeguro = bin2hex(random_bytes(16)) . '.' . $extensao;
-    $destino = DEPOIMENTOS_UPLOAD_DIR . '/' . $nomeSeguro;
+    $nomeDepoente = campo_texto((string) ($_POST['nome'] ?? ''), 150);
+    $partesNome = preg_split('/\s+/', trim($nomeDepoente)) ?: [];
+    $iniciais = '';
 
-    if (!move_uploaded_file((string) $arquivo['tmp_name'], $destino)) {
-        throw new RuntimeException('Não foi possível salvar a foto enviada.');
+    foreach ($partesNome as $parteNome) {
+        $parteNormalizada = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $parteNome);
+        $parteLimpa = preg_replace('/[^a-z]/', '', strtolower((string) $parteNormalizada)) ?? '';
+
+        if ($parteLimpa !== '') {
+            $iniciais .= $parteLimpa[0];
+        }
+    }
+
+    $iniciais = $iniciais !== '' ? $iniciais : 'd';
+    $gerarDestino = static function (string $extensaoArquivo) use ($iniciais): array {
+        $contador = 1;
+
+        do {
+            $nomeSeguro = $iniciais . sprintf('%03d', $contador) . '.' . $extensaoArquivo;
+            $destino = DEPOIMENTOS_UPLOAD_DIR . '/' . $nomeSeguro;
+            $contador++;
+        } while (file_exists($destino));
+
+        return [$nomeSeguro, $destino];
+    };
+    $salvarOriginal = static function (string $extensaoArquivo) use ($arquivo, $gerarDestino): string {
+        [$nomeSeguro, $destino] = $gerarDestino($extensaoArquivo);
+
+        if (!move_uploaded_file((string) $arquivo['tmp_name'], $destino)) {
+            throw new RuntimeException('Não foi possível salvar a foto enviada.');
+        }
+
+        return $nomeSeguro;
+    };
+
+    $criadoresImagem = [
+        'jpg' => 'imagecreatefromjpeg',
+        'jpeg' => 'imagecreatefromjpeg',
+        'png' => 'imagecreatefrompng',
+        'webp' => 'imagecreatefromwebp',
+    ];
+    $criarImagem = $criadoresImagem[$extensao] ?? '';
+    $suportaWebp = extension_loaded('gd') && function_exists('imagewebp') && function_exists($criarImagem);
+
+    if (!$suportaWebp) {
+        error_log('[depoimentos] GD/imagewebp indisponivel; mantendo upload original sem conversao para WebP.');
+        $nomeSeguro = $salvarOriginal($extensao);
+
+        return DEPOIMENTOS_UPLOAD_URL . '/' . $nomeSeguro;
+    }
+
+    $imagemOriginal = @$criarImagem((string) $arquivo['tmp_name']);
+
+    if (!$imagemOriginal) {
+        error_log('[depoimentos] Nao foi possivel converter a imagem para WebP; mantendo upload original.');
+        $nomeSeguro = $salvarOriginal($extensao);
+
+        return DEPOIMENTOS_UPLOAD_URL . '/' . $nomeSeguro;
+    }
+
+    $larguraOriginal = imagesx($imagemOriginal);
+    $alturaOriginal = imagesy($imagemOriginal);
+    $maiorLado = max($larguraOriginal, $alturaOriginal);
+    $limiteImagem = 800;
+    $imagemFinal = $imagemOriginal;
+
+    if ($maiorLado > $limiteImagem) {
+        $escala = $limiteImagem / $maiorLado;
+        $novaLargura = max(1, (int) round($larguraOriginal * $escala));
+        $novaAltura = max(1, (int) round($alturaOriginal * $escala));
+        $imagemFinal = imagecreatetruecolor($novaLargura, $novaAltura);
+
+        imagealphablending($imagemFinal, false);
+        imagesavealpha($imagemFinal, true);
+
+        if (!imagecopyresampled($imagemFinal, $imagemOriginal, 0, 0, 0, 0, $novaLargura, $novaAltura, $larguraOriginal, $alturaOriginal)) {
+            imagedestroy($imagemOriginal);
+            imagedestroy($imagemFinal);
+            throw new RuntimeException('Não foi possível redimensionar a foto enviada.');
+        }
+    }
+
+    [$nomeSeguro, $destino] = $gerarDestino('webp');
+
+    if (!imagewebp($imagemFinal, $destino, 80)) {
+        if (is_file($destino)) {
+            unlink($destino);
+        }
+
+        imagedestroy($imagemOriginal);
+
+        if ($imagemFinal !== $imagemOriginal) {
+            imagedestroy($imagemFinal);
+        }
+
+        error_log('[depoimentos] Falha ao salvar WebP; mantendo upload original.');
+        $nomeSeguro = $salvarOriginal($extensao);
+
+        return DEPOIMENTOS_UPLOAD_URL . '/' . $nomeSeguro;
+    }
+
+    imagedestroy($imagemOriginal);
+
+    if ($imagemFinal !== $imagemOriginal) {
+        imagedestroy($imagemFinal);
     }
 
     return DEPOIMENTOS_UPLOAD_URL . '/' . $nomeSeguro;

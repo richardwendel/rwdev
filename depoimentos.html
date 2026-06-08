@@ -201,6 +201,7 @@
         <div class="depoimentos-grid" id="depoimentosLista">
           <p class="mensagem-formulario depoimentos-carregando">Carregando depoimentos aprovados...</p>
         </div>
+        <div class="depoimentos-paginacao" id="depoimentosPaginacao" aria-label="Paginação dos depoimentos" hidden></div>
       </div>
     </section>
 
@@ -239,6 +240,10 @@
     const formDepoimento = document.getElementById("formDepoimento");
     const mensagemDepoimento = document.getElementById("mensagemDepoimento");
     const depoimentosLista = document.getElementById("depoimentosLista");
+    const depoimentosPaginacao = document.getElementById("depoimentosPaginacao");
+    const depoimentosPorPagina = 5;
+    let depoimentosCarregados = [];
+    let paginaAtualDepoimentos = 1;
     const reacoesDisponiveis = [
       { tipo: "like", rotulo: "Gostei", icone: "👍" },
       { tipo: "love", rotulo: "Amei", icone: "❤️" },
@@ -320,6 +325,108 @@
       `;
     }
 
+    function htmlDepoimento(item) {
+      const foto = item.foto
+        ? `<img class="depoimento-foto" src="${escaparHtml(item.foto)}" alt="Foto de ${escaparHtml(item.nome)}" loading="lazy">`
+        : `<div class="depoimento-avatar" aria-hidden="true">${escaparHtml(iniciais(item.nome))}</div>`;
+      const rede = item.rede_social
+        ? `<a href="${escaparHtml(item.rede_social)}" target="_blank" rel="noopener noreferrer">Ver perfil</a>`
+        : "";
+      const respostaAdmin = item.resposta_admin
+        ? `<div class="depoimento-resposta"><h4>Resposta da RWDEV</h4><p>${textoComQuebras(item.resposta_admin)}</p></div>`
+        : "";
+
+      return `
+        <article class="depoimento-card" data-card-depoimento="${escaparHtml(item.id)}">
+          ${foto}
+          <div class="depoimento-conteudo">
+            <p>"${textoComQuebras(item.depoimento)}"</p>
+            <h3>${escaparHtml(item.nome)}</h3>
+            <span>${escaparHtml(item.cidade)} • Conhece há ${escaparHtml(item.tempo_conhece)}</span>
+            ${rede}
+            ${respostaAdmin}
+            ${htmlReacoes(item)}
+          </div>
+        </article>
+      `;
+    }
+
+    function rolarParaDepoimentos() {
+      const secao = document.querySelector(".depoimentos-pagina");
+
+      if (secao) {
+        secao.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function renderizarPaginacaoDepoimentos(totalPaginas) {
+      if (!depoimentosPaginacao) {
+        return;
+      }
+
+      if (totalPaginas <= 1) {
+        depoimentosPaginacao.innerHTML = "";
+        depoimentosPaginacao.hidden = true;
+        return;
+      }
+
+      depoimentosPaginacao.hidden = false;
+
+      const botoesPaginas = Array.from({ length: totalPaginas }, (_, indice) => {
+        const pagina = indice + 1;
+        const ativa = pagina === paginaAtualDepoimentos ? " ativa" : "";
+
+        return `
+          <button
+            class="pagina-depoimento${ativa}"
+            type="button"
+            data-pagina-depoimento="${pagina}"
+            aria-label="Ir para a página ${pagina} de depoimentos"
+            aria-current="${pagina === paginaAtualDepoimentos ? "page" : "false"}"
+          >
+            ${pagina}
+          </button>
+        `;
+      }).join("");
+
+      depoimentosPaginacao.innerHTML = `
+        <button
+          class="pagina-depoimento pagina-depoimento-controle"
+          type="button"
+          data-pagina-depoimento="${paginaAtualDepoimentos - 1}"
+          ${paginaAtualDepoimentos === 1 ? "disabled" : ""}
+        >
+          Anterior
+        </button>
+        ${botoesPaginas}
+        <button
+          class="pagina-depoimento pagina-depoimento-controle"
+          type="button"
+          data-pagina-depoimento="${paginaAtualDepoimentos + 1}"
+          ${paginaAtualDepoimentos === totalPaginas ? "disabled" : ""}
+        >
+          Próximo
+        </button>
+      `;
+    }
+
+    function renderizarDepoimentosPagina(rolar = false) {
+      if (!depoimentosLista) {
+        return;
+      }
+
+      const totalPaginas = Math.ceil(depoimentosCarregados.length / depoimentosPorPagina);
+      const inicio = (paginaAtualDepoimentos - 1) * depoimentosPorPagina;
+      const depoimentosPagina = depoimentosCarregados.slice(inicio, inicio + depoimentosPorPagina);
+
+      depoimentosLista.innerHTML = depoimentosPagina.map(htmlDepoimento).join("");
+      renderizarPaginacaoDepoimentos(totalPaginas);
+
+      if (rolar) {
+        rolarParaDepoimentos();
+      }
+    }
+
     function atualizarCardReacoes(depoimentoId, reacoes, tipoSelecionado) {
       const botoes = depoimentosLista.querySelectorAll(`[data-depoimento-id="${depoimentoId}"]`);
 
@@ -333,6 +440,14 @@
         if (contador) {
           contador.textContent = String(Number(reacoes[tipo] || 0));
         }
+      });
+
+      depoimentosCarregados = depoimentosCarregados.map((item) => {
+        if (String(item.id) !== String(depoimentoId)) {
+          return item;
+        }
+
+        return { ...item, reacoes };
       });
     }
 
@@ -369,35 +484,10 @@
           return;
         }
 
-        const htmlDepoimentos = [];
+        depoimentosCarregados = depoimentos;
+        paginaAtualDepoimentos = 1;
+        renderizarDepoimentosPagina();
 
-        depoimentos.forEach((item) => {
-          const foto = item.foto
-            ? `<img class="depoimento-foto" src="${escaparHtml(item.foto)}" alt="Foto de ${escaparHtml(item.nome)}" loading="lazy">`
-            : `<div class="depoimento-avatar" aria-hidden="true">${escaparHtml(iniciais(item.nome))}</div>`;
-          const rede = item.rede_social
-            ? `<a href="${escaparHtml(item.rede_social)}" target="_blank" rel="noopener noreferrer">Ver perfil</a>`
-            : "";
-          const respostaAdmin = item.resposta_admin
-            ? `<div class="depoimento-resposta"><h4>Resposta da RWDEV</h4><p>${textoComQuebras(item.resposta_admin)}</p></div>`
-            : "";
-
-          htmlDepoimentos.push(`
-            <article class="depoimento-card" data-card-depoimento="${escaparHtml(item.id)}">
-              ${foto}
-              <div class="depoimento-conteudo">
-                <p>"${textoComQuebras(item.depoimento)}"</p>
-                <h3>${escaparHtml(item.nome)}</h3>
-                <span>${escaparHtml(item.cidade)} • Conhece há ${escaparHtml(item.tempo_conhece)}</span>
-                ${rede}
-                ${respostaAdmin}
-                ${htmlReacoes(item)}
-              </div>
-            </article>
-          `);
-        });
-
-        depoimentosLista.innerHTML = htmlDepoimentos.join("");
       } catch (erro) {
         depoimentosLista.innerHTML = '<p class="mensagem-formulario depoimentos-carregando">Não foi possível carregar os depoimentos agora.</p>';
       }
@@ -456,6 +546,26 @@
         } finally {
           botao.disabled = false;
         }
+      });
+    }
+
+    if (depoimentosPaginacao) {
+      depoimentosPaginacao.addEventListener("click", (evento) => {
+        const botao = evento.target.closest(".pagina-depoimento");
+
+        if (!botao || botao.disabled) {
+          return;
+        }
+
+        const totalPaginas = Math.ceil(depoimentosCarregados.length / depoimentosPorPagina);
+        const pagina = Number(botao.dataset.paginaDepoimento || 1);
+
+        if (pagina < 1 || pagina > totalPaginas || pagina === paginaAtualDepoimentos) {
+          return;
+        }
+
+        paginaAtualDepoimentos = pagina;
+        renderizarDepoimentosPagina(true);
       });
     }
 

@@ -437,6 +437,102 @@ section {
 }
 
 /* =========================================
+   REPUTAÇÃO GOOGLE HOME
+   ========================================= */
+.home-google-reputacao {
+  background: linear-gradient(135deg, var(--branco), #eef6ff);
+  padding: 72px 0;
+}
+
+.home-google-reputacao-container {
+  align-items: center;
+  display: grid;
+  gap: 32px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.home-google-reputacao-resumo {
+  max-width: 520px;
+}
+
+.home-google-estrelas {
+  color: var(--dourado);
+  font-size: 30px;
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.home-google-reputacao h2 {
+  color: var(--azul-principal);
+  font-size: 38px;
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+
+.home-google-avaliacoes {
+  color: var(--preto-suave);
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.home-google-texto {
+  color: var(--cinza-texto);
+  font-size: 17px;
+  margin-bottom: 24px;
+}
+
+.home-google-botao {
+  align-items: center;
+  background: var(--azul-principal);
+  border-radius: 999px;
+  box-shadow: 0 14px 32px rgba(8, 36, 96, 0.18);
+  color: var(--branco);
+  display: inline-flex;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 48px;
+  padding: 13px 24px;
+  text-decoration: none;
+}
+
+.home-google-botao:hover {
+  background: var(--azul-destaque);
+  color: var(--branco);
+  transform: translateY(-2px);
+}
+
+.home-google-cards {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-google-card {
+  background: var(--branco);
+  border: 1px solid rgba(0, 123, 255, 0.12);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  min-height: 172px;
+  padding: 22px;
+}
+
+.home-google-card span {
+  color: var(--dourado);
+  display: block;
+  font-size: 18px;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+.home-google-card p {
+  color: var(--preto-suave);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* =========================================
    PORTFÓLIO PREMIUM
    ========================================= */
 .portfolio-premium {
@@ -890,6 +986,7 @@ section {
   .hero-grid,
   .cards-grid,
   .portfolio-grid,
+  .home-google-cards,
   .diferenciais-grid,
   .expansao-grid,
   .caminhos-grid,
@@ -899,6 +996,14 @@ section {
 
   .hero-grid {
     align-items: start;
+  }
+
+  .home-google-reputacao-container {
+    grid-template-columns: 1fr;
+  }
+
+  .home-google-reputacao-resumo {
+    max-width: 760px;
   }
 }
 
@@ -955,6 +1060,7 @@ section {
 
   .titulo-secao h2,
   .portfolio-cabecalho h2,
+  .home-google-reputacao h2,
   .cta-box h2 {
     font-size: 30px;
   }
@@ -962,6 +1068,7 @@ section {
   .hero-grid,
   .cards-grid,
   .portfolio-grid,
+  .home-google-cards,
   .diferenciais-grid,
   .expansao-grid,
   .caminhos-grid,
@@ -977,6 +1084,14 @@ section {
   .btn {
     text-align: center;
   }
+
+  .home-google-reputacao {
+    padding: 58px 0;
+  }
+
+  .home-google-botao {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -990,6 +1105,14 @@ section {
 
   .hero-texto h1 {
     font-size: 30px;
+  }
+
+  .home-google-estrelas {
+    font-size: 24px;
+  }
+
+  .home-google-card {
+    min-height: auto;
   }
 
   .hero-texto p,
@@ -1824,6 +1947,56 @@ section {
   grid-column: 1 / -1;
 }
 
+.depoimentos-paginacao {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.depoimentos-paginacao[hidden] {
+  display: none;
+}
+
+.pagina-depoimento {
+  align-items: center;
+  background: var(--branco);
+  border: 1px solid rgba(0, 123, 255, 0.2);
+  border-radius: 999px;
+  color: var(--azul-principal);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 40px;
+  min-width: 40px;
+  padding: 9px 14px;
+  transition: var(--transicao);
+}
+
+.pagina-depoimento:hover,
+.pagina-depoimento.ativa {
+  background: linear-gradient(135deg, var(--azul-principal), var(--azul-destaque));
+  border-color: transparent;
+  box-shadow: 0 10px 24px rgba(0, 123, 255, 0.2);
+  color: var(--branco);
+  transform: translateY(-1px);
+}
+
+.pagina-depoimento:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
+.pagina-depoimento-controle {
+  min-width: 96px;
+}
+
 .checkbox-autorizacao {
   display: flex;
   align-items: flex-start;
@@ -1872,6 +2045,22 @@ section {
   .contato-formulario {
     padding: 22px;
   }
+
+  .depoimentos-paginacao {
+    gap: 8px;
+  }
+
+  .pagina-depoimento {
+    font-size: 13px;
+    min-height: 38px;
+    min-width: 38px;
+    padding: 8px 12px;
+  }
+
+  .pagina-depoimento-controle {
+    min-width: 86px;
+  }
+
 }
 
 /* =========================================

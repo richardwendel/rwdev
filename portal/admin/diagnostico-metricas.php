@@ -62,6 +62,30 @@ function classificar_origem(?string $referer): string
     return 'Outros';
 }
 
+function caminho_interno_evento(?string $valor): string
+{
+    $valor = trim((string) $valor);
+
+    if ($valor === '') {
+        return '';
+    }
+
+    if (str_starts_with($valor, 'http://') || str_starts_with($valor, 'https://')) {
+        $host = strtolower((string) parse_url($valor, PHP_URL_HOST));
+        $path = parse_url($valor, PHP_URL_PATH);
+
+        if ($host !== '' && !str_contains($host, 'rwdev.com.br')) {
+            return '';
+        }
+
+        $valor = is_string($path) && $path !== '' ? $path : '/';
+    }
+
+    $valor = '/' . ltrim($valor, '/');
+
+    return rtrim($valor, '/') === '' ? '/' : rtrim($valor, '/');
+}
+
 function rotulo_evento(string $evento): string
 {
     return [
@@ -241,45 +265,59 @@ $stmtCidadeTop = $pdo->prepare(
 $stmtCidadeTop->execute();
 $cidadeTopLead = $stmtCidadeTop->fetch();
 
-$origens = [
-    'Google' => 0,
-    'Instagram' => 0,
-    'Facebook' => 0,
-    'LinkedIn' => 0,
-    'WhatsApp' => 0,
-    'Direto' => 0,
-    'Outros' => 0,
+$paginasInteresse = [
+    '/diagnostico' => 0,
+    '/' => 0,
+    '/servicos.html' => 0,
+    '/trabalhos.html' => 0,
+    '/parceiros.html' => 0,
+    '/contato.html' => 0,
 ];
 
-$stmtOrigens = $pdo->prepare(
-    "SELECT referer, COUNT(*) AS total
+$stmtPaginasInteresse = $pdo->prepare(
+    "SELECT page, referer, COUNT(*) AS total
      FROM diagnostico_eventos
-     WHERE event_type = 'page_view'
-       AND created_at >= {$periodoInicio}
-     GROUP BY referer"
+     WHERE created_at >= {$periodoInicio}
+     GROUP BY page, referer"
 );
-$stmtOrigens->execute();
+$stmtPaginasInteresse->execute();
 
-foreach ($stmtOrigens->fetchAll() as $linhaOrigem) {
-    $origem = classificar_origem($linhaOrigem['referer'] ?? '');
-    $origens[$origem] += (int) $linhaOrigem['total'];
+foreach ($stmtPaginasInteresse->fetchAll() as $linhaPagina) {
+    $paginaEvento = caminho_interno_evento($linhaPagina['page'] ?? '');
+    $refererEvento = caminho_interno_evento($linhaPagina['referer'] ?? '');
+    $totalLinha = (int) $linhaPagina['total'];
+
+    if (array_key_exists($paginaEvento, $paginasInteresse)) {
+        $paginasInteresse[$paginaEvento] += $totalLinha;
+    }
+
+    if ($refererEvento !== $paginaEvento && array_key_exists($refererEvento, $paginasInteresse)) {
+        $paginasInteresse[$refererEvento] += $totalLinha;
+    }
 }
 
-$totalOrigens = array_sum($origens);
-arsort($origens);
-$origemPrincipal = array_key_first($origens);
+$totalPaginasInteresse = array_sum($paginasInteresse);
+$paginasInteresseComDados = array_filter($paginasInteresse, static fn (int $total): bool => $total > 0);
+$ultimoCliqueWhatsapp = null;
+$stmtUltimoCliqueWhatsapp = $pdo->prepare(
+    "SELECT created_at
+     FROM diagnostico_eventos
+     WHERE event_type = 'whatsapp_click'
+     ORDER BY created_at DESC
+     LIMIT 1"
+);
+$stmtUltimoCliqueWhatsapp->execute();
+$ultimoCliqueWhatsappValor = $stmtUltimoCliqueWhatsapp->fetchColumn();
+
+if ($ultimoCliqueWhatsappValor) {
+    $ultimoCliqueWhatsapp = new DateTime((string) $ultimoCliqueWhatsappValor);
+}
 
 $insights = [
     formatar_percentual($taxaInicio) . ' dos visitantes iniciaram o diagnostico.',
     formatar_percentual(porcentagem_metrica($diagnosticosConcluidos, $visitas30Dias)) . ' dos visitantes concluiram o diagnostico.',
     formatar_percentual($taxaConversaoGeral) . ' dos visitantes clicaram no WhatsApp.',
 ];
-
-if (($origens['Instagram'] ?? 0) > ($origens['Google'] ?? 0)) {
-    $insights[] = 'Instagram gerou mais trafego que Google.';
-} elseif (($origens['Google'] ?? 0) > 0) {
-    $insights[] = 'Google esta entre as principais origens de trafego.';
-}
 
 if ($taxaConclusao >= 50.0) {
     $insights[] = 'Pagina possui boa retencao no diagnostico.';
@@ -366,7 +404,7 @@ $leadsRecentes = $stmtLeads->fetchAll();
     }
 
     .funil-card,
-    .origem-item,
+    .pagina-interesse-item,
     .insight-item,
     .lead-oportunidade-card {
       background: #f8fafc;
@@ -393,13 +431,13 @@ $leadsRecentes = $stmtLeads->fetchAll();
       margin-top: 14px;
     }
 
-    .origens-grid {
+    .paginas-interesse-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
 
-    .origem-topo {
+    .pagina-interesse-topo {
       align-items: center;
       display: flex;
       justify-content: space-between;
@@ -407,17 +445,24 @@ $leadsRecentes = $stmtLeads->fetchAll();
       margin-bottom: 10px;
     }
 
-    .origem-barra {
+    .pagina-interesse-barra {
       background: #e5eaf3;
       border-radius: 999px;
       height: 8px;
       overflow: hidden;
     }
 
-    .origem-barra span {
+    .pagina-interesse-barra span {
       background: linear-gradient(135deg, var(--primary), var(--gold));
       display: block;
       height: 100%;
+    }
+
+    .whatsapp-resumo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
     }
 
     .insights-list {
@@ -542,7 +587,8 @@ $leadsRecentes = $stmtLeads->fetchAll();
       .diagnostico-admin-grid,
       .funil-grid,
       .funil-taxas,
-      .origens-grid,
+      .paginas-interesse-grid,
+      .whatsapp-resumo-grid,
       .lead-resultados-grid,
       .lead-oportunidades-grid {
         grid-template-columns: 1fr;
@@ -737,21 +783,40 @@ $leadsRecentes = $stmtLeads->fetchAll();
 
     <section class="panel">
       <div class="panel-head">
-        <h2>Origem dos acessos</h2>
-        <span>Principal: <?= e((string) $origemPrincipal) ?></span>
+        <h2>&#128204; Paginas e Links de Interesse</h2>
+        <span>Diagnostico e conversao</span>
       </div>
 
-      <div class="origens-grid">
-        <?php foreach ($origens as $origemNome => $origemTotal): ?>
-          <?php $percentualOrigem = porcentagem_metrica((int) $origemTotal, $totalOrigens); ?>
-          <article class="origem-item">
-            <div class="origem-topo">
-              <strong><?= e((string) $origemNome) ?></strong>
-              <span><?= (int) $origemTotal ?> - <?= formatar_percentual($percentualOrigem) ?></span>
-            </div>
-            <div class="origem-barra" aria-hidden="true"><span style="width: <?= $percentualOrigem ?>%"></span></div>
-          </article>
-        <?php endforeach; ?>
+      <?php if (!$paginasInteresseComDados): ?>
+        <p class="empty">Ainda não há dados suficientes sobre páginas internas.</p>
+      <?php else: ?>
+        <div class="paginas-interesse-grid">
+          <?php foreach ($paginasInteresse as $paginaInteresse => $totalPaginaInteresse): ?>
+            <?php $percentualPaginaInteresse = porcentagem_metrica((int) $totalPaginaInteresse, $totalPaginasInteresse); ?>
+            <article class="pagina-interesse-item">
+              <div class="pagina-interesse-topo">
+                <strong><?= e((string) $paginaInteresse) ?></strong>
+                <span><?= (int) $totalPaginaInteresse ?> - <?= formatar_percentual($percentualPaginaInteresse) ?></span>
+              </div>
+              <div class="pagina-interesse-barra" aria-hidden="true"><span style="width: <?= $percentualPaginaInteresse ?>%"></span></div>
+            </article>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
+      <div class="whatsapp-resumo-grid">
+        <article class="funil-card">
+          <span>Total de cliques no WhatsApp</span>
+          <strong><?= $cliquesWhatsapp ?></strong>
+        </article>
+        <article class="funil-card">
+          <span>Percentual sobre diagnosticos concluidos</span>
+          <strong><?= formatar_percentual($taxaCliqueWhatsapp) ?></strong>
+        </article>
+        <article class="funil-card">
+          <span>Ultimo clique registrado</span>
+          <strong><?= $ultimoCliqueWhatsapp ? e($ultimoCliqueWhatsapp->format('d/m/Y H:i')) : 'Sem dados' ?></strong>
+        </article>
       </div>
     </section>
 

@@ -1,12 +1,10 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../portal/config/conexao.php';
-require_once __DIR__ . '/../portal/includes/funcoes.php';
+require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/../includes/auth.php';
 
-if (empty($_SESSION['admin_id'])) {
-    redirect('/portal/admin/login.php');
-}
+exigir_admin();
 
 function contador_metrica(PDO $pdo, string $sql, array $params = []): int
 {
@@ -205,7 +203,7 @@ $eventosRecentes = $stmtEventos->fetchAll();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Metricas do Diagnostico | RWDEV Admin</title>
-  <link rel="stylesheet" href="/portal/assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
   <style>
     .diagnostico-admin-grid {
       display: grid;
@@ -342,13 +340,16 @@ $eventosRecentes = $stmtEventos->fetchAll();
 </head>
 <body>
   <header class="app-header admin">
-    <a href="/portal/admin/dashboard.php" class="marca">RWDEV Admin</a>
+    <a href="dashboard.php" class="marca">RWDEV Admin</a>
     <nav>
-      <a href="/portal/admin/dashboard.php">Dashboard</a>
-      <a href="/portal/admin/clientes.php">Clientes</a>
-      <a href="/portal/admin/depoimentos.php">Depoimentos</a>
-      <a href="/admin/diagnostico-metricas.php">Diagnostico</a>
-      <a href="/portal/logout.php">Sair</a>
+      <a href="dashboard.php">Dashboard</a>
+      <a href="clientes.php">Clientes</a>
+      <a href="convites.php">Convites</a>
+      <a href="projetos.php">Projetos</a>
+      <a href="solicitacoes.php">Solicitações</a>
+      <a href="depoimentos.php">Depoimentos</a>
+      <a href="diagnostico-metricas.php">&#128202; Diagnóstico</a>
+      <a href="../logout.php">Sair</a>
     </nav>
   </header>
 

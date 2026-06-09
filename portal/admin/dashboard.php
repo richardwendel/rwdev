@@ -38,6 +38,7 @@ $recentes = $pdo->query(
       <a href="projetos.php">Projetos</a>
       <a href="solicitacoes.php">Solicitações</a>
       <a href="depoimentos.php">Depoimentos</a>
+      <a href="diagnostico-metricas.php">&#128202; Diagnóstico</a>
       <a href="../logout.php">Sair</a>
     </nav>
   </header>

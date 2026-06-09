@@ -532,6 +532,53 @@ section {
   font-weight: 700;
 }
 
+.home-diagnostico-cta {
+  background: var(--branco);
+  padding: 54px 0;
+}
+
+.home-diagnostico-box {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(8, 36, 96, 0.96), rgba(0, 123, 255, 0.88));
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  color: var(--branco);
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  padding: 30px;
+}
+
+.home-diagnostico-box .subtitulo {
+  color: var(--dourado);
+}
+
+.home-diagnostico-box h2 {
+  color: var(--branco);
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.home-diagnostico-botao {
+  align-items: center;
+  background: var(--branco);
+  border-radius: 999px;
+  color: var(--azul-principal);
+  display: inline-flex;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 48px;
+  padding: 13px 24px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.home-diagnostico-botao:hover {
+  color: var(--azul-destaque);
+  transform: translateY(-2px);
+}
+
 /* =========================================
    PORTFÓLIO PREMIUM
    ========================================= */
@@ -1092,6 +1139,15 @@ section {
   .home-google-botao {
     width: 100%;
   }
+
+  .home-diagnostico-box {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .home-diagnostico-botao {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1113,6 +1169,14 @@ section {
 
   .home-google-card {
     min-height: auto;
+  }
+
+  .home-diagnostico-box {
+    padding: 24px;
+  }
+
+  .home-diagnostico-box h2 {
+    font-size: 24px;
   }
 
   .hero-texto p,
@@ -2477,6 +2541,445 @@ body {
 .menu a:hover::after,
 .menu a.ativo::after {
   transform: scaleX(1);
+}
+
+/* =========================================
+   DIAGNOSTICO DIGITAL
+   ========================================= */
+.diagnostico-main {
+  background: var(--cinza-claro);
+}
+
+.diagnostico-hero {
+  background:
+    radial-gradient(circle at 14% 16%, rgba(0, 200, 255, 0.26), transparent 26%),
+    linear-gradient(145deg, #020712 0%, #071a3d 52%, #082460 100%);
+  color: var(--branco);
+  overflow: hidden;
+  padding: 86px 0 74px;
+}
+
+.diagnostico-hero-grid {
+  align-items: center;
+  display: grid;
+  gap: 42px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+}
+
+.diagnostico-selo {
+  color: var(--dourado);
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.diagnostico-hero h1 {
+  color: var(--branco);
+  font-size: 48px;
+  line-height: 1.08;
+  margin-bottom: 18px;
+}
+
+.diagnostico-hero p {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 18px;
+  max-width: 720px;
+}
+
+.diagnostico-cta,
+.diagnostico-submit,
+.diagnostico-whatsapp {
+  align-items: center;
+  background: linear-gradient(135deg, var(--azul-destaque), var(--dourado));
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 18px 38px rgba(0, 123, 255, 0.26);
+  color: var(--branco);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 800;
+  justify-content: center;
+  margin-top: 28px;
+  min-height: 50px;
+  padding: 14px 24px;
+  text-decoration: none;
+  transition: var(--transicao);
+}
+
+.diagnostico-cta:hover,
+.diagnostico-submit:hover,
+.diagnostico-whatsapp:hover {
+  color: var(--branco);
+  transform: translateY(-2px);
+}
+
+.diagnostico-hero-painel {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.26);
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+}
+
+.diagnostico-metrica {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.diagnostico-metrica strong {
+  color: var(--dourado);
+  display: block;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.diagnostico-metrica span {
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 700;
+}
+
+.diagnostico-autoridade {
+  background: var(--branco);
+  padding: 68px 0;
+}
+
+.diagnostico-autoridade-cabecalho {
+  margin: 0 auto 30px;
+  max-width: 860px;
+  text-align: center;
+}
+
+.diagnostico-autoridade-cabecalho h2 {
+  color: var(--azul-principal);
+  font-size: 36px;
+  line-height: 1.16;
+  margin-bottom: 14px;
+}
+
+.diagnostico-autoridade-cabecalho p {
+  color: var(--cinza-texto);
+  font-size: 17px;
+}
+
+.diagnostico-autoridade-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.diagnostico-autoridade-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(217, 243, 255, 0.42));
+  border: 1px solid rgba(0, 123, 255, 0.12);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  min-height: 210px;
+  padding: 24px;
+}
+
+.diagnostico-autoridade-card span {
+  align-items: center;
+  background: var(--azul-claro);
+  border-radius: 14px;
+  display: inline-flex;
+  font-size: 24px;
+  height: 48px;
+  justify-content: center;
+  margin-bottom: 18px;
+  width: 48px;
+}
+
+.diagnostico-autoridade-card h3 {
+  color: var(--azul-principal);
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.diagnostico-autoridade-card p {
+  color: var(--cinza-texto);
+}
+
+.diagnostico-ferramenta {
+  background: var(--cinza-claro);
+  padding: 72px 0;
+}
+
+.diagnostico-layout {
+  align-items: start;
+  display: grid;
+  gap: 30px;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+}
+
+.diagnostico-intro {
+  position: sticky;
+  top: 130px;
+}
+
+.diagnostico-intro h2 {
+  color: var(--azul-principal);
+  font-size: 34px;
+  line-height: 1.18;
+  margin-bottom: 14px;
+}
+
+.diagnostico-intro p {
+  color: var(--cinza-texto);
+}
+
+.diagnostico-card,
+.diagnostico-resultado-card {
+  background: var(--branco);
+  border: 1px solid rgba(0, 123, 255, 0.12);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  padding: 28px;
+}
+
+.diagnostico-progresso {
+  align-items: center;
+  color: var(--cinza-texto);
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.diagnostico-progresso strong {
+  color: var(--azul-principal);
+}
+
+.diagnostico-progresso-barra,
+.diagnostico-score-barra {
+  background: var(--cinza-medio);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.diagnostico-progresso-barra span,
+.diagnostico-score-barra span {
+  background: linear-gradient(90deg, var(--azul-destaque), var(--dourado));
+  display: block;
+  height: 100%;
+  transition: width 0.55s ease;
+  width: 0;
+}
+
+.diagnostico-grupo {
+  border: 0;
+  border-bottom: 1px solid rgba(0, 123, 255, 0.1);
+  display: grid;
+  gap: 10px;
+  padding: 24px 0;
+}
+
+.diagnostico-grupo legend {
+  color: var(--azul-principal);
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.diagnostico-grupo label {
+  align-items: center;
+  background: var(--cinza-claro);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: var(--preto-suave);
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  transition: var(--transicao);
+}
+
+.diagnostico-grupo label:has(input:checked) {
+  background: var(--azul-claro);
+  border-color: rgba(0, 123, 255, 0.28);
+}
+
+.diagnostico-grupo input {
+  accent-color: var(--azul-destaque);
+}
+
+.diagnostico-dados {
+  padding-top: 24px;
+}
+
+.diagnostico-dados h3,
+.diagnostico-recomendacoes h3,
+.diagnostico-conversao h3 {
+  color: var(--azul-principal);
+  margin-bottom: 14px;
+}
+
+.diagnostico-campos {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.diagnostico-campos label {
+  color: var(--azul-principal);
+  display: grid;
+  font-weight: 800;
+  gap: 8px;
+}
+
+.diagnostico-campos label span {
+  color: var(--cinza-texto);
+  font-weight: 400;
+}
+
+.diagnostico-campos input {
+  border: 1px solid var(--cinza-medio);
+  border-radius: 12px;
+  color: var(--preto-suave);
+  font: inherit;
+  min-height: 46px;
+  padding: 10px 12px;
+}
+
+.diagnostico-campos input:focus {
+  border-color: var(--azul-destaque);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.12);
+  outline: 0;
+}
+
+.diagnostico-alerta {
+  color: #b42318;
+  font-weight: 700;
+  margin-top: 18px;
+}
+
+.diagnostico-submit {
+  width: 100%;
+}
+
+.diagnostico-resultado {
+  background: var(--branco);
+  padding: 74px 0;
+}
+
+.diagnostico-resultado-card {
+  margin: 0 auto;
+  max-width: 880px;
+}
+
+.diagnostico-score {
+  align-items: baseline;
+  color: var(--azul-principal);
+  display: flex;
+  gap: 10px;
+  margin: 20px 0 12px;
+}
+
+.diagnostico-score strong {
+  font-size: 56px;
+  line-height: 1;
+}
+
+.diagnostico-score span {
+  color: var(--cinza-texto);
+  font-weight: 800;
+}
+
+.diagnostico-resultado-card > p {
+  color: var(--cinza-texto);
+  font-size: 17px;
+  margin: 18px 0 24px;
+}
+
+.diagnostico-recomendacoes {
+  background: var(--cinza-claro);
+  border-radius: 14px;
+  margin-top: 22px;
+  padding: 20px;
+}
+
+.diagnostico-recomendacoes ul {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+}
+
+.diagnostico-recomendacoes li {
+  color: var(--preto-suave);
+  font-weight: 700;
+}
+
+.diagnostico-conversao {
+  border-top: 1px solid rgba(0, 123, 255, 0.12);
+  margin-top: 24px;
+  padding-top: 24px;
+}
+
+.diagnostico-conversao p {
+  color: var(--cinza-texto);
+}
+
+.diagnostico-whatsapp {
+  background: #128C7E;
+}
+
+@media (max-width: 980px) {
+  .diagnostico-autoridade-grid,
+  .diagnostico-hero-grid,
+  .diagnostico-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .diagnostico-intro {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .diagnostico-hero {
+    padding: 64px 0 56px;
+  }
+
+  .diagnostico-hero h1 {
+    font-size: 34px;
+  }
+
+  .diagnostico-hero p,
+  .diagnostico-autoridade-cabecalho p,
+  .diagnostico-resultado-card > p {
+    font-size: 16px;
+  }
+
+  .diagnostico-autoridade {
+    padding: 54px 0;
+  }
+
+  .diagnostico-autoridade-cabecalho h2 {
+    font-size: 28px;
+  }
+
+  .diagnostico-card,
+  .diagnostico-autoridade-card,
+  .diagnostico-resultado-card {
+    padding: 22px;
+  }
+
+  .diagnostico-campos {
+    grid-template-columns: 1fr;
+  }
+
+  .diagnostico-progresso {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
 }
 
 .hero,

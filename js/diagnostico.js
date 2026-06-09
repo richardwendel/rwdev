@@ -29,11 +29,12 @@ const perguntasDiagnostico = [
   { nome: "contatos_google", texto: "Você acompanha quantos contatos chegam através do Google?" },
 ];
 
-function registrarMetricaDiagnostico(eventType) {
+function registrarMetricaDiagnostico(eventType, dadosExtras = {}) {
   const payload = JSON.stringify({
     event_type: eventType,
     page: "/diagnostico",
     referer: document.referrer || "",
+    ...dadosExtras,
   });
 
   if (navigator.sendBeacon) {
@@ -241,7 +242,13 @@ function processarDiagnostico(evento) {
 
   if (!conclusaoDiagnosticoRegistrada) {
     conclusaoDiagnosticoRegistrada = true;
-    registrarMetricaDiagnostico("diagnosis_completed");
+    registrarMetricaDiagnostico("diagnosis_completed", {
+      lead: {
+        dados,
+        respostas,
+        pontuacao: pontos,
+      },
+    });
   }
 
   window.requestAnimationFrame(() => {

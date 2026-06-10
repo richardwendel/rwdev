@@ -2648,7 +2648,7 @@ body {
 
 .diagnostico-autoridade {
   background: var(--branco);
-  padding: 68px 0;
+  padding: 48px 0;
 }
 
 .diagnostico-autoridade-cabecalho {
@@ -2708,7 +2708,7 @@ body {
 
 .diagnostico-ferramenta {
   background: var(--cinza-claro);
-  padding: 56px 0;
+  padding: 36px 0 40px;
 }
 
 .diagnostico-layout {
@@ -2717,7 +2717,7 @@ body {
 }
 
 .diagnostico-intro {
-  margin: 0 auto 26px;
+  margin: 0 auto 20px;
   max-width: 780px;
   position: static;
   text-align: center;
@@ -2740,7 +2740,7 @@ body {
   border: 1px solid rgba(0, 123, 255, 0.12);
   border-radius: var(--radius);
   box-shadow: var(--sombra);
-  padding: 28px;
+  padding: 24px;
 }
 
 .diagnostico-card {
@@ -2831,7 +2831,7 @@ body {
 .diagnostico-inicio {
   align-content: center;
   justify-items: center;
-  padding: 12px 0 4px;
+  padding: 4px 0 0;
   text-align: center;
 }
 
@@ -2853,7 +2853,7 @@ body {
   display: grid;
   gap: 10px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 22px 0 4px;
+  margin: 18px 0 0;
   width: 100%;
 }
 
@@ -2871,7 +2871,7 @@ body {
   border: 0;
   display: grid;
   gap: 14px;
-  padding: 18px 0 4px;
+  padding: 8px 0 0;
   text-align: center;
 }
 
@@ -3017,7 +3017,7 @@ body {
   align-content: center;
   display: grid;
   justify-items: center;
-  min-height: 260px;
+  min-height: 220px;
   text-align: center;
 }
 
@@ -3049,8 +3049,12 @@ body {
 }
 
 .diagnostico-resultado {
-  background: var(--branco);
-  padding: 74px 0;
+  background: var(--cinza-claro);
+  padding: 36px 0 42px;
+}
+
+.diagnostico-resultado[hidden] {
+  display: none !important;
 }
 
 .diagnostico-resultado-card {
@@ -3220,7 +3224,7 @@ body {
   }
 
   .diagnostico-autoridade {
-    padding: 54px 0;
+    padding: 40px 0;
   }
 
   .diagnostico-autoridade-cabecalho h2 {

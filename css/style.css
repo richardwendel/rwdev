@@ -3226,6 +3226,147 @@ body {
   padding-top: 22px;
 }
 
+.sr-only {
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+body.diagnostico-modal-aberto {
+  overflow: hidden;
+}
+
+.diagnostico-page-compacta .diagnostico-autoridade,
+.diagnostico-page-compacta .diagnostico-ferramenta,
+.diagnostico-page-compacta .diagnostico-hero-painel {
+  display: none !important;
+}
+
+.diagnostico-page-compacta .diagnostico-hero {
+  padding: 78px 0;
+}
+
+.diagnostico-page-compacta .diagnostico-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 820px);
+  justify-content: center;
+  text-align: center;
+}
+
+.diagnostico-page-compacta .diagnostico-hero p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.diagnostico-beneficios-pagina {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 26px auto 0;
+  max-width: 760px;
+}
+
+.diagnostico-beneficios-pagina span {
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  color: var(--branco);
+  font-weight: 800;
+  padding: 14px 12px;
+}
+
+.diagnostico-fluxo-modal {
+  align-items: center;
+  background: rgba(2, 7, 18, 0.78);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  opacity: 0;
+  padding: 22px;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 0.22s ease;
+  z-index: 9998;
+}
+
+.diagnostico-fluxo-modal.ativo {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.diagnostico-fluxo-card {
+  max-height: 90vh;
+  max-width: 900px;
+  overflow-y: auto;
+  position: relative;
+  scrollbar-width: thin;
+  width: min(100%, 900px);
+}
+
+.diagnostico-fluxo-conteudo {
+  padding: 2px;
+}
+
+.diagnostico-fluxo-fechar {
+  align-items: center;
+  background: var(--branco);
+  border: 1px solid rgba(0, 123, 255, 0.14);
+  border-radius: 50%;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+  color: var(--azul-principal);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 900;
+  height: 38px;
+  justify-content: center;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 38px;
+  z-index: 2;
+}
+
+.diagnostico-fluxo-modal .diagnostico-card,
+.diagnostico-fluxo-modal .diagnostico-resultado-card {
+  margin: 0;
+  max-width: none;
+  padding: 28px;
+}
+
+.diagnostico-fluxo-modal .diagnostico-card {
+  padding-top: 58px;
+}
+
+.diagnostico-fluxo-modal .diagnostico-resultado {
+  background: transparent;
+  padding: 0;
+}
+
+.diagnostico-fluxo-modal .diagnostico-resultado > .container {
+  padding: 0;
+  width: 100%;
+}
+
+.diagnostico-fluxo-modal .diagnostico-dados:not(.ativa),
+.diagnostico-fluxo-modal .diagnostico-processando:not(.ativa),
+.diagnostico-fluxo-modal .diagnostico-etapa:not(.ativa),
+.diagnostico-fluxo-modal [hidden] {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
 @media (max-width: 980px) {
   .diagnostico-autoridade-grid,
   .diagnostico-hero-grid,
@@ -3288,6 +3429,32 @@ body {
   .diagnostico-grupo legend,
   .diagnostico-inicio h3 {
     font-size: 26px;
+  }
+
+  .diagnostico-page-compacta .diagnostico-hero {
+    padding: 58px 0;
+  }
+
+  .diagnostico-beneficios-pagina {
+    grid-template-columns: 1fr;
+  }
+
+  .diagnostico-fluxo-modal {
+    padding: 10px;
+  }
+
+  .diagnostico-fluxo-card {
+    max-height: 94vh;
+    width: 100%;
+  }
+
+  .diagnostico-fluxo-modal .diagnostico-card,
+  .diagnostico-fluxo-modal .diagnostico-resultado-card {
+    padding: 22px;
+  }
+
+  .diagnostico-fluxo-modal .diagnostico-card {
+    padding-top: 54px;
   }
 }
 

@@ -17,6 +17,7 @@ const mensagemFinalResultado = document.getElementById("diagnosticoMensagemFinal
 const listaRecomendacoes = document.getElementById("diagnosticoRecomendacoes");
 const linkWhatsappDiagnostico = document.getElementById("diagnosticoWhatsapp");
 const botaoIniciarPerguntas = document.getElementById("diagnosticoIniciarPerguntas");
+const botaoAbrirDiagnostico = document.querySelector(".diagnostico-cta");
 const progressoTopo = document.querySelector(".diagnostico-progresso");
 const progressoBarra = document.querySelector(".diagnostico-progresso-barra");
 const blocoDados = formDiagnostico?.querySelector(".diagnostico-dados");
@@ -28,16 +29,20 @@ let conclusaoDiagnosticoRegistrada = false;
 let perguntaAtual = -1;
 let dadoAtual = -1;
 let avancandoPergunta = false;
+let botaoSairDiagnostico = null;
+let modalFluxoDiagnostico = null;
+let modalFluxoCard = null;
+let modalConfirmacaoSaida = null;
 
 const perguntasDiagnostico = [
-  { nome: "google_aparece", texto: "Quando alguem pesquisa sua empresa no Google, ela aparece?" },
-  { nome: "whatsapp_contatos", texto: "Voce recebe contatos pelo WhatsApp regularmente?" },
+  { nome: "google_aparece", texto: "Quando algu\u00e9m pesquisa sua empresa no Google, ela aparece?" },
+  { nome: "whatsapp_contatos", texto: "Voc\u00ea recebe contatos pelo WhatsApp regularmente?" },
   { nome: "perfil_google", texto: "Sua empresa possui Perfil da Empresa no Google?" },
   { nome: "instagram_ativo", texto: "Sua empresa possui Instagram ativo?" },
-  { nome: "google_ads", texto: "Voce ja anunciou no Google Ads?" },
-  { nome: "site_profissional", texto: "Voce possui um site profissional?" },
-  { nome: "visitas_site", texto: "Voce sabe quantas pessoas visitam seu site por mes?" },
-  { nome: "contatos_google", texto: "Voce acompanha quantos contatos chegam atraves do Google?" },
+  { nome: "google_ads", texto: "Voc\u00ea j\u00e1 anunciou no Google Ads?" },
+  { nome: "site_profissional", texto: "Voc\u00ea possui um site profissional?" },
+  { nome: "visitas_site", texto: "Voc\u00ea sabe quantas pessoas visitam seu site por m\u00eas?" },
+  { nome: "contatos_google", texto: "Voc\u00ea acompanha quantos contatos chegam atrav\u00e9s do Google?" },
 ];
 
 const dadosEtapas = ["empresa", "responsavel", "whatsapp", "cidade", "email"];
@@ -85,7 +90,7 @@ function etapaPergunta(indice) {
 }
 
 function definirEtapaAtiva(elementoAtivo) {
-  if (!formDiagnostico || !elementoAtivo) {
+  if (!formDiagnostico) {
     return;
   }
 
@@ -113,7 +118,7 @@ function atualizarProgressoDiagnostico(modo = "pergunta") {
     const numeroDado = Math.max(1, dadoAtual + 1);
     const percentual = Math.round(((perguntasDiagnostico.length + numeroDado) / (perguntasDiagnostico.length + dadosEtapas.length)) * 100);
 
-    etapaDiagnostico.textContent = "Dados para analise";
+    etapaDiagnostico.textContent = "Dados para an\u00e1lise";
     progressoDiagnostico.style.width = `${percentual}%`;
 
     if (percentualDiagnostico) {
@@ -125,7 +130,7 @@ function atualizarProgressoDiagnostico(modo = "pergunta") {
 
   if (perguntaAtual < 0) {
     progressoDiagnostico.style.width = "0%";
-    etapaDiagnostico.textContent = "Diagnostico gratuito";
+    etapaDiagnostico.textContent = "Diagn\u00f3stico gratuito";
 
     if (percentualDiagnostico) {
       percentualDiagnostico.textContent = "0%";
@@ -145,33 +150,38 @@ function atualizarProgressoDiagnostico(modo = "pergunta") {
   }
 }
 
-function rolarParaQuestionario() {
-  formDiagnostico?.scrollIntoView({ behavior: "smooth", block: "center" });
+function rolarModalParaTopo() {
+  modalFluxoCard?.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function criarTelaInicial() {
-  if (!formDiagnostico || formDiagnostico.querySelector("[data-etapa='inicio']")) {
-    return;
+function prepararPaginaCompacta() {
+  const heroTexto = document.querySelector(".diagnostico-hero-texto");
+  const tituloHero = heroTexto?.querySelector("h1");
+  const textoHero = heroTexto?.querySelector("p");
+
+  if (tituloHero) {
+    tituloHero.textContent = "Diagn\u00f3stico Gratuito de Presen\u00e7a Digital";
   }
 
-  const telaInicial = document.createElement("section");
-  telaInicial.className = "diagnostico-inicio diagnostico-etapa ativa";
-  telaInicial.dataset.etapa = "inicio";
-  telaInicial.innerHTML = `
-    <span class="diagnostico-etapa-icone" aria-hidden="true">🚀</span>
-    <h3>Diagnóstico Gratuito de Presença Digital</h3>
-    <p>Descubra em menos de 1 minuto se sua empresa está aparecendo bem no Google, aproveitando o WhatsApp e preparada para gerar mais oportunidades.</p>
-    <div class="diagnostico-beneficios">
+  if (textoHero) {
+    textoHero.textContent = "Descubra em menos de 1 minuto se sua empresa est\u00e1 aparecendo bem no Google, aproveitando o WhatsApp e preparada para gerar mais oportunidades.";
+  }
+
+  if (botaoAbrirDiagnostico) {
+    botaoAbrirDiagnostico.textContent = "Come\u00e7ar diagn\u00f3stico";
+    botaoAbrirDiagnostico.setAttribute("href", "#");
+    botaoAbrirDiagnostico.setAttribute("role", "button");
+  }
+
+  if (heroTexto && !heroTexto.querySelector(".diagnostico-beneficios-pagina")) {
+    const beneficios = document.createElement("div");
+    beneficios.className = "diagnostico-beneficios-pagina";
+    beneficios.innerHTML = `
       <span>Visibilidade no Google</span>
-      <span>Captação pelo WhatsApp</span>
+      <span>Capta\u00e7\u00e3o pelo WhatsApp</span>
       <span>Oportunidades de crescimento</span>
-    </div>
-  `;
-
-  formDiagnostico.insertBefore(telaInicial, progressoTopo || formDiagnostico.firstChild);
-
-  if (botaoIniciarPerguntas) {
-    telaInicial.appendChild(botaoIniciarPerguntas);
+    `;
+    heroTexto.insertBefore(beneficios, botaoAbrirDiagnostico);
   }
 }
 
@@ -199,6 +209,71 @@ function prepararCamposDeDados() {
   botaoContinuar.addEventListener("click", avancarDado);
 }
 
+function criarModalFluxo() {
+  if (!formDiagnostico || modalFluxoDiagnostico) {
+    return;
+  }
+
+  modalFluxoDiagnostico = document.createElement("div");
+  modalFluxoDiagnostico.className = "diagnostico-fluxo-modal";
+  modalFluxoDiagnostico.id = "diagnosticoFluxoModal";
+  modalFluxoDiagnostico.setAttribute("aria-hidden", "true");
+  modalFluxoDiagnostico.innerHTML = `
+    <div class="diagnostico-fluxo-card" role="dialog" aria-modal="true" aria-labelledby="diagnosticoFluxoTitulo">
+      <button class="diagnostico-fluxo-fechar" type="button" aria-label="Fechar diagnostico">x</button>
+      <div class="diagnostico-fluxo-conteudo"></div>
+    </div>
+  `;
+
+  document.body.appendChild(modalFluxoDiagnostico);
+  modalFluxoCard = modalFluxoDiagnostico.querySelector(".diagnostico-fluxo-card");
+
+  const conteudo = modalFluxoDiagnostico.querySelector(".diagnostico-fluxo-conteudo");
+  const tituloModal = document.createElement("span");
+  tituloModal.className = "sr-only";
+  tituloModal.id = "diagnosticoFluxoTitulo";
+  tituloModal.textContent = "Diagn\u00f3stico gratuito de presen\u00e7a digital";
+
+  conteudo.appendChild(tituloModal);
+  conteudo.appendChild(formDiagnostico);
+
+  if (resultadoDiagnostico) {
+    conteudo.appendChild(resultadoDiagnostico);
+  }
+
+  modalFluxoDiagnostico.querySelector(".diagnostico-fluxo-fechar")?.addEventListener("click", pedirConfirmacaoSaida);
+  modalFluxoDiagnostico.addEventListener("click", (evento) => {
+    if (evento.target === modalFluxoDiagnostico) {
+      pedirConfirmacaoSaida();
+    }
+  });
+}
+
+function abrirModalDiagnostico(evento) {
+  evento?.preventDefault();
+
+  if (!modalFluxoDiagnostico) {
+    return;
+  }
+
+  resetarDiagnosticoVisual();
+  modalFluxoDiagnostico.classList.add("ativo");
+  modalFluxoDiagnostico.setAttribute("aria-hidden", "false");
+  document.body.classList.add("diagnostico-modal-aberto");
+  iniciarPerguntas();
+}
+
+function fecharModalDiagnostico() {
+  if (!modalFluxoDiagnostico) {
+    return;
+  }
+
+  modalFluxoDiagnostico.classList.remove("ativo");
+  modalFluxoDiagnostico.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("diagnostico-modal-aberto");
+  resetarDiagnosticoVisual();
+}
+
 function mostrarCampoDeDados(indice) {
   if (!blocoDados) {
     return;
@@ -214,7 +289,7 @@ function mostrarCampoDeDados(indice) {
   const inputAtual = campoFormulario(dadosEtapas[indice]);
   alertaDiagnostico.textContent = "";
   atualizarProgressoDiagnostico("dados");
-  rolarParaQuestionario();
+  rolarModalParaTopo();
 
   window.setTimeout(() => inputAtual?.focus(), 120);
 }
@@ -239,7 +314,7 @@ function validarDadoAtual() {
     const campoEmail = campoFormulario("email");
 
     if (valor && campoEmail && !campoEmail.checkValidity()) {
-      return "Informe um e-mail valido ou deixe o campo em branco.";
+      return "Informe um e-mail v\u00e1lido ou deixe o campo em branco.";
     }
   }
 
@@ -265,11 +340,21 @@ function avancarDado() {
 function iniciarPerguntas() {
   perguntaAtual = 0;
   dadoAtual = -1;
+  avancandoPergunta = false;
+
+  if (formDiagnostico) {
+    formDiagnostico.hidden = false;
+  }
+
+  if (resultadoDiagnostico) {
+    resultadoDiagnostico.hidden = true;
+  }
+
   alternarProgresso(true);
   botaoSairDiagnostico.hidden = false;
   definirEtapaAtiva(etapaPergunta(perguntaAtual));
   atualizarProgressoDiagnostico();
-  rolarParaQuestionario();
+  rolarModalParaTopo();
 }
 
 function registrarInicioDiagnostico() {
@@ -282,24 +367,24 @@ function registrarInicioDiagnostico() {
 function diagnosticoPorPontuacao(pontos) {
   if (pontos <= 40) {
     return {
-      titulo: "🔴 Oportunidade Crítica",
-      texto: "Sua empresa possui oportunidades importantes de melhoria digital. Existem pontos que podem estar reduzindo sua visibilidade e geração de contatos.",
-      complemento: "Inicie uma conversa com a RWDEV e descubra possíveis soluções para aumentar seus resultados.",
+      titulo: "Oportunidade Cr\u00edtica",
+      texto: "Sua empresa possui oportunidades importantes de melhoria digital. Existem pontos que podem estar reduzindo sua visibilidade e gera\u00e7\u00e3o de contatos.",
+      complemento: "Inicie uma conversa com a RWDEV e descubra poss\u00edveis solu\u00e7\u00f5es para aumentar seus resultados.",
     };
   }
 
   if (pontos <= 70) {
     return {
-      titulo: "🟡 Potencial de Crescimento",
-      texto: "Sua empresa já possui uma boa base digital, porém ainda existem oportunidades para ampliar sua presença online e aumentar a geração de leads.",
-      complemento: "A RWDEV pode ajudar a identificar ações práticas para acelerar esse crescimento.",
+      titulo: "Potencial de Crescimento",
+      texto: "Sua empresa j\u00e1 possui uma boa base digital, por\u00e9m ainda existem oportunidades para ampliar sua presen\u00e7a online e aumentar a gera\u00e7\u00e3o de leads.",
+      complemento: "A RWDEV pode ajudar a identificar a\u00e7\u00f5es pr\u00e1ticas para acelerar esse crescimento.",
     };
   }
 
   return {
-    titulo: "🟢 Presença Digital Sólida",
-    texto: "Parabéns! Sua empresa demonstra uma presença digital sólida.",
-    complemento: "Mesmo empresas com boa estrutura podem alcançar resultados ainda melhores através de SEO avançado, Google Ads, otimização de conversão, automações e melhorias estratégicas.",
+    titulo: "Presen\u00e7a Digital S\u00f3lida",
+    texto: "Parab\u00e9ns! Sua empresa demonstra uma presen\u00e7a digital s\u00f3lida.",
+    complemento: "Mesmo empresas com boa estrutura podem alcan\u00e7ar resultados ainda melhores atrav\u00e9s de SEO avan\u00e7ado, Google Ads, otimiza\u00e7\u00e3o de convers\u00e3o, automa\u00e7\u00f5es e melhorias estrat\u00e9gicas.",
   };
 }
 
@@ -311,11 +396,11 @@ function gerarRecomendacoes(respostas) {
   }
 
   if (respostas.google_ads !== "Sim") {
-    recomendacoes.push("Google Ads pode acelerar a captacao quando existe uma oferta clara e uma pagina preparada para converter.");
+    recomendacoes.push("Google Ads pode acelerar a capta\u00e7\u00e3o quando existe uma oferta clara e uma p\u00e1gina preparada para converter.");
   }
 
   if (respostas.site_profissional !== "Sim") {
-    recomendacoes.push("Um site profissional pode centralizar sua presenca digital e transformar visitas em contatos.");
+    recomendacoes.push("Um site profissional pode centralizar sua presen\u00e7a digital e transformar visitas em contatos.");
   }
 
   if (respostas.visitas_site !== "Sim") {
@@ -323,7 +408,7 @@ function gerarRecomendacoes(respostas) {
   }
 
   if (respostas.contatos_google !== "Sim") {
-    recomendacoes.push("Acompanhar contatos vindos do Google ajuda a medir o retorno da sua presenca digital.");
+    recomendacoes.push("Acompanhar contatos vindos do Google ajuda a medir o retorno da sua presen\u00e7a digital.");
   }
 
   if (respostas.whatsapp_contatos !== "Sim") {
@@ -331,7 +416,7 @@ function gerarRecomendacoes(respostas) {
   }
 
   if (recomendacoes.length === 0) {
-    recomendacoes.push("Sua base digital esta bem estruturada. A RWDEV pode ajudar a refinar SEO, automacoes, campanhas e conversao.");
+    recomendacoes.push("Sua base digital est\u00e1 bem estruturada. A RWDEV pode ajudar a refinar SEO, automa\u00e7\u00f5es, campanhas e convers\u00e3o.");
   }
 
   return recomendacoes;
@@ -343,22 +428,22 @@ function montarMensagemWhatsapp(dados, respostas, pontos, diagnostico, recomenda
   });
 
   return [
-    "Ola, RWDEV! Quero solicitar uma analise gratuita com base no meu diagnostico digital.",
+    "Ol\u00e1, RWDEV! Quero solicitar uma an\u00e1lise gratuita com base no meu diagn\u00f3stico digital.",
     "",
     "*Dados da empresa*",
     `Empresa: ${dados.empresa}`,
-    `Responsavel: ${dados.responsavel}`,
+    `Respons\u00e1vel: ${dados.responsavel}`,
     `Cidade: ${dados.cidade}`,
     `WhatsApp: ${dados.whatsapp}`,
     `E-mail: ${dados.email || "Nao informado"}`,
     "",
     "*Resultado*",
-    `Pontuacao final: ${pontos}/100`,
-    `Diagnostico: ${diagnostico.titulo}`,
+    `Pontua\u00e7\u00e3o final: ${pontos}/100`,
+    `Diagn\u00f3stico: ${diagnostico.titulo}`,
     diagnostico.texto,
     diagnostico.complemento,
     "",
-    "*Recomendacoes*",
+    "*Recomenda\u00e7\u00f5es*",
     ...recomendacoes.map((item) => `- ${item}`),
     "",
     "*Respostas*",
@@ -370,7 +455,7 @@ function validarDiagnostico() {
   const primeiraSemResposta = perguntasDiagnostico.find((pergunta) => !respostaSelecionada(pergunta.nome));
 
   if (primeiraSemResposta) {
-    return "Responda todas as perguntas para gerar seu diagnostico.";
+    return "Responda todas as perguntas para gerar seu diagn\u00f3stico.";
   }
 
   for (const nome of ["empresa", "responsavel", "whatsapp", "cidade"]) {
@@ -432,6 +517,11 @@ function exibirResultado() {
 
   listaRecomendacoes.innerHTML = recomendacoes.map((item) => `<li>${item}</li>`).join("");
   linkWhatsappDiagnostico.href = `https://wa.me/${telefoneRwdev}?text=${encodeURIComponent(mensagem)}`;
+
+  if (formDiagnostico) {
+    formDiagnostico.hidden = true;
+  }
+
   resultadoDiagnostico.hidden = false;
 
   if (!conclusaoDiagnosticoRegistrada) {
@@ -447,9 +537,8 @@ function exibirResultado() {
 
   window.requestAnimationFrame(() => {
     barraResultado.style.width = `${pontos}%`;
+    rolarModalParaTopo();
   });
-
-  resultadoDiagnostico.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function processarDiagnostico() {
@@ -459,7 +548,7 @@ function processarDiagnostico() {
   }
 
   definirEtapaAtiva(processamentoDiagnostico);
-  etapaDiagnostico.textContent = "Analise em andamento";
+  etapaDiagnostico.textContent = "An\u00e1lise em andamento";
   progressoDiagnostico.style.width = "100%";
   botaoSairDiagnostico.hidden = true;
 
@@ -467,6 +556,7 @@ function processarDiagnostico() {
     percentualDiagnostico.textContent = "100%";
   }
 
+  rolarModalParaTopo();
   setTimeout(exibirResultado, 2000);
 }
 
@@ -492,81 +582,108 @@ function avancarAposResposta(evento) {
       perguntaAtual += 1;
       definirEtapaAtiva(etapaPergunta(perguntaAtual));
       atualizarProgressoDiagnostico();
-      rolarParaQuestionario();
+      rolarModalParaTopo();
     } else {
       mostrarCampoDeDados(0);
     }
 
     avancandoPergunta = false;
-  }, 320);
+  }, 300);
 }
 
 function criarControleSaida() {
   const botaoSair = document.createElement("button");
   botaoSair.type = "button";
   botaoSair.className = "diagnostico-sair";
-  botaoSair.textContent = "Sair do diagnóstico";
+  botaoSair.textContent = "Sair do diagn\u00f3stico";
   botaoSair.hidden = true;
   botaoSair.id = "diagnosticoSair";
   formDiagnostico.appendChild(botaoSair);
 
-  const modal = document.createElement("div");
-  modal.className = "diagnostico-modal";
-  modal.id = "diagnosticoModalSair";
-  modal.setAttribute("aria-hidden", "true");
-  modal.innerHTML = `
+  modalConfirmacaoSaida = document.createElement("div");
+  modalConfirmacaoSaida.className = "diagnostico-modal";
+  modalConfirmacaoSaida.id = "diagnosticoModalSair";
+  modalConfirmacaoSaida.setAttribute("aria-hidden", "true");
+  modalConfirmacaoSaida.innerHTML = `
     <div class="diagnostico-modal-card" role="dialog" aria-modal="true" aria-labelledby="diagnosticoModalTitulo">
-      <h3 id="diagnosticoModalTitulo">Deseja sair do diagnóstico?</h3>
-      <p>Você está a poucos passos de descobrir oportunidades importantes para sua empresa aparecer melhor no Google e gerar mais contatos pelo WhatsApp.</p>
+      <h3 id="diagnosticoModalTitulo">Deseja sair do diagn\u00f3stico?</h3>
+      <p>Voc\u00ea est\u00e1 a poucos passos de descobrir oportunidades importantes para sua empresa aparecer melhor no Google e gerar mais contatos pelo WhatsApp.</p>
       <div class="diagnostico-modal-acoes">
-        <button class="diagnostico-submit" id="diagnosticoContinuarModal" type="button">Continuar diagnóstico</button>
+        <button class="diagnostico-submit" id="diagnosticoContinuarModal" type="button">Continuar diagn\u00f3stico</button>
         <button class="diagnostico-modal-sair" id="diagnosticoConfirmarSair" type="button">Sair mesmo assim</button>
       </div>
     </div>
   `;
-  document.body.appendChild(modal);
+  document.body.appendChild(modalConfirmacaoSaida);
 
-  botaoSair.addEventListener("click", () => {
-    modal.classList.add("ativo");
-    modal.setAttribute("aria-hidden", "false");
-  });
+  botaoSair.addEventListener("click", pedirConfirmacaoSaida);
 
-  modal.querySelector("#diagnosticoContinuarModal")?.addEventListener("click", () => {
-    modal.classList.remove("ativo");
-    modal.setAttribute("aria-hidden", "true");
-  });
-
-  modal.querySelector("#diagnosticoConfirmarSair")?.addEventListener("click", () => {
-    modal.classList.remove("ativo");
-    modal.setAttribute("aria-hidden", "true");
-    resetarDiagnosticoVisual();
+  modalConfirmacaoSaida.querySelector("#diagnosticoContinuarModal")?.addEventListener("click", fecharConfirmacaoSaida);
+  modalConfirmacaoSaida.querySelector("#diagnosticoConfirmarSair")?.addEventListener("click", () => {
+    fecharConfirmacaoSaida();
+    fecharModalDiagnostico();
   });
 
   return botaoSair;
+}
+
+function pedirConfirmacaoSaida() {
+  if (!modalConfirmacaoSaida || !modalFluxoDiagnostico?.classList.contains("ativo")) {
+    return;
+  }
+
+  modalConfirmacaoSaida.classList.add("ativo");
+  modalConfirmacaoSaida.setAttribute("aria-hidden", "false");
+}
+
+function fecharConfirmacaoSaida() {
+  if (!modalConfirmacaoSaida) {
+    return;
+  }
+
+  modalConfirmacaoSaida.classList.remove("ativo");
+  modalConfirmacaoSaida.setAttribute("aria-hidden", "true");
 }
 
 function resetarDiagnosticoVisual() {
   perguntaAtual = -1;
   dadoAtual = -1;
   avancandoPergunta = false;
-  alertaDiagnostico.textContent = "";
-  resultadoDiagnostico.hidden = true;
-  formDiagnostico.reset();
-  formDiagnostico.querySelectorAll(".selecionando").forEach((label) => {
-    label.classList.remove("selecionando");
-  });
+
+  if (alertaDiagnostico) {
+    alertaDiagnostico.textContent = "";
+  }
+
+  if (resultadoDiagnostico) {
+    resultadoDiagnostico.hidden = true;
+  }
+
+  if (formDiagnostico) {
+    formDiagnostico.hidden = false;
+    formDiagnostico.reset();
+    formDiagnostico.querySelectorAll(".selecionando").forEach((label) => {
+      label.classList.remove("selecionando");
+    });
+    definirEtapaAtiva(null);
+  }
+
   alternarProgresso(false);
-  definirEtapaAtiva(formDiagnostico.querySelector("[data-etapa='inicio']"));
-  botaoSairDiagnostico.hidden = true;
+
+  if (botaoSairDiagnostico) {
+    botaoSairDiagnostico.hidden = true;
+  }
+
+  if (barraResultado) {
+    barraResultado.style.width = "0%";
+  }
+
   atualizarProgressoDiagnostico();
-  rolarParaQuestionario();
 }
 
-let botaoSairDiagnostico = null;
-
 if (formDiagnostico) {
-  criarTelaInicial();
+  prepararPaginaCompacta();
   prepararCamposDeDados();
+  criarModalFluxo();
   botaoSairDiagnostico = criarControleSaida();
   alternarProgresso(false);
   registrarMetricaDiagnostico("page_view");
@@ -574,7 +691,8 @@ if (formDiagnostico) {
   formDiagnostico.addEventListener("submit", (evento) => {
     evento.preventDefault();
   });
-  botaoIniciarPerguntas?.addEventListener("click", iniciarPerguntas);
+  botaoIniciarPerguntas?.setAttribute("hidden", "true");
+  botaoAbrirDiagnostico?.addEventListener("click", abrirModalDiagnostico);
   atualizarProgressoDiagnostico();
 }
 

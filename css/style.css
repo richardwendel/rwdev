@@ -2708,19 +2708,19 @@ body {
 
 .diagnostico-ferramenta {
   background: var(--cinza-claro);
-  padding: 72px 0;
+  padding: 56px 0;
 }
 
 .diagnostico-layout {
-  align-items: start;
-  display: grid;
-  gap: 30px;
-  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+  align-items: center;
+  display: block;
 }
 
 .diagnostico-intro {
-  position: sticky;
-  top: 130px;
+  margin: 0 auto 26px;
+  max-width: 780px;
+  position: static;
+  text-align: center;
 }
 
 .diagnostico-intro h2 {
@@ -2743,8 +2743,13 @@ body {
   padding: 28px;
 }
 
+.diagnostico-card {
+  margin: 0 auto;
+  max-width: 860px;
+}
+
 .diagnostico-card-jornada {
-  min-height: 560px;
+  min-height: 0;
   overflow: hidden;
   position: relative;
 }
@@ -2781,7 +2786,7 @@ body {
 
 .diagnostico-etapa {
   display: none;
-  min-height: 430px;
+  min-height: 0;
   opacity: 0;
   pointer-events: none;
   transform: translateY(18px) scale(0.98);
@@ -2823,11 +2828,50 @@ body {
   width: 54px;
 }
 
+.diagnostico-inicio {
+  align-content: center;
+  justify-items: center;
+  padding: 12px 0 4px;
+  text-align: center;
+}
+
+.diagnostico-inicio h3 {
+  color: var(--azul-principal);
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.08;
+  margin-bottom: 14px;
+  max-width: 760px;
+}
+
+.diagnostico-inicio p {
+  color: var(--cinza-texto);
+  font-size: 17px;
+  max-width: 700px;
+}
+
+.diagnostico-beneficios {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 22px 0 4px;
+  width: 100%;
+}
+
+.diagnostico-beneficios span {
+  background: var(--cinza-claro);
+  border: 1px solid rgba(0, 123, 255, 0.12);
+  border-radius: 14px;
+  color: var(--azul-principal);
+  font-size: 14px;
+  font-weight: 800;
+  padding: 14px 12px;
+}
+
 .diagnostico-grupo {
   border: 0;
   display: grid;
   gap: 14px;
-  padding: 30px 0 10px;
+  padding: 18px 0 4px;
   text-align: center;
 }
 
@@ -2878,7 +2922,7 @@ body {
 .diagnostico-dados {
   align-content: center;
   display: grid;
-  padding-top: 24px;
+  padding-top: 8px;
   text-align: center;
 }
 
@@ -2915,16 +2959,21 @@ body {
 }
 
 .diagnostico-campos {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: block;
 }
 
 .diagnostico-campos label {
   color: var(--azul-principal);
-  display: grid;
+  display: none;
   font-weight: 800;
   gap: 8px;
+}
+
+.diagnostico-campos label.ativo {
+  animation: diagnostico-etapa-entrada 0.28s ease both;
+  display: grid;
+  margin: 0 auto;
+  max-width: 560px;
 }
 
 .diagnostico-campos label span {
@@ -2937,8 +2986,10 @@ body {
   border-radius: 12px;
   color: var(--preto-suave);
   font: inherit;
-  min-height: 46px;
-  padding: 10px 12px;
+  font-size: 18px;
+  min-height: 56px;
+  padding: 12px 14px;
+  text-align: center;
 }
 
 .diagnostico-campos input:focus {
@@ -2957,11 +3008,16 @@ body {
   width: 100%;
 }
 
+.diagnostico-inicio .diagnostico-submit,
+.diagnostico-continuar-dados {
+  max-width: 360px;
+}
+
 .diagnostico-processando {
   align-content: center;
   display: grid;
   justify-items: center;
-  min-height: 380px;
+  min-height: 260px;
   text-align: center;
 }
 
@@ -3058,6 +3114,84 @@ body {
   background: #128C7E;
 }
 
+.diagnostico-sair {
+  background: transparent;
+  border: 0;
+  color: var(--cinza-texto);
+  cursor: pointer;
+  display: table;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  margin: 12px auto 0;
+  padding: 8px;
+}
+
+.diagnostico-sair:hover {
+  color: var(--azul-principal);
+}
+
+.diagnostico-modal {
+  align-items: center;
+  background: rgba(2, 7, 18, 0.72);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  opacity: 0;
+  padding: 18px;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 0.2s ease;
+  z-index: 9999;
+}
+
+.diagnostico-modal.ativo {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.diagnostico-modal-card {
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+  max-width: 520px;
+  padding: 28px;
+  text-align: center;
+  width: min(100%, 520px);
+}
+
+.diagnostico-modal-card h3 {
+  color: var(--azul-principal);
+  font-size: 26px;
+  margin-bottom: 12px;
+}
+
+.diagnostico-modal-card p {
+  color: var(--cinza-texto);
+}
+
+.diagnostico-modal-acoes {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.diagnostico-modal-acoes .diagnostico-submit {
+  margin-top: 0;
+}
+
+.diagnostico-modal-sair {
+  background: transparent;
+  border: 1px solid var(--cinza-medio);
+  border-radius: 999px;
+  color: var(--preto-suave);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  min-height: 48px;
+  padding: 12px 18px;
+}
+
 @media (max-width: 980px) {
   .diagnostico-autoridade-grid,
   .diagnostico-hero-grid,
@@ -3100,13 +3234,26 @@ body {
   }
 
   .diagnostico-campos {
-    grid-template-columns: 1fr;
+    display: block;
   }
 
   .diagnostico-progresso {
     align-items: flex-start;
     flex-direction: column;
     gap: 4px;
+  }
+
+  .diagnostico-beneficios {
+    grid-template-columns: 1fr;
+  }
+
+  .diagnostico-card-jornada {
+    padding: 18px;
+  }
+
+  .diagnostico-grupo legend,
+  .diagnostico-inicio h3 {
+    font-size: 26px;
   }
 }
 

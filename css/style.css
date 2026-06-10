@@ -3196,6 +3196,36 @@ body {
   padding: 12px 18px;
 }
 
+.diagnostico-page-compacta .diagnostico-etapa:not(.ativa),
+.diagnostico-page-compacta .diagnostico-dados:not(.ativa),
+.diagnostico-page-compacta .diagnostico-processando:not(.ativa),
+.diagnostico-page-compacta .diagnostico-resultado[hidden],
+.diagnostico-page-compacta [hidden] {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+.diagnostico-page-compacta .diagnostico-ferramenta,
+.diagnostico-page-compacta .diagnostico-card,
+.diagnostico-page-compacta .diagnostico-card-jornada {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.diagnostico-page-compacta .diagnostico-ferramenta {
+  padding-bottom: 28px;
+  padding-top: 28px;
+}
+
+.diagnostico-page-compacta .diagnostico-card {
+  padding-bottom: 22px;
+  padding-top: 22px;
+}
+
 @media (max-width: 980px) {
   .diagnostico-autoridade-grid,
   .diagnostico-hero-grid,

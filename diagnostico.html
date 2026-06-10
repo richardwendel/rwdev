@@ -110,7 +110,7 @@
     </div>
   </header>
 
-  <main class="diagnostico-main">
+  <main class="diagnostico-main diagnostico-page-compacta">
     <section class="diagnostico-hero">
       <div class="container diagnostico-hero-grid">
         <div class="diagnostico-hero-texto reveal-scroll">
@@ -182,11 +182,11 @@
         </div>
 
         <form class="diagnostico-card diagnostico-card-jornada reveal-scroll" id="formDiagnostico" novalidate>
-          <div class="diagnostico-progresso" aria-live="polite">
+          <div class="diagnostico-progresso" aria-live="polite" hidden>
             <span id="diagnosticoEtapaTexto">Dados da empresa</span>
             <strong id="diagnosticoPercentual">0%</strong>
           </div>
-          <div class="diagnostico-progresso-barra">
+          <div class="diagnostico-progresso-barra" hidden>
             <span id="diagnosticoProgresso"></span>
           </div>
 
@@ -244,7 +244,7 @@
             <label><input type="radio" name="contatos_google" value="Não" data-pontos="0"> Não</label>
           </fieldset>
 
-          <div class="diagnostico-dados diagnostico-etapa ativa" data-etapa="dados">
+          <div class="diagnostico-dados diagnostico-etapa" data-etapa="dados">
             <h3>Dados para gerar sua análise</h3>
             <p>Preencha as informações abaixo para iniciar uma experiência rápida e personalizada.</p>
             <div class="diagnostico-campos">

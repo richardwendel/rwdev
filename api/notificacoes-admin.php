@@ -3,10 +3,18 @@ declare(strict_types=1);
 
 define('RWDEV_JSON_ENDPOINT', true);
 
-require_once __DIR__ . '/../portal/config/conexao.php';
+require_once __DIR__ . '/../portal/includes/funcoes.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+
+if (!isset($_SESSION['admin_id'])) {
+    http_response_code(401);
+    echo json_encode(['total' => 0], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+require_once __DIR__ . '/../portal/config/conexao.php';
 
 function contar_pendencias(PDO $pdo, string $sql): int
 {

@@ -63,10 +63,27 @@ function atualizarBadgeNotificacoesAdmin() {
     headers: { "Accept": "application/json" },
     cache: "no-store",
   })
-    .then((resposta) => (resposta.ok ? resposta.json() : { total: 0 }))
+    .then((resposta) => {
+      if (!resposta.ok) {
+        return { adminAutenticado: false, total: 0 };
+      }
+
+      return resposta.json().then((dados) => ({
+        adminAutenticado: true,
+        total: Number(dados.total || 0),
+      }));
+    })
     .then((dados) => {
-      const total = Number(dados.total || 0);
+      const total = dados.total;
       const indicadorAtual = linkAreaCliente.querySelector(".notificacoes-admin-indicador");
+
+      if (!dados.adminAutenticado) {
+        indicadorAtual?.remove();
+        linkAreaCliente.classList.remove("com-notificacoes-admin");
+        return;
+      }
+
+      linkAreaCliente.setAttribute("href", "/portal/admin/dashboard.php");
 
       if (total <= 0) {
         indicadorAtual?.remove();

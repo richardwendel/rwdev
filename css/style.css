@@ -2743,6 +2743,12 @@ body {
   padding: 28px;
 }
 
+.diagnostico-card-jornada {
+  min-height: 560px;
+  overflow: hidden;
+  position: relative;
+}
+
 .diagnostico-progresso {
   align-items: center;
   color: var(--cinza-texto);
@@ -2773,32 +2779,89 @@ body {
   width: 0;
 }
 
+.diagnostico-etapa {
+  display: none;
+  min-height: 430px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(18px) scale(0.98);
+  visibility: hidden;
+}
+
+.diagnostico-etapa.ativa {
+  animation: diagnostico-etapa-entrada 0.34s ease both;
+  display: grid;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+}
+
+@keyframes diagnostico-etapa-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.diagnostico-etapa-icone,
+.diagnostico-grupo::before {
+  align-items: center;
+  background: linear-gradient(135deg, var(--azul-destaque), var(--dourado));
+  border-radius: 16px;
+  color: var(--branco);
+  display: inline-flex;
+  font-size: 24px;
+  height: 54px;
+  justify-content: center;
+  margin: 0 auto 18px;
+  width: 54px;
+}
+
 .diagnostico-grupo {
   border: 0;
-  border-bottom: 1px solid rgba(0, 123, 255, 0.1);
   display: grid;
-  gap: 10px;
-  padding: 24px 0;
+  gap: 14px;
+  padding: 30px 0 10px;
+  text-align: center;
 }
 
 .diagnostico-grupo legend {
   color: var(--azul-principal);
-  font-size: 17px;
+  font-size: clamp(24px, 3vw, 34px);
   font-weight: 800;
-  margin-bottom: 10px;
+  line-height: 1.16;
+  margin: 0 auto 20px;
+  max-width: 760px;
 }
 
 .diagnostico-grupo label {
   align-items: center;
-  background: var(--cinza-claro);
-  border: 1px solid transparent;
-  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+  border: 1px solid rgba(0, 123, 255, 0.14);
+  border-radius: 16px;
+  box-shadow: 0 12px 26px rgba(10, 35, 66, 0.06);
   color: var(--preto-suave);
   cursor: pointer;
   display: flex;
-  gap: 10px;
-  padding: 12px 14px;
+  font-size: 17px;
+  font-weight: 800;
+  gap: 12px;
+  justify-content: center;
+  min-height: 64px;
+  padding: 16px 18px;
   transition: var(--transicao);
+}
+
+.diagnostico-grupo label:hover,
+.diagnostico-grupo label.selecionando {
+  border-color: rgba(0, 123, 255, 0.36);
+  transform: translateY(-2px);
 }
 
 .diagnostico-grupo label:has(input:checked) {
@@ -2808,10 +2871,35 @@ body {
 
 .diagnostico-grupo input {
   accent-color: var(--azul-destaque);
+  height: 18px;
+  width: 18px;
 }
 
 .diagnostico-dados {
+  align-content: center;
+  display: grid;
   padding-top: 24px;
+  text-align: center;
+}
+
+.diagnostico-dados::before {
+  align-items: center;
+  background: linear-gradient(135deg, var(--azul-destaque), var(--dourado));
+  border-radius: 16px;
+  color: var(--branco);
+  content: "\1F4BC";
+  display: inline-flex;
+  font-size: 24px;
+  height: 54px;
+  justify-content: center;
+  margin: 0 auto 18px;
+  width: 54px;
+}
+
+.diagnostico-dados > p {
+  color: var(--cinza-texto);
+  margin: -4px auto 24px;
+  max-width: 620px;
 }
 
 .diagnostico-dados h3,
@@ -2819,6 +2907,11 @@ body {
 .diagnostico-conversao h3 {
   color: var(--azul-principal);
   margin-bottom: 14px;
+}
+
+.diagnostico-dados h3 {
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.18;
 }
 
 .diagnostico-campos {
@@ -2864,6 +2957,41 @@ body {
   width: 100%;
 }
 
+.diagnostico-processando {
+  align-content: center;
+  display: grid;
+  justify-items: center;
+  min-height: 380px;
+  text-align: center;
+}
+
+.diagnostico-processando h3 {
+  color: var(--azul-principal);
+  font-size: clamp(26px, 3vw, 36px);
+  margin: 18px 0 10px;
+}
+
+.diagnostico-processando p {
+  color: var(--cinza-texto);
+  max-width: 520px;
+}
+
+.diagnostico-loader {
+  border: 5px solid var(--cinza-medio);
+  border-top-color: var(--azul-destaque);
+  border-radius: 50%;
+  display: block;
+  height: 72px;
+  width: 72px;
+  animation: diagnostico-spin 0.9s linear infinite;
+}
+
+@keyframes diagnostico-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .diagnostico-resultado {
   background: var(--branco);
   padding: 74px 0;
@@ -2895,7 +3023,7 @@ body {
 .diagnostico-resultado-card > p {
   color: var(--cinza-texto);
   font-size: 17px;
-  margin: 18px 0 24px;
+  margin: 18px 0 12px;
 }
 
 .diagnostico-recomendacoes {

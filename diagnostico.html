@@ -181,71 +181,72 @@
           </p>
         </div>
 
-        <form class="diagnostico-card reveal-scroll" id="formDiagnostico" novalidate>
-          <div class="diagnostico-progresso" aria-hidden="true">
-            <span>Questionário</span>
-            <strong id="diagnosticoEtapaTexto">0 de 8 respostas</strong>
+        <form class="diagnostico-card diagnostico-card-jornada reveal-scroll" id="formDiagnostico" novalidate>
+          <div class="diagnostico-progresso" aria-live="polite">
+            <span id="diagnosticoEtapaTexto">Dados da empresa</span>
+            <strong id="diagnosticoPercentual">0%</strong>
           </div>
           <div class="diagnostico-progresso-barra">
             <span id="diagnosticoProgresso"></span>
           </div>
 
-          <fieldset class="diagnostico-grupo">
+          <fieldset class="diagnostico-grupo diagnostico-etapa" data-pergunta="0">
             <legend>1. Quando alguém pesquisa sua empresa no Google, ela aparece?</legend>
             <label><input type="radio" name="google_aparece" value="Sim" data-pontos="14" required> Sim</label>
             <label><input type="radio" name="google_aparece" value="Não" data-pontos="0"> Não</label>
             <label><input type="radio" name="google_aparece" value="Não sei" data-pontos="5"> Não sei</label>
           </fieldset>
 
-          <fieldset class="diagnostico-grupo">
+          <fieldset class="diagnostico-grupo diagnostico-etapa" data-pergunta="1">
             <legend>2. Você recebe contatos pelo WhatsApp regularmente?</legend>
             <label><input type="radio" name="whatsapp_contatos" value="Sim" data-pontos="12" required> Sim</label>
             <label><input type="radio" name="whatsapp_contatos" value="Poucos" data-pontos="6"> Poucos</label>
             <label><input type="radio" name="whatsapp_contatos" value="Não" data-pontos="0"> Não</label>
           </fieldset>
 
-          <fieldset class="diagnostico-grupo">
+          <fieldset class="diagnostico-grupo diagnostico-etapa" data-pergunta="2">
             <legend>3. Sua empresa possui Perfil da Empresa no Google?</legend>
             <label><input type="radio" name="perfil_google" value="Sim" data-pontos="14" required> Sim</label>
             <label><input type="radio" name="perfil_google" value="Não" data-pontos="0"> Não</label>
             <label><input type="radio" name="perfil_google" value="Não sei" data-pontos="5"> Não sei</label>
           </fieldset>
 
-          <fieldset class="diagnostico-grupo">
+          <fieldset class="diagnostico-grupo diagnostico-etapa" data-pergunta="3">
             <legend>4. Sua empresa possui Instagram ativo?</legend>
             <label><input type="radio" name="instagram_ativo" value="Sim" data-pontos="10" required> Sim</label>
             <label><input type="radio" name="instagram_ativo" value="Não" data-pontos="0"> Não</label>
           </fieldset>
 
-          <fieldset class="diagnostico-grupo">
+          <fieldset class="diagnostico-grupo diagnostico-etapa" data-pergunta="4">
             <legend>5. Você já anunciou no Google Ads?</legend>
             <label><input type="radio" name="google_ads" value="Sim" data-pontos="12" required> Sim</label>
             <label><input type="radio" name="google_ads" value="Não" data-pontos="0"> Não</label>
             <label><input type="radio" name="google_ads" value="Tenho interesse" data-pontos="6"> Tenho interesse</label>
           </fieldset>
 
-          <fieldset class="diagnostico-grupo">
+          <fieldset class="diagnostico-grupo diagnostico-etapa" data-pergunta="5">
             <legend>6. Você possui um site profissional?</legend>
             <label><input type="radio" name="site_profissional" value="Sim" data-pontos="14" required> Sim</label>
             <label><input type="radio" name="site_profissional" value="Não" data-pontos="0"> Não</label>
             <label><input type="radio" name="site_profissional" value="Está desatualizado" data-pontos="5"> Está desatualizado</label>
           </fieldset>
 
-          <fieldset class="diagnostico-grupo">
+          <fieldset class="diagnostico-grupo diagnostico-etapa" data-pergunta="6">
             <legend>7. Você sabe quantas pessoas visitam seu site por mês?</legend>
             <label><input type="radio" name="visitas_site" value="Sim" data-pontos="12" required> Sim</label>
             <label><input type="radio" name="visitas_site" value="Não" data-pontos="0"> Não</label>
             <label><input type="radio" name="visitas_site" value="Não tenho site" data-pontos="0"> Não tenho site</label>
           </fieldset>
 
-          <fieldset class="diagnostico-grupo">
+          <fieldset class="diagnostico-grupo diagnostico-etapa" data-pergunta="7">
             <legend>8. Você acompanha quantos contatos chegam através do Google?</legend>
             <label><input type="radio" name="contatos_google" value="Sim" data-pontos="12" required> Sim</label>
             <label><input type="radio" name="contatos_google" value="Não" data-pontos="0"> Não</label>
           </fieldset>
 
-          <div class="diagnostico-dados">
+          <div class="diagnostico-dados diagnostico-etapa ativa" data-etapa="dados">
             <h3>Dados para gerar sua análise</h3>
+            <p>Preencha as informações abaixo para iniciar uma experiência rápida e personalizada.</p>
             <div class="diagnostico-campos">
               <label>
                 Nome da empresa
@@ -270,8 +271,14 @@
             </div>
           </div>
 
+          <div class="diagnostico-processando diagnostico-etapa" id="diagnosticoProcessando" aria-live="polite">
+            <span class="diagnostico-loader" aria-hidden="true"></span>
+            <h3>Analisando sua presença digital...</h3>
+            <p>Estamos cruzando seus sinais de Google, WhatsApp, site e canais digitais.</p>
+          </div>
+
           <p class="diagnostico-alerta" id="diagnosticoAlerta" aria-live="polite"></p>
-          <button class="diagnostico-submit" type="submit">Gerar diagnóstico</button>
+          <button class="diagnostico-submit" id="diagnosticoIniciarPerguntas" type="button">Começar diagnóstico</button>
         </form>
       </div>
     </section>
@@ -289,6 +296,7 @@
             <span id="diagnosticoBarraResultado"></span>
           </div>
           <p id="diagnosticoResumo"></p>
+          <p id="diagnosticoMensagemFinal"></p>
 
           <div class="diagnostico-recomendacoes">
             <h3>Recomendações automáticas</h3>
@@ -296,12 +304,12 @@
           </div>
 
           <div class="diagnostico-conversao">
-            <h3>🎯 Receba uma análise gratuita da RWDEV</h3>
+            <h3>🎁 Análise Estratégica Gratuita</h3>
             <p>
-              Com base nas suas respostas, podemos identificar oportunidades para aumentar sua visibilidade online, melhorar sua presença no Google e gerar mais contatos para sua empresa.
+              Como agradecimento pela realização deste diagnóstico, a RWDEV oferece uma análise estratégica gratuita e sem compromisso para identificar oportunidades de crescimento para sua empresa.
             </p>
             <a class="diagnostico-whatsapp" id="diagnosticoWhatsapp" href="#" target="_blank" rel="noopener noreferrer">
-              🚀 Solicitar Análise Gratuita
+              🚀 Solicitar Análise Gratuita no WhatsApp
             </a>
           </div>
         </div>

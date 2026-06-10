@@ -47,3 +47,48 @@ if (aceitaHover && cardsPortfolio.length > 0) {
     });
   });
 }
+
+// Atualiza o indicador de pendencias administrativas sem expor dados sensiveis.
+function atualizarBadgeNotificacoesAdmin() {
+  const linkAreaCliente = Array.from(document.querySelectorAll(".menu a")).find((link) => {
+    const href = link.getAttribute("href") || "";
+    return href.includes("/portal/cliente/login.php");
+  });
+
+  if (!linkAreaCliente) {
+    return;
+  }
+
+  fetch("/api/notificacoes-admin.php", {
+    headers: { "Accept": "application/json" },
+    cache: "no-store",
+  })
+    .then((resposta) => (resposta.ok ? resposta.json() : { total: 0 }))
+    .then((dados) => {
+      const total = Number(dados.total || 0);
+      const indicadorAtual = linkAreaCliente.querySelector(".notificacoes-admin-indicador");
+
+      if (total <= 0) {
+        indicadorAtual?.remove();
+        linkAreaCliente.classList.remove("com-notificacoes-admin");
+        return;
+      }
+
+      const indicador = indicadorAtual || document.createElement("span");
+      indicador.className = "notificacoes-admin-indicador";
+      indicador.innerHTML = `
+        <span class="notificacoes-admin-icone" aria-hidden="true">🔔</span>
+        <span class="notificacoes-admin-badge">${total}</span>
+      `;
+
+      if (!indicadorAtual) {
+        linkAreaCliente.appendChild(indicador);
+      }
+
+      linkAreaCliente.classList.add("com-notificacoes-admin");
+      linkAreaCliente.setAttribute("aria-label", `Area do Cliente, ${total} pendencia${total === 1 ? "" : "s"} administrativa${total === 1 ? "" : "s"}`);
+    })
+    .catch(() => {});
+}
+
+atualizarBadgeNotificacoesAdmin();

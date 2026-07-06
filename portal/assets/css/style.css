@@ -599,6 +599,100 @@ th {
   color: #fff;
 }
 
+.ponto-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: -6px 0 22px;
+}
+
+.ponto-tabs a {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--primary-dark);
+  font-weight: 800;
+  padding: 10px 14px;
+}
+
+.ponto-tabs a:hover,
+.ponto-tabs a.ativo {
+  background: var(--primary-dark);
+  color: #fff;
+  text-decoration: none;
+}
+
+.ponto-actions,
+.ponto-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ponto-filtros {
+  align-items: end;
+  display: grid;
+  grid-template-columns: 130px 140px minmax(180px, 1fr) auto;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.ponto-filtros label {
+  margin: 0;
+}
+
+.ponto-dia-semana {
+  color: var(--gold-dark);
+  font-weight: 800;
+}
+
+.ponto-hora-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.ponto-hora-input .btn {
+  min-height: 44px;
+}
+
+.ponto-table-actions {
+  gap: 8px;
+}
+
+.ponto-checkbox {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.ponto-checkbox input {
+  width: auto;
+}
+
+.docs-filtros {
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 120px auto;
+}
+
+.docs-preview {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: block;
+  max-width: 100%;
+}
+
+.docs-frame {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  height: 620px;
+  width: 100%;
+}
+
+.danger-link {
+  color: var(--danger);
+  font-weight: 800;
+}
+
 .testimonial-review {
   border-top: 1px solid var(--line);
   display: grid;
@@ -738,7 +832,8 @@ th {
   .testimonial-review,
   .form-grid.two-cols,
   .app-container.split,
-  .app-shell {
+  .app-shell,
+  .ponto-filtros {
     grid-template-columns: 1fr;
   }
 

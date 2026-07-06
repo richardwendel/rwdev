@@ -85,6 +85,8 @@ $projetos = $pdo->query(
       <a href="solicitacoes.php">Solicitações</a>
       <a href="depoimentos.php">Depoimentos</a>
       <a href="diagnostico-metricas.php">&#128202; Diagnóstico</a>
+      <a href="ponto/index.php">SONI PONTO</a>
+      <a href="documentos-trabalho/index.php">DOCUMENTOS</a>
       <a href="../logout.php">Sair</a>
     </nav>
   </header>

@@ -23,6 +23,12 @@ rwdev-site-hosting.zip
 portal/uploads/solicitacoes/*
 !portal/uploads/solicitacoes/.gitkeep
 
+# Documentos profissionais/pessoais reais
+contrato soni.pdf
+portal/uploads/documentos-trabalho/*
+!portal/uploads/documentos-trabalho/.htaccess
+!portal/uploads/documentos-trabalho/.gitkeep
+
 # Logs e arquivos temporarios
 *.log
 *.tmp

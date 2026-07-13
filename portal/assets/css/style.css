@@ -182,9 +182,19 @@ button:hover,
 }
 
 .app-header nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: #fff;
   font-weight: 700;
   font-size: 14px;
+}
+
+.admin-menu-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
 }
 
 .app-header.admin .marca {

@@ -78,16 +78,16 @@ $projetos = $pdo->query(
   <header class="app-header admin">
     <a href="dashboard.php" class="marca">RWDEV Admin</a>
     <nav>
-      <a href="dashboard.php">Dashboard</a>
-      <a href="clientes.php">Clientes</a>
-      <a href="convites.php">Convites</a>
-      <a href="projetos.php">Projetos</a>
-      <a href="solicitacoes.php">Solicitações</a>
-      <a href="depoimentos.php">Depoimentos</a>
-      <a href="diagnostico-metricas.php">&#128202; Diagnóstico</a>
-      <a href="ponto/index.php">Soni Ponto</a>
-      <a href="documentos-trabalho/index.php">Documentos</a>
-      <a href="../logout.php">Sair</a>
+      <a href="dashboard.php"><span class="admin-menu-item">🏠 Dashboard</span></a>
+      <a href="clientes.php"><span class="admin-menu-item">👥 Clientes</span></a>
+      <a href="convites.php"><span class="admin-menu-item">✉️ Convites</span></a>
+      <a href="projetos.php"><span class="admin-menu-item">📁 Projetos</span></a>
+      <a href="solicitacoes.php"><span class="admin-menu-item">📋 Solicitações</span></a>
+      <a href="depoimentos.php"><span class="admin-menu-item">💬 Depoimentos</span></a>
+      <a href="diagnostico-metricas.php"><span class="admin-menu-item">📊 Diagnóstico</span></a>
+      <a href="ponto/index.php"><span class="admin-menu-item">⏱️ Soni Ponto</span></a>
+      <a href="documentos-trabalho/index.php"><span class="admin-menu-item">📄 Documentos</span></a>
+      <a href="../logout.php"><span class="admin-menu-item">🚪 Sair</span></a>
     </nav>
   </header>
 

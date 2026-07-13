@@ -1,97 +1,60 @@
 # RWDEV
 
-Portal institucional da RWDEV para apresentação de serviços de desenvolvimento web e soluções digitais. O projeto reúne uma vitrine profissional para sites e sistemas web, SEO, Google Ads e integração com WhatsApp, além de um sistema de depoimentos e um portal de atendimento a clientes.
+RWDEV é a plataforma institucional e administrativa da RWDEV, criada para apresentar serviços digitais, captar oportunidades comerciais, gerenciar clientes, organizar projetos e centralizar rotinas internas de trabalho.
 
-🌐 **Projeto online:** [https://rwdev.com.br](https://rwdev.com.br)
+O projeto reúne site institucional, portal do cliente, painel administrativo, diagnóstico comercial, depoimentos, solicitações de alteração, SONI PONTO e Documentos do Trabalho.
 
-## Funcionalidades
+Projeto online: <https://rwdev.com.br>
 
-### Site institucional
+## Objetivos da Plataforma
 
-- Página inicial com apresentação da RWDEV e portfólio.
-- Páginas de serviços, contato, parceiros, depoimentos e política de privacidade.
-- Divulgação de soluções para sites profissionais, sistemas web, SEO e Google Ads.
-- Formulário de contato com direcionamento para o WhatsApp.
-- Atalhos de contato via WhatsApp nas páginas públicas.
-- Configuração de SEO com metadados, `robots.txt` e `sitemap.xml`.
-
-### Sistema de depoimentos
-
-- Envio público de depoimentos com foto opcional.
-- Validação e armazenamento de uploads.
-- Publicação somente após aprovação administrativa.
-- Resposta opcional da RWDEV aos depoimentos aprovados.
-- Reações de visitantes aos depoimentos publicados.
-- Área administrativa para aprovar, recusar ou excluir depoimentos.
-
-### Portal RWDEV
-
-- Login separado para clientes e administradores.
-- Cadastro de clientes por convite privado.
-- Área administrativa para gestão de clientes, convites e projetos.
-- Área do cliente com visualização de projetos.
-- Criação e acompanhamento de solicitações de alteração.
-- Upload de anexos em solicitações.
-- Atualização administrativa do status e da resposta de cada solicitação.
+- Apresentar a RWDEV, seus serviços, portfólio, parceiros e canais de contato.
+- Receber depoimentos públicos com moderação administrativa.
+- Captar leads por meio da ferramenta de diagnóstico.
+- Organizar clientes, projetos e solicitações de alteração.
+- Registrar pontos de trabalho, lojas, trajetos e resumo mensal.
+- Armazenar documentos profissionais com upload protegido.
+- Manter uma base simples, compatível com hospedagem compartilhada Hostinger.
 
 ## Tecnologias Utilizadas
 
-- HTML5
-- CSS3
-- JavaScript
 - PHP
 - MySQL
-- SEO
-- Git e GitHub
+- JavaScript
+- HTML5
+- CSS3
+- Git
+- GitHub
+- Hostinger
 
-## Estrutura do Projeto
+## Estrutura das Pastas
 
 ```text
 rwdev/
-├── audio/                         # Arquivos de áudio do site
-├── css/                           # Estilos do site institucional
-├── images/                        # Logos, ícones e imagens do portfólio
-├── js/                            # Scripts do site institucional
+├── api/                         # Endpoints auxiliares e notificações
+├── audio/                       # Arquivos de áudio do site
+├── css/                         # CSS do site institucional
+├── images/                      # Logos, ícones e imagens do portfólio
+├── js/                          # JavaScript do site institucional
 ├── portal/
-│   ├── admin/                     # Área administrativa
-│   ├── assets/                    # CSS e JavaScript do portal
-│   ├── cliente/                   # Área autenticada do cliente
-│   ├── config/                    # Conexão com o banco de dados
-│   ├── includes/                  # Funções, autenticação e notificações
-│   └── uploads/solicitacoes/      # Anexos enviados em solicitações
-├── uploads/depoimentos/           # Fotos enviadas com depoimentos
-├── index.html                     # Página inicial
-├── servicos.html                  # Serviços oferecidos
-├── contato.html                   # Página de contato
-├── parceiros.html                 # Parceiros
-├── depoimentos.html               # Envio e exibição de depoimentos
-├── politica-de-privacidade.html   # Política de privacidade
-├── salvar_depoimento.php          # Recebimento de depoimentos
-├── listar_depoimentos.php         # Listagem pública de depoimentos aprovados
-├── salvar_reacao_depoimento.php   # Registro de reações
-├── banco.sql                      # Estrutura principal do banco
-├── banco-depoimentos.sql          # Estrutura do módulo de depoimentos
-├── banco-convites.sql             # Estrutura do módulo de convites
-├── robots.txt                     # Orientações para mecanismos de busca
-├── sitemap.xml                    # Mapa do site para SEO
-└── .env.example                   # Modelo de variáveis de ambiente
+│   ├── admin/                   # Painel administrativo
+│   │   ├── documentos-trabalho/ # Módulo Documentos do Trabalho
+│   │   └── ponto/               # Módulo SONI PONTO
+│   ├── assets/                  # CSS e JS do portal
+│   ├── cliente/                 # Área do cliente
+│   ├── config/                  # Conexão PDO e configuração de banco
+│   ├── includes/                # Funções globais, autenticação e notificações
+│   └── uploads/                 # Uploads protegidos ou controlados do portal
+├── sql/                         # Scripts SQL incrementais de módulos
+├── uploads/                     # Uploads públicos/legados
+├── *.html                       # Páginas institucionais
+├── config.php                   # Configuração legada/global do site
+├── u724577237_rwdev_portal.sql  # Dump principal do banco do portal
+├── README.md                    # Documentação principal
+└── .env.example                 # Modelo de variáveis de ambiente
 ```
 
-## Segurança
-
-As credenciais reais de ambiente não devem ser versionadas. O arquivo `.env` é ignorado pelo Git e o arquivo `.env.example` funciona somente como modelo para a configuração local.
-
-Antes de publicar alterações, confirme que dados sensíveis, senhas e credenciais não foram adicionados ao histórico do repositório.
-
-## Configuração Local
-
-### Pré-requisitos
-
-- Servidor local compatível com PHP
-- MySQL
-- Git
-
-### Instalação
+## Como Instalar
 
 1. Clone o repositório:
 
@@ -100,29 +63,153 @@ git clone <url-do-repositorio>
 cd rwdev
 ```
 
-2. Crie um arquivo `.env` local baseado no modelo `.env.example`.
+2. Crie o arquivo `.env` com base em `.env.example`.
 
-3. Preencha no `.env` local as configurações do banco de dados do seu ambiente.
+3. Configure as credenciais do banco:
 
-4. Crie o banco de dados e importe os scripts SQL necessários:
-
-```text
-banco.sql
-banco-depoimentos.sql
-banco-convites.sql
+```env
+DB_HOST=localhost
+DB_NAME=seu_banco
+DB_USER=seu_usuario
+DB_PASS=sua_senha
 ```
 
-5. Sirva o diretório do projeto em um ambiente local com PHP e MySQL configurados.
+4. Configure um servidor local com PHP e MySQL.
 
-6. Acesse a página inicial pelo endereço definido no seu servidor local.
+5. Aponte o servidor para a raiz do projeto.
 
-> O arquivo `banco.sql` contém a estrutura principal. Os demais scripts SQL podem ser utilizados conforme a necessidade de instalação ou atualização dos módulos.
+## Como Configurar
 
-## Autor
+- O portal usa `portal/config/conexao.php` para carregar variáveis do `.env` e criar a conexão PDO.
+- O timezone padrão é `America/Sao_Paulo`.
+- O arquivo `.env` não deve ser versionado.
+- Uploads reais e documentos pessoais não devem ser commitados.
+- O domínio de produção é definido em constantes como `BASE_URL`.
 
-**Ricardo Sousa**  
-Fundador da RWDEV
+## Como Importar o Banco
 
----
+1. Crie o banco MySQL.
+2. Importe o dump principal:
 
-**RWDEV: transformando ideias em soluções digitais profissionais, funcionais e preparadas para gerar resultados.**
+```text
+u724577237_rwdev_portal.sql
+```
+
+3. Importe os scripts incrementais necessários:
+
+```text
+sql/soni_ponto.sql
+sql/documentos_trabalho.sql
+```
+
+4. Confirme se as tabelas foram criadas corretamente no phpMyAdmin.
+
+## Como Publicar na Hostinger
+
+1. Faça backup dos arquivos e do banco atual.
+2. Envie os arquivos para `public_html` ou diretório equivalente.
+3. Configure o `.env` com as credenciais reais do banco.
+4. Importe os SQLs pelo phpMyAdmin.
+5. Verifique permissões de pastas de upload.
+6. Teste login admin, portal do cliente, diagnóstico, depoimentos, SONI PONTO e Documentos do Trabalho.
+7. Confirme que arquivos sensíveis não estão acessíveis diretamente.
+
+Mais detalhes estão em `DEPLOY.md`.
+
+## Como Utilizar Git
+
+Fluxo básico:
+
+```bash
+git status
+git add .
+git commit -m "Descreve a alteração"
+git push
+```
+
+Antes de commitar:
+
+- Revise `git status`.
+- Evite versionar `.env`, PDFs reais, backups, dumps temporários e uploads reais.
+- Rode validações de sintaxe PHP quando alterar arquivos `.php`.
+- Separe commits por objetivo.
+
+## Fluxo Recomendado de Desenvolvimento
+
+1. Criar ou atualizar uma branch de trabalho.
+2. Implementar a alteração localmente.
+3. Testar fluxo afetado.
+4. Rodar `php -l` nos arquivos PHP alterados.
+5. Rodar `git diff --check`.
+6. Revisar `git diff`.
+7. Commitar com mensagem clara.
+8. Publicar e validar na Hostinger.
+
+## Como Criar Novos Módulos
+
+Para módulos administrativos:
+
+1. Criar pasta em `portal/admin/nome-do-modulo/`.
+2. Incluir `portal/config/conexao.php` e `portal/includes/auth.php`.
+3. Chamar `exigir_admin()`.
+4. Usar prepared statements.
+5. Reutilizar `portal/assets/css/style.css`.
+6. Criar SQL incremental em `sql/`.
+7. Atualizar menu admin.
+8. Documentar em `CHANGELOG.md`, `DATABASE.md` e `ARCHITECTURE.md`.
+
+## Autenticação
+
+A autenticação fica em `portal/includes/auth.php`.
+
+- `exigir_admin()` protege páginas administrativas.
+- `exigir_cliente()` protege páginas do cliente.
+- Sessões usam `$_SESSION['admin_id']` e `$_SESSION['cliente_id']`.
+- Quando um tipo de usuário acessa uma área incompatível, o sistema redireciona para a área correta.
+
+## Painel Administrativo
+
+O painel admin fica em `portal/admin/`.
+
+Principais áreas:
+
+- Dashboard
+- Clientes
+- Convites
+- Projetos
+- Solicitações
+- Depoimentos
+- Diagnóstico
+- SONI PONTO
+- Documentos do Trabalho
+
+Cada página administrativa deve validar sessão admin e usar PDO.
+
+## Boas Práticas do Projeto
+
+- Usar PHP com PDO e prepared statements.
+- Validar dados no backend.
+- Não exibir erros sensíveis em produção.
+- Proteger uploads reais.
+- Não versionar documentos pessoais, PDFs reais ou credenciais.
+- Manter HTML semântico e CSS reaproveitável.
+- Criar documentação para novos módulos.
+- Manter scripts SQL incrementais em `sql/`.
+- Testar compatibilidade com PHP 8.x e ambiente Hostinger.
+
+## Documentação Complementar
+
+- `ARCHITECTURE.md`
+- `DATABASE.md`
+- `DEPLOY.md`
+- `CHANGELOG.md`
+- `ROADMAP.md`
+- `TODO.md`
+- `VERSION.md`
+- `CONTRIBUTING.md`
+- `melhorias-futuras-portal-rwdev.md`
+
+## Responsável
+
+Ricardo Sousa  
+RWDEV

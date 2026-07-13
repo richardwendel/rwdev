@@ -24,8 +24,8 @@ function ponto_render_header(string $titulo): void
         <a href="../solicitacoes.php">Solicitações</a>
         <a href="../depoimentos.php">Depoimentos</a>
         <a href="../diagnostico-metricas.php">&#128202; Diagnóstico</a>
-        <a href="index.php">SONI PONTO</a>
-        <a href="../documentos-trabalho/index.php">DOCUMENTOS</a>
+        <a href="index.php">Soni Ponto</a>
+        <a href="../documentos-trabalho/index.php">Documentos</a>
         <a href="../../logout.php">Sair</a>
       </nav>
     </header>

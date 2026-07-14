@@ -1,5 +1,13 @@
 # Arquitetura
 
+## Atualização SONI PONTO - Sprint 1.5 Status do Dia e Escala
+
+O SONI PONTO passa a tratar o registro de ponto como um registro de dia, não apenas como jornada trabalhada.
+
+O campo `status_dia` define se o dia foi trabalhado, folga, integração/treinamento, feriado, falta, atestado, férias ou outro. Quando o status não é `trabalhado`, o backend ignora horários, transporte e trajetos, mantendo apenas data, status e observação.
+
+A escala de domingo é informativa: o sistema conta domingos trabalhados no ciclo atual e indica se o próximo domingo tem folga prevista. Nenhum registro é alterado automaticamente.
+
 ## Atualização SONI PONTO - Sprint 1 Lojas e Trajetos
 
 O SONI PONTO separa loja e trajeto. Loja é o local de trabalho; trajeto é uma opção de caminho vinculada à loja.

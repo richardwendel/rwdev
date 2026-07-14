@@ -19,7 +19,7 @@ if ($lojaFiltro > 0) {
 $stmt = $pdo->prepare(
     'SELECT p.*, l.codigo_loja, l.nome AS loja_nome
      FROM pontos_trabalho p
-     INNER JOIN lojas_trabalho l ON l.id = p.loja_id
+     LEFT JOIN lojas_trabalho l ON l.id = p.loja_id
      WHERE ' . implode(' AND ', $where) . '
      ORDER BY p.data'
 );
@@ -31,10 +31,32 @@ $totalLiquido = 0;
 $totalTransporte = 0.0;
 $totalBilhetes = 0;
 $totalValorBilhetes = 0.0;
+$contadoresStatus = [
+    'trabalhado' => 0,
+    'folga_semanal' => 0,
+    'folga_domingo' => 0,
+    'integracao_treinamento' => 0,
+    'feriado' => 0,
+    'atestado' => 0,
+    'falta' => 0,
+    'ferias' => 0,
+];
 
 foreach ($pontos as $ponto) {
+    $status = (string) ($ponto['status_dia'] ?? 'trabalhado');
+
+    if (isset($contadoresStatus[$status])) {
+        $contadoresStatus[$status]++;
+    }
+
+    if (!ponto_dia_trabalhado($status)) {
+        continue;
+    }
+
     $calculo = ponto_calcular($ponto);
-    $lojaChave = 'Loja ' . $ponto['codigo_loja'] . ' - ' . $ponto['loja_nome'];
+    $lojaChave = $ponto['codigo_loja']
+        ? 'Loja ' . $ponto['codigo_loja'] . ' - ' . $ponto['loja_nome']
+        : 'Sem loja';
 
     if (!isset($porLoja[$lojaChave])) {
         $porLoja[$lojaChave] = ['dias' => 0, 'liquido' => 0, 'transporte' => 0.0];
@@ -91,7 +113,14 @@ foreach ($pontos as $ponto) {
     </section>
 
     <div class="metrics-grid">
-      <article class="metric-card"><span>Dias trabalhados</span><strong><?= count($pontos) ?></strong></article>
+      <article class="metric-card"><span>Dias trabalhados</span><strong><?= $contadoresStatus['trabalhado'] ?></strong></article>
+      <article class="metric-card"><span>Folgas semanais</span><strong><?= $contadoresStatus['folga_semanal'] ?></strong></article>
+      <article class="metric-card"><span>Folgas de domingo</span><strong><?= $contadoresStatus['folga_domingo'] ?></strong></article>
+      <article class="metric-card"><span>Integrações</span><strong><?= $contadoresStatus['integracao_treinamento'] ?></strong></article>
+      <article class="metric-card"><span>Feriados</span><strong><?= $contadoresStatus['feriado'] ?></strong></article>
+      <article class="metric-card"><span>Atestados</span><strong><?= $contadoresStatus['atestado'] ?></strong></article>
+      <article class="metric-card"><span>Faltas</span><strong><?= $contadoresStatus['falta'] ?></strong></article>
+      <article class="metric-card"><span>Férias</span><strong><?= $contadoresStatus['ferias'] ?></strong></article>
       <article class="metric-card"><span>Horas líquidas</span><strong><?= e(ponto_formatar_minutos($totalLiquido)) ?></strong></article>
       <article class="metric-card"><span>Transporte</span><strong><?= e(ponto_moeda($totalTransporte)) ?></strong></article>
       <article class="metric-card destaque"><span>Valor perdido</span><strong><?= e(ponto_moeda($totalValorBilhetes)) ?></strong></article>
@@ -106,7 +135,7 @@ foreach ($pontos as $ponto) {
         <table>
           <thead><tr><th>Loja</th><th>Dias</th><th>Horas líquidas</th><th>Transporte</th></tr></thead>
           <tbody>
-            <?php if (!$porLoja): ?><tr><td colspan="4">Nenhum registro no período.</td></tr><?php endif; ?>
+            <?php if (!$porLoja): ?><tr><td colspan="4">Nenhum registro trabalhado no período.</td></tr><?php endif; ?>
             <?php foreach ($porLoja as $loja => $dados): ?>
               <tr>
                 <td><?= e($loja) ?></td>

@@ -2,6 +2,9 @@
 
 ## SONI PONTO
 
+- Validar a migration `sql/soni_ponto_status_dia_escala_v15.sql` em cópia do banco de produção antes do deploy.
+- Evoluir a escala de domingo para calendário visual na próxima sprint, sem automatizar alteração de registros.
+
 - Validar a migration `sql/soni_ponto_lojas_trajetos_v2.sql` em cópia do banco de produção antes do deploy.
 - Planejar Sprint 2 para Transportes Inteligentes sem misturar com a base de lojas/trajetos.
 

@@ -19,7 +19,7 @@ if ($lojaFiltro > 0) {
 $stmt = $pdo->prepare(
     'SELECT p.*, l.codigo_loja, l.nome AS loja_nome
      FROM pontos_trabalho p
-     INNER JOIN lojas_trabalho l ON l.id = p.loja_id
+     LEFT JOIN lojas_trabalho l ON l.id = p.loja_id
      WHERE ' . implode(' AND ', $where) . '
      ORDER BY p.data DESC, p.entrada DESC, p.id DESC'
 );
@@ -30,16 +30,21 @@ $totalLiquido = 0;
 $totalTransporte = 0.0;
 $totalBilhetes = 0;
 $totalValorBilhetes = 0.0;
+$diasTrabalhados = 0;
 
 foreach ($pontos as $pontoResumo) {
+    if (!ponto_dia_trabalhado($pontoResumo['status_dia'] ?? 'trabalhado')) {
+        continue;
+    }
+
     $calculoResumo = ponto_calcular($pontoResumo);
+    $diasTrabalhados++;
     $totalLiquido += $calculoResumo['liquido'] ?? 0;
     $totalTransporte += (float) $pontoResumo['gasto_transporte'];
     $totalBilhetes += (int) $pontoResumo['bilhetes_perdidos'];
     $totalValorBilhetes += (float) $pontoResumo['valor_bilhetes_perdidos'];
 }
 
-$ultimoPontoId = 0;
 $stmtUltimo = $pdo->query('SELECT id FROM pontos_trabalho ORDER BY data DESC, id DESC LIMIT 1');
 $ultimoPontoId = (int) ($stmtUltimo->fetchColumn() ?: 0);
 ?>
@@ -63,7 +68,7 @@ $ultimoPontoId = (int) ($stmtUltimo->fetchColumn() ?: 0);
     <?php ponto_render_nav('index.php'); ?>
 
     <div class="metrics-grid">
-      <article class="metric-card"><span>Dias trabalhados</span><strong><?= count($pontos) ?></strong></article>
+      <article class="metric-card"><span>Dias trabalhados</span><strong><?= $diasTrabalhados ?></strong></article>
       <article class="metric-card"><span>Horas líquidas</span><strong><?= e(ponto_formatar_minutos($totalLiquido)) ?></strong></article>
       <article class="metric-card"><span>Transporte</span><strong><?= e(ponto_moeda($totalTransporte)) ?></strong></article>
       <article class="metric-card destaque"><span>Bilhetes perdidos</span><strong><?= $totalBilhetes ?></strong></article>
@@ -103,25 +108,27 @@ $ultimoPontoId = (int) ($stmtUltimo->fetchColumn() ?: 0);
         <table>
           <thead>
             <tr>
-              <th>Data</th><th>Loja</th><th>Entrada</th><th>Saída</th><th>Café</th><th>Almoço</th><th>Permanência</th><th>Líquido</th><th>Transporte</th><th>Ações</th>
+              <th>Data</th><th>Status</th><th>Loja</th><th>Entrada</th><th>Saída</th><th>Café</th><th>Almoço</th><th>Permanência</th><th>Líquido</th><th>Transporte</th><th>Ações</th>
             </tr>
           </thead>
           <tbody>
             <?php if (!$pontos): ?>
-              <tr><td colspan="10">Nenhum ponto encontrado para o filtro.</td></tr>
+              <tr><td colspan="11">Nenhum ponto encontrado para o filtro.</td></tr>
             <?php endif; ?>
             <?php foreach ($pontos as $ponto): ?>
               <?php $calculo = ponto_calcular($ponto); ?>
+              <?php $diaTrabalhado = ponto_dia_trabalhado($ponto['status_dia'] ?? 'trabalhado'); ?>
               <tr>
                 <td><?= date('d/m/Y', strtotime($ponto['data'])) ?><br><small><?= e($ponto['dia_semana']) ?></small></td>
-                <td>Loja <?= e((string) $ponto['codigo_loja']) ?><br><small><?= e((string) $ponto['loja_nome']) ?></small></td>
-                <td title="<?= e(ponto_formatar_hora_completa($ponto['entrada'])) ?>"><?= e(ponto_formatar_hora($ponto['entrada'])) ?><?php if (ponto_hora_tem_segundos($ponto['entrada'])): ?><br><small><?= e(ponto_formatar_hora_completa($ponto['entrada'])) ?></small><?php endif; ?></td>
-                <td title="<?= e(ponto_formatar_hora_completa($ponto['saida'])) ?>"><?= e(ponto_formatar_hora($ponto['saida'])) ?><?php if (ponto_hora_tem_segundos($ponto['saida'])): ?><br><small><?= e(ponto_formatar_hora_completa($ponto['saida'])) ?></small><?php endif; ?></td>
+                <td><?= e(ponto_status_dia_label($ponto['status_dia'] ?? 'trabalhado')) ?></td>
+                <td><?php if ($ponto['codigo_loja']): ?>Loja <?= e((string) $ponto['codigo_loja']) ?><br><small><?= e((string) $ponto['loja_nome']) ?></small><?php else: ?>-<?php endif; ?></td>
+                <td title="<?= e(ponto_formatar_hora_completa($ponto['entrada'])) ?>"><?= $diaTrabalhado ? e(ponto_formatar_hora($ponto['entrada'])) : '-' ?><?php if ($diaTrabalhado && ponto_hora_tem_segundos($ponto['entrada'])): ?><br><small><?= e(ponto_formatar_hora_completa($ponto['entrada'])) ?></small><?php endif; ?></td>
+                <td title="<?= e(ponto_formatar_hora_completa($ponto['saida'])) ?>"><?= $diaTrabalhado ? e(ponto_formatar_hora($ponto['saida'])) : '-' ?><?php if ($diaTrabalhado && ponto_hora_tem_segundos($ponto['saida'])): ?><br><small><?= e(ponto_formatar_hora_completa($ponto['saida'])) ?></small><?php endif; ?></td>
                 <td><?= e(ponto_formatar_minutos($calculo['cafe'])) ?></td>
                 <td><?= e(ponto_formatar_minutos($calculo['almoco'])) ?></td>
                 <td><?= e(ponto_formatar_minutos($calculo['permanencia'])) ?></td>
                 <td><strong><?= e(ponto_formatar_minutos($calculo['liquido'])) ?></strong></td>
-                <td><?= e(ponto_moeda((float) $ponto['gasto_transporte'])) ?></td>
+                <td><?= $diaTrabalhado ? e(ponto_moeda((float) $ponto['gasto_transporte'])) : '-' ?></td>
                 <td class="ponto-table-actions">
                   <a href="editar.php?id=<?= (int) $ponto['id'] ?>">Editar</a>
                   <a href="novo.php?duplicar=<?= (int) $ponto['id'] ?>">Duplicar</a>

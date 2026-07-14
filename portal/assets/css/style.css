@@ -689,6 +689,20 @@ th {
   padding: 10px 12px;
 }
 
+.ponto-escala-card {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+}
+
+.ponto-escala-card strong {
+  color: var(--primary-dark);
+}
+
 .loja-cor {
   background: var(--loja-cor, var(--gold));
   border-radius: 999px;

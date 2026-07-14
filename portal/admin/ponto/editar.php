@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $pdo->prepare(
             'UPDATE pontos_trabalho
-             SET data = :data, dia_semana = :dia_semana, loja_id = :loja_id,
+             SET data = :data, dia_semana = :dia_semana, status_dia = :status_dia, loja_id = :loja_id,
                  trajeto_ida_id = :trajeto_ida_id, trajeto_volta_id = :trajeto_volta_id, entrada = :entrada,
                  cafe_saida = :cafe_saida, cafe_retorno = :cafe_retorno, almoco_saida = :almoco_saida,
                  almoco_retorno = :almoco_retorno, saida = :saida, transporte_observacao = :transporte_observacao,

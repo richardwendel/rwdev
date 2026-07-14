@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.1.5
+
+Data: 2026-07-14
+
+### Adicionado
+
+- Migration incremental `sql/soni_ponto_status_dia_escala_v15.sql`.
+- Campo `status_dia` para classificar dias trabalhados, folgas, integração/treinamento, feriado, falta, atestado, férias e outro.
+- Ocultação automática de horários, transporte e trajetos quando o status não é Trabalhado.
+- Cartões de resumo mensal por status do dia.
+- Escala informativa de domingo no ciclo 2 domingos trabalhados para 1 domingo de folga.
+
+### Melhorias
+
+- Registros sem jornada podem ser salvos sem loja, trajetos ou transporte.
+- Resumo e listagem preservam dias sem loja usando relacionamento opcional.
+
 ## 2.1.0
 
 Data: 2026-07-13

@@ -1,6 +1,12 @@
 # Versão Atual
 
-## Próxima versão documentada
+Versão: 2.1.5
+
+Data: 2026-07-14
+
+Descrição: Sprint 1.5 do SONI PONTO com Status do Dia, registro de dias sem jornada, escala informativa de domingo e resumo mensal por tipo de dia.
+
+## Histórico recente
 
 Versão: 2.1.0
 

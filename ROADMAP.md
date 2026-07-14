@@ -1,5 +1,14 @@
 # ROADMAP
 
+## SONI PONTO - Sprint 1.5 Status do Dia e Escala
+
+- [x] Adicionar status do dia no cadastro de ponto.
+- [x] Ocultar campos de jornada para dias não trabalhados.
+- [x] Permitir registro sem loja quando não houver jornada.
+- [x] Exibir resumo mensal por tipo de dia.
+- [x] Calcular escala informativa de domingo sem alterar registros automaticamente.
+- [ ] Planejar Sprint 1.6 para calendário visual de escala e alertas.
+
 ## SONI PONTO - Sprint 1 Lojas e Trajetos
 
 - [x] Padronizar código técnico de lojas no formato LJ.

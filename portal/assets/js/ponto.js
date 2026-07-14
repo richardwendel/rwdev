@@ -39,6 +39,7 @@
   function atualizarTrajetos(form, limparSelecao) {
     var origemJson = form.querySelector('[data-ponto-trajetos-json]');
     var lojaSelect = form.querySelector('[data-ponto-loja]');
+    var statusSelect = form.querySelector('[data-ponto-status]');
     var avisoSemTrajeto = form.querySelector('[data-ponto-sem-trajeto]');
     var trajetos = {};
 
@@ -51,6 +52,18 @@
     }
 
     if (!lojaSelect) {
+      return;
+    }
+
+    if (statusSelect && statusSelect.value !== 'trabalhado') {
+      form.querySelectorAll('[data-ponto-trajeto]').forEach(function (select) {
+        select.innerHTML = '<option value="">Selecione a loja primeiro</option>';
+      });
+
+      if (avisoSemTrajeto) {
+        avisoSemTrajeto.hidden = true;
+      }
+
       return;
     }
 
@@ -84,6 +97,27 @@
     }
   }
 
+  function atualizarStatusDia(form) {
+    var statusSelect = form.querySelector('[data-ponto-status]');
+    var lojaSelect = form.querySelector('[data-ponto-loja]');
+    var trabalhado = !statusSelect || statusSelect.value === 'trabalhado';
+
+    form.querySelectorAll('[data-ponto-trabalhado]').forEach(function (elemento) {
+      elemento.hidden = !trabalhado;
+
+      elemento.querySelectorAll('input, select, textarea, button').forEach(function (campo) {
+        campo.disabled = !trabalhado;
+      });
+    });
+
+    if (lojaSelect) {
+      lojaSelect.required = trabalhado;
+      lojaSelect.disabled = !trabalhado;
+    }
+
+    atualizarTrajetos(form, false);
+  }
+
   function inicializarPontoForm() {
     var form = document.querySelector('[data-ponto-form]');
 
@@ -92,7 +126,7 @@
     }
 
     if (form.getAttribute('data-ponto-js-inicializado') === '1') {
-      atualizarTrajetos(form, false);
+      atualizarStatusDia(form);
       return;
     }
 
@@ -108,7 +142,14 @@
       });
     }
 
-    atualizarTrajetos(form, false);
+    atualizarStatusDia(form);
+
+    var statusSelect = form.querySelector('[data-ponto-status]');
+    if (statusSelect) {
+      statusSelect.addEventListener('change', function () {
+        atualizarStatusDia(form);
+      });
+    }
 
     var lojaSelect = form.querySelector('[data-ponto-loja]');
     if (lojaSelect) {

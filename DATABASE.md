@@ -1,5 +1,18 @@
 # Banco de Dados
 
+## Atualização SONI PONTO - Sprint 1.5 Status do Dia e Escala
+
+Script incremental: `sql/soni_ponto_status_dia_escala_v15.sql`.
+
+Campos adicionados/ajustados em `pontos_trabalho`:
+
+- `status_dia`: status operacional do registro, com default `trabalhado` para compatibilidade com registros antigos.
+- `loja_id`: passa a aceitar `NULL` para dias sem jornada, como folga, feriado, falta, atestado, férias ou outro.
+
+Valores usados por `status_dia`: `trabalhado`, `folga_semanal`, `folga_domingo`, `integracao_treinamento`, `feriado`, `falta`, `atestado`, `ferias`, `outro`.
+
+A migration não apaga registros e não altera horários antigos. Registros existentes recebem `trabalhado` como status inicial.
+
 ## Atualização SONI PONTO - Sprint 1 Lojas e Trajetos
 
 Script incremental: `sql/soni_ponto_lojas_trajetos_v2.sql`.

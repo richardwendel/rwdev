@@ -63,6 +63,84 @@ function ponto_dias_semana(): array
     ];
 }
 
+function ponto_status_dia_opcoes(): array
+{
+    return [
+        'trabalhado' => '🟢 Trabalhado',
+        'folga_semanal' => '🟡 Folga Semanal',
+        'folga_domingo' => '🟡 Folga de Domingo',
+        'integracao_treinamento' => '🟠 Integração / Treinamento',
+        'feriado' => '⚫ Feriado',
+        'falta' => '🔴 Falta',
+        'atestado' => '🟣 Atestado',
+        'ferias' => '🔵 Férias',
+        'outro' => '⚪ Outro',
+    ];
+}
+
+function ponto_status_dia_valido(string $status): bool
+{
+    return array_key_exists($status, ponto_status_dia_opcoes());
+}
+
+function ponto_status_dia_label(?string $status): string
+{
+    $status = $status ?: 'trabalhado';
+    $opcoes = ponto_status_dia_opcoes();
+
+    return $opcoes[$status] ?? $opcoes['trabalhado'];
+}
+
+function ponto_dia_trabalhado(?string $status): bool
+{
+    return ($status ?: 'trabalhado') === 'trabalhado';
+}
+
+function ponto_proximo_domingo(string $dataReferencia): string
+{
+    $data = new DateTime(ponto_validar_data($dataReferencia));
+
+    if ((int) $data->format('w') !== 0) {
+        $data->modify('next sunday');
+    }
+
+    return $data->format('Y-m-d');
+}
+
+function ponto_escala_domingo(PDO $pdo, string $dataReferencia): array
+{
+    $proximoDomingo = ponto_proximo_domingo($dataReferencia);
+    $stmt = $pdo->prepare(
+        "SELECT data, status_dia
+         FROM pontos_trabalho
+         WHERE DAYOFWEEK(data) = 1 AND data < :proximo_domingo
+         ORDER BY data DESC, id DESC
+         LIMIT 12"
+    );
+    $stmt->execute([':proximo_domingo' => $proximoDomingo]);
+    $domingos = $stmt->fetchAll();
+
+    $trabalhadosNoCiclo = 0;
+
+    foreach ($domingos as $domingo) {
+        $status = (string) ($domingo['status_dia'] ?? 'trabalhado');
+
+        if ($status === 'folga_domingo') {
+            break;
+        }
+
+        if ($status === 'trabalhado') {
+            $trabalhadosNoCiclo++;
+        }
+    }
+
+    return [
+        'proximo_domingo' => $proximoDomingo,
+        'trabalhados_no_ciclo' => $trabalhadosNoCiclo,
+        'folga_prevista' => $trabalhadosNoCiclo >= 2,
+    ];
+}
+
 function ponto_dia_semana(string $data): string
 {
     $dt = DateTime::createFromFormat('Y-m-d', $data);
@@ -180,6 +258,19 @@ function ponto_intervalo(?string $inicio, ?string $fim): ?int
 
 function ponto_calcular(array $ponto): array
 {
+    if (!ponto_dia_trabalhado($ponto['status_dia'] ?? 'trabalhado')) {
+        return [
+            'cafe' => null,
+            'almoco' => null,
+            'permanencia' => null,
+            'liquido' => null,
+            'cafe_segundos' => null,
+            'almoco_segundos' => null,
+            'permanencia_segundos' => null,
+            'liquido_segundos' => null,
+        ];
+    }
+
     $permanenciaSegundos = ponto_intervalo_segundos($ponto['entrada'] ?? null, $ponto['saida'] ?? null);
     $cafeSegundos = ponto_intervalo_segundos($ponto['cafe_saida'] ?? null, $ponto['cafe_retorno'] ?? null);
     $almocoSegundos = ponto_intervalo_segundos($ponto['almoco_saida'] ?? null, $ponto['almoco_retorno'] ?? null);
@@ -322,7 +413,7 @@ function ponto_buscar_ponto(PDO $pdo, int $id): ?array
     $stmt = $pdo->prepare(
         'SELECT p.*, l.codigo_loja, l.nome AS loja_nome
          FROM pontos_trabalho p
-         INNER JOIN lojas_trabalho l ON l.id = p.loja_id
+         LEFT JOIN lojas_trabalho l ON l.id = p.loja_id
          WHERE p.id = :id
          LIMIT 1'
     );
@@ -337,6 +428,34 @@ function ponto_dados_post(): array
     global $pdo;
 
     $data = ponto_validar_data(trim($_POST['data'] ?? ''));
+    $statusDia = trim((string) ($_POST['status_dia'] ?? 'trabalhado'));
+
+    if (!ponto_status_dia_valido($statusDia)) {
+        throw new RuntimeException('Selecione um status do dia válido.');
+    }
+
+    if (!ponto_dia_trabalhado($statusDia)) {
+        return [
+            'data' => $data,
+            'dia_semana' => ponto_dia_semana($data),
+            'status_dia' => $statusDia,
+            'loja_id' => null,
+            'trajeto_ida_id' => null,
+            'trajeto_volta_id' => null,
+            'entrada' => null,
+            'cafe_saida' => null,
+            'cafe_retorno' => null,
+            'almoco_saida' => null,
+            'almoco_retorno' => null,
+            'saida' => null,
+            'transporte_observacao' => '',
+            'gasto_transporte' => 0.0,
+            'bilhetes_perdidos' => 0,
+            'valor_bilhetes_perdidos' => 0.0,
+            'observacoes' => trim($_POST['observacoes'] ?? ''),
+        ];
+    }
+
     $lojaId = (int) ($_POST['loja_id'] ?? 0);
 
     if ($lojaId <= 0) {
@@ -351,6 +470,7 @@ function ponto_dados_post(): array
     return [
         'data' => $data,
         'dia_semana' => ponto_dia_semana($data),
+        'status_dia' => $statusDia,
         'loja_id' => $lojaId,
         'trajeto_ida_id' => $trajetoIdaId,
         'trajeto_volta_id' => $trajetoVoltaId,

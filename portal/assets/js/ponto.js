@@ -55,7 +55,10 @@
     }
 
     var lojaId = lojaSelect.value;
-    var opcoes = trajetos[lojaId] || [];
+    var opcaoLoja = lojaSelect.options[lojaSelect.selectedIndex];
+    var lojaCodigo = opcaoLoja ? opcaoLoja.getAttribute('data-loja-codigo') : '';
+    var chaveTrajetos = lojaCodigo || lojaId;
+    var opcoes = trajetos[chaveTrajetos] || [];
 
     form.querySelectorAll('[data-ponto-trajeto]').forEach(function (select) {
       var selecionado = limparSelecao ? '' : (select.value || select.getAttribute('data-selected') || '');
@@ -63,7 +66,7 @@
 
       var opcaoVazia = document.createElement('option');
       opcaoVazia.value = '';
-      opcaoVazia.textContent = lojaId ? 'Selecione' : 'Selecione a loja primeiro';
+      opcaoVazia.textContent = lojaId ? 'Selecione um trajeto' : 'Selecione a loja primeiro';
       select.appendChild(opcaoVazia);
 
       opcoes.forEach(function (trajeto) {
@@ -136,9 +139,6 @@
       });
     });
 
-    window.setTimeout(function () {
-      atualizarTrajetos(form, false);
-    }, 0);
   }
 
   if (document.readyState === 'loading') {

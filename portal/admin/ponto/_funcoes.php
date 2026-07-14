@@ -270,19 +270,22 @@ function ponto_lojas(PDO $pdo, bool $somenteAtivas = true): array
 function ponto_trajetos_ativos_por_loja(PDO $pdo): array
 {
     $trajetos = $pdo->query(
-        'SELECT t.id, t.loja_id, t.nome_trajeto, t.observacoes
+        'SELECT t.id, t.loja_id, l.codigo_loja, t.nome_trajeto, t.observacoes
          FROM trajetos_trabalho t
+         INNER JOIN lojas_trabalho l ON l.id = t.loja_id
          WHERE t.ativo = 1
-         ORDER BY t.loja_id, t.nome_trajeto'
+         ORDER BY l.codigo_loja, t.nome_trajeto'
     )->fetchAll();
 
     $porLoja = [];
 
     foreach ($trajetos as $trajeto) {
         $id = (int) $trajeto['id'];
-        $porLoja[(int) $trajeto['loja_id']][] = [
+        $codigoLoja = (string) $trajeto['codigo_loja'];
+        $porLoja[$codigoLoja][] = [
             'id' => $id,
             'loja_id' => (int) $trajeto['loja_id'],
+            'codigo_loja' => $codigoLoja,
             'nome' => (string) $trajeto['nome_trajeto'],
             'rotulo' => (string) $trajeto['nome_trajeto'],
             'observacoes' => (string) ($trajeto['observacoes'] ?? ''),

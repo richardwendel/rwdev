@@ -20,7 +20,7 @@ $trajetosJson = json_encode($trajetosPorLoja, JSON_UNESCAPED_UNICODE | JSON_UNES
     <select name="loja_id" required data-ponto-loja>
       <option value="">Selecione</option>
       <?php foreach ($lojas as $loja): ?>
-        <option value="<?= (int) $loja['id'] ?>" <?= (int) ($ponto['loja_id'] ?? 0) === (int) $loja['id'] ? 'selected' : '' ?>>
+        <option value="<?= (int) $loja['id'] ?>" data-loja-codigo="<?= e((string) $loja['codigo_loja']) ?>" <?= (int) ($ponto['loja_id'] ?? 0) === (int) $loja['id'] ? 'selected' : '' ?>>
           <?= e((string) $loja['codigo_loja']) ?> - <?= e((string) $loja['nome']) ?>
         </option>
       <?php endforeach; ?>

@@ -81,12 +81,19 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
+  function inicializarPontoForm() {
     var form = document.querySelector('[data-ponto-form]');
 
     if (!form) {
       return;
     }
+
+    if (form.getAttribute('data-ponto-js-inicializado') === '1') {
+      atualizarTrajetos(form, false);
+      return;
+    }
+
+    form.setAttribute('data-ponto-js-inicializado', '1');
 
     var dataInput = form.querySelector('[data-ponto-data]');
     var diaSemana = form.querySelector('[data-ponto-dia-semana]');
@@ -103,6 +110,10 @@
     var lojaSelect = form.querySelector('[data-ponto-loja]');
     if (lojaSelect) {
       lojaSelect.addEventListener('change', function () {
+        atualizarTrajetos(form, true);
+      });
+
+      lojaSelect.addEventListener('input', function () {
         atualizarTrajetos(form, true);
       });
     }
@@ -124,5 +135,17 @@
         }
       });
     });
-  });
+
+    window.setTimeout(function () {
+      atualizarTrajetos(form, false);
+    }, 0);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarPontoForm);
+  } else {
+    inicializarPontoForm();
+  }
+
+  window.addEventListener('pageshow', inicializarPontoForm);
 }());

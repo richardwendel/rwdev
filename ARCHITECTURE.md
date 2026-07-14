@@ -1,5 +1,13 @@
 # Arquitetura
 
+## Atualização SONI PONTO - Sprint 1 Lojas e Trajetos
+
+O SONI PONTO separa loja e trajeto. Loja é o local de trabalho; trajeto é uma opção de caminho vinculada à loja.
+
+No cadastro de ponto, a loja filtra os trajetos ativos disponíveis. O usuário pode escolher um trajeto de ida e outro de volta. O backend valida se cada trajeto pertence à loja selecionada.
+
+Os códigos técnicos das lojas usam padrão `LJ01`, `LJ02`, `LJ03`... e são independentes do nome da loja.
+
 ## Visão Geral
 
 O RWDEV é um projeto PHP com MySQL, hospedado em ambiente Hostinger, composto por:

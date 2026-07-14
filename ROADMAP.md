@@ -1,5 +1,14 @@
 # ROADMAP
 
+## SONI PONTO - Sprint 1 Lojas e Trajetos
+
+- [x] Padronizar código técnico de lojas no formato LJ.
+- [x] Separar trajetos por loja.
+- [x] Usar select para trajeto de ida e volta.
+- [x] Permitir ida e volta diferentes.
+- [x] Tratar loja sem trajeto sem bloquear o ponto.
+- [ ] Planejar Sprint 2 para Transportes Inteligentes.
+
 ## Concluído
 
 - [x] Site institucional

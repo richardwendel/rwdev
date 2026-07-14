@@ -13,6 +13,7 @@ if (!$ponto) {
 }
 
 $lojas = ponto_lojas($pdo, false);
+$trajetosPorLoja = ponto_trajetos_ativos_por_loja($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     validar_csrf();
@@ -23,7 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $pdo->prepare(
             'UPDATE pontos_trabalho
-             SET data = :data, dia_semana = :dia_semana, loja_id = :loja_id, entrada = :entrada,
+             SET data = :data, dia_semana = :dia_semana, loja_id = :loja_id,
+                 trajeto_ida_id = :trajeto_ida_id, trajeto_volta_id = :trajeto_volta_id, entrada = :entrada,
                  cafe_saida = :cafe_saida, cafe_retorno = :cafe_retorno, almoco_saida = :almoco_saida,
                  almoco_retorno = :almoco_retorno, saida = :saida, transporte_observacao = :transporte_observacao,
                  gasto_transporte = :gasto_transporte, bilhetes_perdidos = :bilhetes_perdidos,

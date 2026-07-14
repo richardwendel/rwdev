@@ -1,5 +1,10 @@
 # TODO
 
+## SONI PONTO
+
+- Validar a migration `sql/soni_ponto_lojas_trajetos_v2.sql` em cópia do banco de produção antes do deploy.
+- Planejar Sprint 2 para Transportes Inteligentes sem misturar com a base de lojas/trajetos.
+
 ## Alta
 
 - Validar melhor a ordem cronológica dos horários no SONI PONTO.

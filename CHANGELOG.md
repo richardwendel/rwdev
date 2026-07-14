@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.1.0
+
+Data: 2026-07-13
+
+### Adicionado
+
+- Migration incremental `sql/soni_ponto_lojas_trajetos_v2.sql`.
+- Padrão de código técnico de lojas `LJ01`, `LJ02`, `LJ03`...
+- Campos opcionais de loja: número interno, responsável, telefone, horário padrão e cor.
+- Selects de trajeto de ida e volta filtrados pela loja.
+- Vínculo opcional de ponto com trajeto de ida e trajeto de volta.
+
+### Melhorias
+
+- Cadastro de trajetos como opção de caminho por loja.
+- Tratamento de lojas sem trajeto sem bloquear o cadastro do ponto.
+
 Todas as mudanças relevantes do projeto RWDEV devem ser registradas neste arquivo.
 
 O projeto utiliza versionamento semântico no formato `MAJOR.MINOR.PATCH`.

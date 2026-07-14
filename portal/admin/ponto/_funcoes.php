@@ -256,7 +256,7 @@ function ponto_mensagem_erro(Throwable $erro): string
 
 function ponto_lojas(PDO $pdo, bool $somenteAtivas = true): array
 {
-    $sql = 'SELECT id, codigo_loja, nome FROM lojas_trabalho';
+    $sql = 'SELECT id, codigo_loja, numero_interno, nome, endereco, cidade, responsavel, telefone, horario_padrao, cor_identificacao, observacoes, ativo FROM lojas_trabalho';
 
     if ($somenteAtivas) {
         $sql .= ' WHERE ativo = 1';
@@ -265,6 +265,53 @@ function ponto_lojas(PDO $pdo, bool $somenteAtivas = true): array
     $sql .= ' ORDER BY codigo_loja, nome';
 
     return $pdo->query($sql)->fetchAll();
+}
+
+function ponto_trajetos_ativos_por_loja(PDO $pdo): array
+{
+    $trajetos = $pdo->query(
+        'SELECT t.id, t.loja_id, t.nome_trajeto, t.observacoes
+         FROM trajetos_trabalho t
+         WHERE t.ativo = 1
+         ORDER BY t.loja_id, t.nome_trajeto'
+    )->fetchAll();
+
+    $porLoja = [];
+
+    foreach ($trajetos as $trajeto) {
+        $id = (int) $trajeto['id'];
+        $porLoja[(int) $trajeto['loja_id']][] = [
+            'id' => $id,
+            'loja_id' => (int) $trajeto['loja_id'],
+            'nome' => (string) $trajeto['nome_trajeto'],
+            'rotulo' => (string) $trajeto['nome_trajeto'],
+            'observacoes' => (string) ($trajeto['observacoes'] ?? ''),
+        ];
+    }
+
+    return $porLoja;
+}
+
+function ponto_validar_trajeto_loja(PDO $pdo, int $trajetoId, int $lojaId): ?int
+{
+    if ($trajetoId <= 0) {
+        return null;
+    }
+
+    $stmt = $pdo->prepare(
+        'SELECT *
+         FROM trajetos_trabalho
+         WHERE id = :id AND loja_id = :loja_id AND ativo = 1
+         LIMIT 1'
+    );
+    $stmt->execute([':id' => $trajetoId, ':loja_id' => $lojaId]);
+    $trajeto = $stmt->fetch();
+
+    if (!$trajeto) {
+        throw new RuntimeException('O trajeto selecionado nÃ£o pertence Ã  loja informada ou estÃ¡ inativo.');
+    }
+
+    return $trajetoId;
 }
 
 function ponto_buscar_ponto(PDO $pdo, int $id): ?array
@@ -284,6 +331,8 @@ function ponto_buscar_ponto(PDO $pdo, int $id): ?array
 
 function ponto_dados_post(): array
 {
+    global $pdo;
+
     $data = ponto_validar_data(trim($_POST['data'] ?? ''));
     $lojaId = (int) ($_POST['loja_id'] ?? 0);
 
@@ -291,10 +340,17 @@ function ponto_dados_post(): array
         throw new RuntimeException('Selecione a loja.');
     }
 
+    $trajetoIdaId = (int) ($_POST['trajeto_ida_id'] ?? 0);
+    $trajetoVoltaId = (int) ($_POST['trajeto_volta_id'] ?? 0);
+    $trajetoIdaId = ponto_validar_trajeto_loja($pdo, $trajetoIdaId, $lojaId);
+    $trajetoVoltaId = ponto_validar_trajeto_loja($pdo, $trajetoVoltaId, $lojaId);
+
     return [
         'data' => $data,
         'dia_semana' => ponto_dia_semana($data),
         'loja_id' => $lojaId,
+        'trajeto_ida_id' => $trajetoIdaId,
+        'trajeto_volta_id' => $trajetoVoltaId,
         'entrada' => ponto_normalizar_hora($_POST['entrada'] ?? ''),
         'cafe_saida' => ponto_normalizar_hora($_POST['cafe_saida'] ?? ''),
         'cafe_retorno' => ponto_normalizar_hora($_POST['cafe_retorno'] ?? ''),

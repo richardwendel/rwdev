@@ -1,11 +1,15 @@
 <?php
 /** @var array $ponto */
 /** @var array $lojas */
+/** @var array $trajetosPorLoja */
 /** @var string $acao */
 $dataPonto = (string) ($ponto['data'] ?? date('Y-m-d'));
+$trajetosPorLoja = $trajetosPorLoja ?? [];
+$trajetosJson = json_encode($trajetosPorLoja, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 ?>
 <form class="panel form-grid two-cols" method="post" data-ponto-form>
   <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+  <script type="application/json" data-ponto-trajetos-json><?= $trajetosJson ?></script>
 
   <h2 class="form-section-title">Dados do dia</h2>
   <label>Data
@@ -13,11 +17,11 @@ $dataPonto = (string) ($ponto['data'] ?? date('Y-m-d'));
     <small class="ponto-dia-semana" data-ponto-dia-semana><?= e(ponto_dia_semana($dataPonto)) ?></small>
   </label>
   <label>Loja
-    <select name="loja_id" required>
+    <select name="loja_id" required data-ponto-loja>
       <option value="">Selecione</option>
       <?php foreach ($lojas as $loja): ?>
         <option value="<?= (int) $loja['id'] ?>" <?= (int) ($ponto['loja_id'] ?? 0) === (int) $loja['id'] ? 'selected' : '' ?>>
-          Loja <?= e((string) $loja['codigo_loja']) ?> - <?= e((string) $loja['nome']) ?>
+          <?= e((string) $loja['codigo_loja']) ?> - <?= e((string) $loja['nome']) ?>
         </option>
       <?php endforeach; ?>
     </select>
@@ -44,7 +48,24 @@ $dataPonto = (string) ($ponto['data'] ?? date('Y-m-d'));
   </label>
 
   <h2 class="form-section-title">Transporte e observações</h2>
-  <label>Gasto com transporte<input name="gasto_transporte" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['gasto_transporte'] ?? 0), 2, ',', '.')) ?>"></label>
+  <label>Trajeto de ida
+    <select name="trajeto_ida_id" data-ponto-trajeto="ida" data-selected="<?= (int) ($ponto['trajeto_ida_id'] ?? 0) ?>">
+      <option value="">Selecione a loja primeiro</option>
+    </select>
+  </label>
+  <label>Trajeto de volta
+    <select name="trajeto_volta_id" data-ponto-trajeto="volta" data-selected="<?= (int) ($ponto['trajeto_volta_id'] ?? 0) ?>">
+      <option value="">Selecione a loja primeiro</option>
+    </select>
+  </label>
+  <div class="ponto-sem-trajeto full" data-ponto-sem-trajeto hidden>
+    Nenhum trajeto cadastrado para esta loja.
+    <a href="trajetos.php">➕ Cadastrar trajeto</a>
+  </div>
+  <p class="ponto-link-discreto full"><a href="trajetos.php">🛣️ Gerenciar Trajetos</a></p>
+  <label>Gasto com transporte
+    <input name="gasto_transporte" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['gasto_transporte'] ?? 0), 2, ',', '.')) ?>">
+  </label>
   <label>Bilhetes perdidos<input name="bilhetes_perdidos" inputmode="numeric" value="<?= e((string) ($ponto['bilhetes_perdidos'] ?? 0)) ?>"></label>
   <label>Valor dos bilhetes perdidos<input name="valor_bilhetes_perdidos" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['valor_bilhetes_perdidos'] ?? 0), 2, ',', '.')) ?>"></label>
   <label class="full">Observação de transporte

@@ -1,5 +1,23 @@
 # Deploy
 
+## Deploy SONI PONTO - Sprint 1 Lojas e Trajetos
+
+Ordem recomendada na Hostinger:
+
+1. Fazer backup completo dos arquivos.
+2. Fazer backup completo do banco via phpMyAdmin.
+3. Executar `sql/soni_ponto_lojas_trajetos_v2.sql` no phpMyAdmin.
+4. Conferir se as colunas novas e as foreign keys de ida/volta foram criadas.
+5. Enviar os arquivos PHP, JS, CSS e docs alterados.
+6. Testar login admin.
+7. Testar `portal/admin/ponto/lojas.php`.
+8. Testar `portal/admin/ponto/trajetos.php`.
+9. Testar novo ponto com loja que possui trajetos.
+10. Testar ida e volta diferentes.
+11. Testar troca de loja limpando os selects.
+12. Testar loja sem trajeto sem bloquear o cadastro.
+13. Testar visual mobile do formulário de ponto.
+
 Este documento descreve o processo recomendado para publicar o projeto RWDEV na Hostinger.
 
 ## Ambiente

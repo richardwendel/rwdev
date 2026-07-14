@@ -680,6 +680,33 @@ th {
   width: auto;
 }
 
+.ponto-sem-trajeto {
+  background: #fff8e6;
+  border: 1px solid #f3d28a;
+  border-radius: var(--radius);
+  color: var(--primary-dark);
+  font-weight: 700;
+  padding: 10px 12px;
+}
+
+.loja-cor {
+  background: var(--loja-cor, var(--gold));
+  border-radius: 999px;
+  display: inline-block;
+  height: 10px;
+  margin-right: 6px;
+  width: 10px;
+}
+
+.ponto-link-discreto {
+  margin: -2px 0 0;
+}
+
+.ponto-link-discreto a {
+  color: var(--primary-dark);
+  font-weight: 800;
+}
+
 .docs-filtros {
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 120px auto;
 }

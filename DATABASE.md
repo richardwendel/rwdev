@@ -1,5 +1,17 @@
 # Banco de Dados
 
+## Atualização SONI PONTO - Sprint 1 Lojas e Trajetos
+
+Script incremental: `sql/soni_ponto_lojas_trajetos_v2.sql`.
+
+O padrão de `codigo_loja` passa a ser técnico e estável: `LJ01`, `LJ02`, `LJ03`, `LJ04`, `LJ05`, `LJ06`, `LJ07`. Esse código não depende do nome da loja. O número oficial interno fica em `numero_interno`.
+
+Campos opcionais adicionados em `lojas_trabalho`: `numero_interno`, `responsavel`, `telefone`, `horario_padrao`, `cor_identificacao`.
+
+Campos adicionados em `pontos_trabalho`: `trajeto_ida_id`, `trajeto_volta_id`.
+
+Nesta Sprint, trajeto é apenas uma opção de caminho vinculada a uma loja. Não há modelagem de meios de transporte, valores, economia, gasto extra ou dashboard de transporte.
+
 Este documento descreve as tabelas utilizadas pelo projeto RWDEV.
 
 ## Arquivos SQL

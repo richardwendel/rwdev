@@ -52,11 +52,15 @@ function admin_versao_sistema(): string
     }
 
     $versionPath = dirname(__DIR__, 2) . '/VERSION.md';
-    $conteudo = is_file($versionPath) ? (string) file_get_contents($versionPath) : '';
+    $linhas = is_file($versionPath) ? file($versionPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : [];
 
-    if (preg_match('/Versao:\s*([0-9]+(?:\.[0-9]+){1,2})/i', $conteudo, $matches)) {
-        $versao = $matches[1];
-        return $versao;
+    foreach ($linhas ?: [] as $linha) {
+        $linha = trim(str_replace("\xEF\xBB\xBF", '', (string) $linha));
+
+        if (preg_match('/^Vers(?:ao|ão):\s*([0-9]+(?:\.[0-9]+){1,2})\s*$/iu', $linha, $matches)) {
+            $versao = $matches[1];
+            return $versao;
+        }
     }
 
     $versao = 'indisponivel';

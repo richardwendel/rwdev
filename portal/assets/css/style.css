@@ -199,17 +199,25 @@ button:hover,
 
 .admin-user {
   align-items: start;
-  color: rgba(255, 255, 255, 0.82);
+  color: #fff;
   display: inline-grid;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   gap: 2px;
   line-height: 1.25;
 }
 
-.admin-user strong,
+.admin-user span {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.admin-user strong {
+  color: #fff;
+  font-weight: 600;
+}
+
 .admin-user small {
-  color: inherit;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .app-header.admin .marca {

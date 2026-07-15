@@ -11,16 +11,16 @@ function admin_url(string $caminho, string $prefixo = ''): string
 function admin_menu_itens(): array
 {
     return [
-        ['permissao' => 'dashboard.visualizar', 'href' => 'dashboard.php', 'rotulo' => 'Dashboard'],
-        ['permissao' => 'clientes.visualizar', 'href' => 'clientes.php', 'rotulo' => 'Clientes'],
-        ['permissao' => 'convites_clientes.visualizar', 'href' => 'convites.php', 'rotulo' => 'Convites'],
-        ['permissao' => 'projetos.visualizar', 'href' => 'projetos.php', 'rotulo' => 'Projetos'],
-        ['permissao' => 'solicitacoes.visualizar', 'href' => 'solicitacoes.php', 'rotulo' => 'Solicitacoes'],
-        ['permissao' => 'depoimentos.visualizar', 'href' => 'depoimentos.php', 'rotulo' => 'Depoimentos'],
-        ['permissao' => 'diagnostico.visualizar', 'href' => 'diagnostico-metricas.php', 'rotulo' => 'Diagnostico'],
-        ['permissao' => 'ponto.visualizar', 'href' => 'ponto/index.php', 'rotulo' => 'Soni Ponto'],
-        ['permissao' => 'documentos.visualizar', 'href' => 'documentos-trabalho/index.php', 'rotulo' => 'Documentos'],
-        ['permissao' => 'admins.visualizar', 'href' => 'administradores.php', 'rotulo' => 'Administradores'],
+        ['permissao' => 'dashboard.visualizar', 'href' => 'dashboard.php', 'rotulo' => '🏠 Dashboard'],
+        ['permissao' => 'clientes.visualizar', 'href' => 'clientes.php', 'rotulo' => '👥 Clientes'],
+        ['permissao' => 'convites_clientes.visualizar', 'href' => 'convites.php', 'rotulo' => '✉️ Convites'],
+        ['permissao' => 'projetos.visualizar', 'href' => 'projetos.php', 'rotulo' => '📁 Projetos'],
+        ['permissao' => 'solicitacoes.visualizar', 'href' => 'solicitacoes.php', 'rotulo' => '📋 Solicitacoes'],
+        ['permissao' => 'depoimentos.visualizar', 'href' => 'depoimentos.php', 'rotulo' => '💬 Depoimentos'],
+        ['permissao' => 'diagnostico.visualizar', 'href' => 'diagnostico-metricas.php', 'rotulo' => '📊 Diagnostico'],
+        ['permissao' => 'ponto.visualizar', 'href' => 'ponto/index.php', 'rotulo' => '⏱️ Soni Ponto'],
+        ['permissao' => 'documentos.visualizar', 'href' => 'documentos-trabalho/index.php', 'rotulo' => '📄 Documentos'],
+        ['permissao' => 'admins.visualizar', 'href' => 'administradores.php', 'rotulo' => '🛡️ Administradores'],
     ];
 }
 
@@ -40,7 +40,7 @@ function admin_render_header(string $prefixo = ''): void
           <?php endif; ?>
         <?php endforeach; ?>
         <span class="admin-user">Usuario: <?= e((string) ($admin['nome'] ?? $_SESSION['admin_nome'] ?? 'Admin')) ?> | <?= e($perfilRotulo) ?></span>
-        <a href="<?= e(admin_url('../logout.php', $prefixo)) ?>"><span class="admin-menu-item">Sair</span></a>
+        <a href="<?= e(admin_url('../logout.php', $prefixo)) ?>"><span class="admin-menu-item">🚪 Sair</span></a>
       </nav>
     </header>
     <?php

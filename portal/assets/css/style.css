@@ -224,6 +224,10 @@ button:hover,
   color: var(--gold);
 }
 
+.app-header.admin > .admin-desktop-nav {
+  display: flex;
+}
+
 .admin-mobile-menu-button,
 .admin-mobile-menu,
 .admin-mobile-menu-overlay {
@@ -926,11 +930,16 @@ th {
     flex-direction: row;
   }
 
-  .app-header.admin .admin-desktop-nav {
+  .app-header.admin > .admin-desktop-nav {
     display: none;
+    height: 0;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    width: 0;
   }
 
-  .admin-mobile-menu-button {
+  .app-header.admin > .admin-mobile-menu-button {
     background: transparent;
     border: 1px solid rgba(215, 168, 79, 0.56);
     color: #fff;
@@ -939,7 +948,7 @@ th {
     padding: 10px 14px;
   }
 
-  .admin-mobile-menu-button:hover {
+  .app-header.admin > .admin-mobile-menu-button:hover {
     background: rgba(215, 168, 79, 0.16);
     color: #fff;
   }
@@ -1034,12 +1043,12 @@ th {
 }
 
 @media (max-width: 920px) {
-  .app-header {
+  .app-header:not(.admin) {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .app-header nav {
+  .app-header:not(.admin) nav {
     justify-content: flex-start;
   }
 

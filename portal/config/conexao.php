@@ -31,6 +31,7 @@ $senha = $env['DB_PASS'] ?? getenv('DB_PASS') ?: '';
 
 define('BASE_URL', 'https://www.rwdev.com.br');
 define('ADMIN_EMAIL_NOTIFICACAO', 'rwdevtech@gmail.com');
+define('APP_ENV', $env['APP_ENV'] ?? getenv('APP_ENV') ?: 'production');
 
 try {
     $pdo = new PDO(

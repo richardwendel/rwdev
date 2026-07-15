@@ -198,11 +198,18 @@ button:hover,
 }
 
 .admin-user {
-  align-items: center;
+  align-items: start;
   color: rgba(255, 255, 255, 0.82);
-  display: inline-flex;
+  display: inline-grid;
   font-size: 13px;
   font-weight: 700;
+  gap: 2px;
+  line-height: 1.25;
+}
+
+.admin-user strong,
+.admin-user small {
+  color: inherit;
 }
 
 .app-header.admin .marca {

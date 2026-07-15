@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($_SESSION['cliente_id'], $_SESSION['cliente_nome']);
         $_SESSION['admin_id'] = (int) $admin['id'];
         $_SESSION['admin_nome'] = $admin['nome'];
+        $_SESSION['admin_ultimo_acesso_anterior'] = $admin['ultimo_acesso'] ?? null;
         admin_atual(true);
 
         if (admin_coluna_existe($pdo, 'ultimo_acesso')) {

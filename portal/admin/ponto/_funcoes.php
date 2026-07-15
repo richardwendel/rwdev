@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../config/conexao.php';
-require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/admin_ui.php';
 
 exigir_admin();
 
@@ -13,38 +13,24 @@ function ponto_admin_url(string $arquivo = 'index.php'): string
 
 function ponto_render_header(string $titulo): void
 {
-    ?>
-    <header class="app-header admin">
-      <a href="../dashboard.php" class="marca">RWDEV Admin</a>
-      <nav>
-        <a href="../dashboard.php"><span class="admin-menu-item">🏠 Dashboard</span></a>
-        <a href="../clientes.php"><span class="admin-menu-item">👥 Clientes</span></a>
-        <a href="../convites.php"><span class="admin-menu-item">✉️ Convites</span></a>
-        <a href="../projetos.php"><span class="admin-menu-item">📁 Projetos</span></a>
-        <a href="../solicitacoes.php"><span class="admin-menu-item">📋 Solicitações</span></a>
-        <a href="../depoimentos.php"><span class="admin-menu-item">💬 Depoimentos</span></a>
-        <a href="../diagnostico-metricas.php"><span class="admin-menu-item">📊 Diagnóstico</span></a>
-        <a href="index.php"><span class="admin-menu-item">⏱️ Soni Ponto</span></a>
-        <a href="../documentos-trabalho/index.php"><span class="admin-menu-item">📄 Documentos</span></a>
-        <a href="../../logout.php"><span class="admin-menu-item">🚪 Sair</span></a>
-      </nav>
-    </header>
-    <?php
+    admin_render_header('../');
 }
 
 function ponto_render_nav(string $ativo): void
 {
     $itens = [
-        'index.php' => 'Registros',
-        'novo.php' => 'Novo ponto',
-        'resumo.php' => 'Resumo mensal',
-        'lojas.php' => 'Lojas',
-        'trajetos.php' => 'Trajetos',
+        'index.php' => ['Registros', 'ponto.visualizar'],
+        'novo.php' => ['Novo ponto', 'ponto.criar'],
+        'resumo.php' => ['Resumo mensal', 'resumo.visualizar'],
+        'lojas.php' => ['Lojas', 'lojas.visualizar'],
+        'trajetos.php' => ['Trajetos', 'trajetos.visualizar'],
     ];
     ?>
-    <nav class="ponto-tabs" aria-label="Navegação SONI PONTO">
-      <?php foreach ($itens as $href => $rotulo): ?>
-        <a class="<?= $ativo === $href ? 'ativo' : '' ?>" href="<?= e($href) ?>"><?= e($rotulo) ?></a>
+    <nav class="ponto-tabs" aria-label="Navegacao SONI PONTO">
+      <?php foreach ($itens as $href => [$rotulo, $permissao]): ?>
+        <?php if (usuario_pode($permissao)): ?>
+          <a class="<?= $ativo === $href ? 'ativo' : '' ?>" href="<?= e($href) ?>"><?= e($rotulo) ?></a>
+        <?php endif; ?>
       <?php endforeach; ?>
     </nav>
     <?php

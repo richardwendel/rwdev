@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_funcoes.php';
 
+exigir_permissao('resumo.visualizar');
+
 $mes = max(1, min(12, (int) ($_GET['mes'] ?? date('n'))));
 $ano = max(2020, min(2100, (int) ($_GET['ano'] ?? date('Y'))));
 $lojaFiltro = (int) ($_GET['loja_id'] ?? 0);

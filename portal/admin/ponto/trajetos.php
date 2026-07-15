@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_funcoes.php';
 
+exigir_permissao('trajetos.visualizar');
+
 $erro = '';
 $sucesso = '';
 $lojas = ponto_lojas($pdo, false);
@@ -32,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($id > 0) {
+            exigir_permissao('trajetos.editar');
             $dados[':id'] = $id;
             $stmt = $pdo->prepare(
                 'UPDATE trajetos_trabalho
@@ -41,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute($dados);
             $sucesso = 'Trajeto atualizado.';
         } else {
+            exigir_permissao('trajetos.criar');
             $stmt = $pdo->prepare(
                 'INSERT INTO trajetos_trabalho
                  (loja_id, nome_trajeto, observacoes, ativo)

@@ -386,3 +386,24 @@ Relacionamentos:
 - As tabelas principais usam `InnoDB`.
 - Uploads reais não devem ser armazenados no Git.
 - Scripts incrementais devem ser documentados ao criar novos módulos.
+
+## Sprint 1.6 - Administradores e Permissoes
+
+Script incremental: `sql/admin_convites_permissoes_v1.sql`.
+
+Alteracoes em `admins`:
+
+- `perfil`: `superadministrador`, `administrador_modulo` ou `visualizador`.
+- `ativo`: controla bloqueio rapido de conta.
+- `ultimo_acesso`: atualizado no login administrativo.
+- `atualizado_em`: auditoria de alteracao.
+- `criado_por`: administrador que criou ou convidou a conta.
+
+Novas tabelas:
+
+- `admin_permissoes`: permissoes por administrador, como `ponto.criar` e `trajetos.editar`.
+- `convites_admin`: convites administrativos com `token_hash`, status, expiracao, uso e vinculo ao admin criado.
+
+Eventos novos em `logs_seguranca`: convite criado/revogado, conta ativada, admin criado, permissoes alteradas, status alterado e acesso negado.
+
+O superadministrador atual recebe automaticamente `perfil = superadministrador` e `ativo = 1`. A migration nao apaga usuarios e nao altera hashes de senha existentes.

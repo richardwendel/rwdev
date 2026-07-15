@@ -154,3 +154,30 @@ git add .
 git commit -m "Atualiza projeto"
 git push
 ```
+
+## Deploy Sprint 1.6 - Administradores
+
+Ordem exata na Hostinger:
+
+1. Fazer backup completo dos arquivos.
+2. Fazer backup completo do banco no phpMyAdmin.
+3. Executar `sql/admin_convites_permissoes_v1.sql`.
+4. Conferir se `admins` recebeu `perfil`, `ativo`, `ultimo_acesso`, `atualizado_em` e `criado_por`.
+5. Conferir se `admin_permissoes` e `convites_admin` existem.
+6. Enviar os arquivos PHP/CSS/docs alterados.
+7. Testar login do superadministrador atual.
+8. Acessar `portal/admin/administradores.php`.
+9. Gerar convite administrativo para Marquinhos com e-mail real.
+10. Copiar o link, ativar a conta e definir senha.
+11. Testar login do administrador de modulo.
+12. Confirmar menu reduzido: Dashboard, Soni Ponto e Sair.
+13. Testar CRUD de ponto, lojas e trajetos.
+14. Tentar acessar Documentos, Clientes e Administradores por URL direta e confirmar HTTP 403.
+15. Desativar a conta apos o teste em Administradores.
+
+Rollback:
+
+1. Reenviar os arquivos do backup anterior.
+2. Restaurar o banco salvo antes da migration.
+3. Testar login admin.
+4. Se a restauracao completa nao for possivel, desative contas de teste em `admins.ativo = 0` e revogue convites pendentes em `convites_admin.status = 'revogado'`.

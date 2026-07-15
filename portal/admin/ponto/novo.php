@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_funcoes.php';
 
+exigir_permissao(isset($_GET['duplicar']) ? 'ponto.duplicar' : 'ponto.criar');
+
 $erro = '';
 $lojas = ponto_lojas($pdo);
 $trajetosPorLoja = ponto_trajetos_ativos_por_loja($pdo);
@@ -29,6 +31,7 @@ if (isset($_GET['duplicar'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    exigir_permissao('ponto.criar');
     validar_csrf();
 
     try {

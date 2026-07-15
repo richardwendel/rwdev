@@ -118,6 +118,25 @@ Mais detalhes estão em `DEPLOY.md`.
 
 ## Como Utilizar Git
 
+## Sprint 1.6 - Administradores e Convites Administrativos
+
+A Sprint 1.6 adiciona gestao de administradores em `portal/admin/administradores.php`.
+
+- Perfis: Superadministrador, Administrador de modulo e Visualizador.
+- Permissoes por modulo/acao, como `ponto.criar`, `lojas.editar`, `admins.convidar`.
+- Convite administrativo separado de `convites_cliente`.
+- Token de convite salvo somente como hash SHA-256.
+- Ativacao em `portal/admin/ativar-admin.php`, com senha definida pelo convidado.
+- Menu administrativo dinamico e identificacao do usuario logado no topo.
+
+SQL incremental:
+
+```text
+sql/admin_convites_permissoes_v1.sql
+```
+
+Para convidar Marquinhos, use Administradores > Convidar administrador, informe o e-mail real, mantenha o perfil Administrador de modulo e deixe marcadas apenas as permissoes de Dashboard, Soni Ponto, Resumo mensal, Lojas e Trajetos. Nao marque Documentos, Clientes, Convites, Projetos, Solicitacoes, Depoimentos, Diagnostico, Administradores nem configuracoes gerais.
+
 Fluxo básico:
 
 ```bash

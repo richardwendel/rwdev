@@ -197,6 +197,14 @@ button:hover,
   line-height: 1;
 }
 
+.admin-user {
+  align-items: center;
+  color: rgba(255, 255, 255, 0.82);
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .app-header.admin .marca {
   color: var(--gold);
 }
@@ -465,6 +473,30 @@ button:hover,
 .checkbox-grid input {
   flex: 0 0 auto;
   width: auto;
+}
+
+.permission-group {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin: 0;
+  padding: 12px;
+}
+
+.permission-group legend {
+  color: var(--primary-dark);
+  font-weight: 800;
+  padding: 0 6px;
+}
+
+.permission-group label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.inline-form {
+  display: inline-flex;
+  margin: 0;
 }
 
 .hint {

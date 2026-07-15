@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_funcoes.php';
 
+exigir_permissao('documentos.editar');
+
 $erro = '';
 $sucesso = '';
 $editarId = (int) ($_GET['editar'] ?? 0);

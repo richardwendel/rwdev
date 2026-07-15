@@ -34,3 +34,11 @@
 - Adicionar mais estados vazios nas tabelas.
 - Criar documentação visual do fluxo do painel.
 - Melhorar destaque do menu ativo.
+
+## TODO - Sprint 1.6
+
+- [ ] Aplicar `sql/admin_convites_permissoes_v1.sql` em producao antes dos arquivos.
+- [ ] Convidar Marquinhos pelo fluxo administrativo usando e-mail real.
+- [ ] Desativar a conta de teste apos validacao do SONI PONTO.
+- [ ] Validar manualmente todos os cenarios de convite expirado, revogado e usado.
+- [ ] Criar futuramente uma tela de consulta de auditoria.

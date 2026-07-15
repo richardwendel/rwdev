@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/conexao.php';
-require_once __DIR__ . '/../includes/funcoes.php';
+require_once __DIR__ . '/../includes/auth.php';
 
 if (isset($_SESSION['admin_id'])) {
     redirect('dashboard.php');
@@ -18,14 +18,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute([':email' => $email]);
     $admin = $stmt->fetch();
 
-    if ($admin && password_verify($senha, $admin['senha'])) {
+    $ativo = $admin && admin_coluna_existe($pdo, 'ativo') ? (int) $admin['ativo'] : 1;
+
+    if ($admin && $ativo === 1 && password_verify($senha, $admin['senha'])) {
         session_regenerate_id(true);
         unset($_SESSION['cliente_id'], $_SESSION['cliente_nome']);
         $_SESSION['admin_id'] = (int) $admin['id'];
         $_SESSION['admin_nome'] = $admin['nome'];
+        admin_atual(true);
+
+        if (admin_coluna_existe($pdo, 'ultimo_acesso')) {
+            $stmtAcesso = $pdo->prepare('UPDATE admins SET ultimo_acesso = NOW() WHERE id = :id');
+            $stmtAcesso->execute([':id' => (int) $admin['id']]);
+        }
+
+        admin_registrar_evento($pdo, 'login_sucesso', $email, 'Login administrativo realizado.');
         redirect('dashboard.php');
     }
 
+    admin_registrar_evento($pdo, $admin && $ativo !== 1 ? 'login_bloqueado' : 'login_falha', $email, 'Login administrativo recusado.');
     $erro = 'E-mail ou senha invalidos.';
 }
 ?>

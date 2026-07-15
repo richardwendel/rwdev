@@ -150,3 +150,17 @@ Uploads reais não devem ser versionados.
 - Melhorar segurança de sessão.
 - Criar download autenticado para todos os uploads.
 - Padronizar encoding UTF-8.
+
+## Sprint 1.6 - Administradores
+
+A autorizacao administrativa passa a usar `portal/includes/auth.php` como camada central:
+
+- `usuario_pode(string $permissao): bool`
+- `exigir_permissao(string $permissao): void`
+- `admin_atual()` para carregar nome, perfil, status e permissoes do usuario logado.
+
+O menu administrativo foi centralizado em `portal/includes/admin_ui.php` e renderiza apenas modulos liberados. O topo exibe `Usuario: Nome | Perfil`.
+
+O convite administrativo usa `convites_admin`, separado de `convites_cliente`. O token cru nunca e persistido; o banco recebe apenas `token_hash` com SHA-256. A conta convidada nasce em `admins` com `ativo = 0` e senha vazia, e so fica ativa depois da definicao de senha em `portal/admin/ativar-admin.php`.
+
+Rotas privadas validam permissao no backend. O SONI PONTO exige permissoes separadas para registros, resumo, lojas e trajetos. Documentos do Trabalho exige `documentos.*` e nao deve ser liberado para o teste do Marquinhos.

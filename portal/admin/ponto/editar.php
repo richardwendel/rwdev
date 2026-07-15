@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_funcoes.php';
 
+exigir_permissao('ponto.editar');
+
 $erro = '';
 $id = (int) ($_GET['id'] ?? 0);
 $ponto = ponto_buscar_ponto($pdo, $id);

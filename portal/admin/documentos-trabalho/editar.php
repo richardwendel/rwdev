@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_funcoes.php';
 
+exigir_permissao('documentos.editar');
+
 $erro = '';
 $id = (int) ($_GET['id'] ?? 0);
 $documento = docs_buscar($pdo, $id);

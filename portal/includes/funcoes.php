@@ -16,6 +16,15 @@ function redirect(string $url): never
     exit;
 }
 
+function portal_url(string $caminho): string
+{
+    $script = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+    $pos = strpos($script, '/portal/');
+    $base = $pos === false ? '' : substr($script, 0, $pos);
+
+    return $base . '/portal/' . ltrim($caminho, '/');
+}
+
 function csrf_token(): string
 {
     if (empty($_SESSION['csrf_token'])) {

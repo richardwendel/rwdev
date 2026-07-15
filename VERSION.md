@@ -1,12 +1,18 @@
 # Versão Atual
 
+Versão: 2.2.0
+
+Data: 2026-07-14
+
+Descrição: Sprint 1.6 com CRUD de administradores, convite administrativo, perfis, permissoes por modulo, ativacao por token e protecao de rotas administrativas.
+
+## Histórico recente
+
 Versão: 2.1.5
 
 Data: 2026-07-14
 
 Descrição: Sprint 1.5 do SONI PONTO com Status do Dia, registro de dias sem jornada, escala informativa de domingo e resumo mensal por tipo de dia.
-
-## Histórico recente
 
 Versão: 2.1.0
 

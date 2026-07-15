@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_funcoes.php';
 
+exigir_permissao('ponto.visualizar');
+
 $mes = max(1, min(12, (int) ($_GET['mes'] ?? date('n'))));
 $ano = max(2020, min(2100, (int) ($_GET['ano'] ?? date('Y'))));
 $lojaFiltro = (int) ($_GET['loja_id'] ?? 0);
@@ -78,9 +80,9 @@ $ultimoPontoId = (int) ($stmtUltimo->fetchColumn() ?: 0);
       <div class="panel-head">
         <h2>Registros de ponto</h2>
         <div class="ponto-actions">
-          <a class="btn" href="novo.php">Novo ponto</a>
-          <?php if ($ultimoPontoId): ?><a class="btn outline" href="novo.php?duplicar=<?= $ultimoPontoId ?>">Duplicar último</a><?php endif; ?>
-          <a class="btn outline" href="resumo.php?mes=<?= $mes ?>&ano=<?= $ano ?>&loja_id=<?= $lojaFiltro ?>">Resumo</a>
+          <?php if (usuario_pode('ponto.criar')): ?><a class="btn" href="novo.php">Novo ponto</a><?php endif; ?>
+          <?php if ($ultimoPontoId && usuario_pode('ponto.duplicar')): ?><a class="btn outline" href="novo.php?duplicar=<?= $ultimoPontoId ?>">Duplicar ultimo</a><?php endif; ?>
+          <?php if (usuario_pode('resumo.visualizar')): ?><a class="btn outline" href="resumo.php?mes=<?= $mes ?>&ano=<?= $ano ?>&loja_id=<?= $lojaFiltro ?>">Resumo</a><?php endif; ?>
         </div>
       </div>
 
@@ -130,9 +132,9 @@ $ultimoPontoId = (int) ($stmtUltimo->fetchColumn() ?: 0);
                 <td><strong><?= e(ponto_formatar_minutos($calculo['liquido'])) ?></strong></td>
                 <td><?= $diaTrabalhado ? e(ponto_moeda((float) $ponto['gasto_transporte'])) : '-' ?></td>
                 <td class="ponto-table-actions">
-                  <a href="editar.php?id=<?= (int) $ponto['id'] ?>">Editar</a>
-                  <a href="novo.php?duplicar=<?= (int) $ponto['id'] ?>">Duplicar</a>
-                  <a class="danger-link" href="excluir.php?id=<?= (int) $ponto['id'] ?>">Excluir</a>
+                  <?php if (usuario_pode('ponto.editar')): ?><a href="editar.php?id=<?= (int) $ponto['id'] ?>">Editar</a><?php endif; ?>
+                  <?php if (usuario_pode('ponto.duplicar')): ?><a href="novo.php?duplicar=<?= (int) $ponto['id'] ?>">Duplicar</a><?php endif; ?>
+                  <?php if (usuario_pode('ponto.excluir')): ?><a class="danger-link" href="excluir.php?id=<?= (int) $ponto['id'] ?>">Excluir</a><?php endif; ?>
                 </td>
               </tr>
             <?php endforeach; ?>

@@ -89,3 +89,23 @@ Data: 2026-07-06
 - Moderação administrativa de depoimentos.
 - Diagnóstico comercial.
 - Métricas administrativas do diagnóstico.
+
+## 2.2.0
+
+Data: 2026-07-14
+
+### Adicionado
+
+- CRUD de administradores em `portal/admin/administradores.php`.
+- Convite administrativo separado do convite de cliente.
+- Ativacao de conta por token com hash em `convites_admin`.
+- Perfis Superadministrador, Administrador de modulo e Visualizador.
+- Permissoes por modulo e acao no backend.
+- Menu administrativo dinamico e identificacao do usuario logado no topo.
+- Migration `sql/admin_convites_permissoes_v1.sql`.
+
+### Seguranca
+
+- Rotas administrativas passam a validar permissao no backend.
+- Tentativas negadas sao registradas em `logs_seguranca` quando a migration ja foi aplicada.
+- Documentos do Trabalho nao entram no perfil de teste do Marquinhos.

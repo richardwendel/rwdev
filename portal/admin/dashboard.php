@@ -1,24 +1,33 @@
 <?php
 require_once __DIR__ . '/../config/conexao.php';
-require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/admin_ui.php';
 
 exigir_admin();
+exigir_permissao('dashboard.visualizar');
 
-$totais = [
-    'clientes' => (int) $pdo->query('SELECT COUNT(*) FROM clientes')->fetchColumn(),
-    'projetos' => (int) $pdo->query('SELECT COUNT(*) FROM projetos')->fetchColumn(),
-    'solicitacoes' => (int) $pdo->query('SELECT COUNT(*) FROM solicitacoes')->fetchColumn(),
-    'recebidas' => (int) $pdo->query('SELECT COUNT(*) FROM solicitacoes WHERE status = "Recebido"')->fetchColumn(),
-];
+$totais = [];
+$recentes = [];
 
-$recentes = $pdo->query(
-    'SELECT s.*, c.nome AS cliente_nome, p.nome AS projeto_nome
-     FROM solicitacoes s
-     INNER JOIN clientes c ON c.id = s.cliente_id
-     INNER JOIN projetos p ON p.id = s.projeto_id
-     ORDER BY s.criado_em DESC
-     LIMIT 8'
-)->fetchAll();
+if (usuario_pode('clientes.visualizar')) {
+    $totais['clientes'] = (int) $pdo->query('SELECT COUNT(*) FROM clientes')->fetchColumn();
+}
+
+if (usuario_pode('projetos.visualizar')) {
+    $totais['projetos'] = (int) $pdo->query('SELECT COUNT(*) FROM projetos')->fetchColumn();
+}
+
+if (usuario_pode('solicitacoes.visualizar')) {
+    $totais['solicitacoes'] = (int) $pdo->query('SELECT COUNT(*) FROM solicitacoes')->fetchColumn();
+    $totais['recebidas'] = (int) $pdo->query('SELECT COUNT(*) FROM solicitacoes WHERE status = "Recebido"')->fetchColumn();
+    $recentes = $pdo->query(
+        'SELECT s.*, c.nome AS cliente_nome, p.nome AS projeto_nome
+         FROM solicitacoes s
+         INNER JOIN clientes c ON c.id = s.cliente_id
+         INNER JOIN projetos p ON p.id = s.projeto_id
+         ORDER BY s.criado_em DESC
+         LIMIT 8'
+    )->fetchAll();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -29,21 +38,7 @@ $recentes = $pdo->query(
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <header class="app-header admin">
-    <a href="dashboard.php" class="marca">RWDEV Admin</a>
-    <nav>
-      <a href="dashboard.php"><span class="admin-menu-item">🏠 Dashboard</span></a>
-      <a href="clientes.php"><span class="admin-menu-item">👥 Clientes</span></a>
-      <a href="convites.php"><span class="admin-menu-item">✉️ Convites</span></a>
-      <a href="projetos.php"><span class="admin-menu-item">📁 Projetos</span></a>
-      <a href="solicitacoes.php"><span class="admin-menu-item">📋 Solicitações</span></a>
-      <a href="depoimentos.php"><span class="admin-menu-item">💬 Depoimentos</span></a>
-      <a href="diagnostico-metricas.php"><span class="admin-menu-item">📊 Diagnóstico</span></a>
-      <a href="ponto/index.php"><span class="admin-menu-item">⏱️ Soni Ponto</span></a>
-      <a href="documentos-trabalho/index.php"><span class="admin-menu-item">📄 Documentos</span></a>
-      <a href="../logout.php"><span class="admin-menu-item">🚪 Sair</span></a>
-    </nav>
-  </header>
+  <?php admin_render_header(); ?>
 
   <main class="app-container">
     <section class="page-title">
@@ -52,10 +47,10 @@ $recentes = $pdo->query(
     </section>
 
     <div class="metrics-grid">
-      <article class="metric-card"><span>Clientes</span><strong><?= $totais['clientes'] ?></strong></article>
-      <article class="metric-card"><span>Projetos</span><strong><?= $totais['projetos'] ?></strong></article>
-      <article class="metric-card"><span>Solicitações</span><strong><?= $totais['solicitacoes'] ?></strong></article>
-      <article class="metric-card destaque"><span>Recebidas</span><strong><?= $totais['recebidas'] ?></strong></article>
+      <?php if (array_key_exists('clientes', $totais)): ?><article class="metric-card"><span>Clientes</span><strong><?= $totais['clientes'] ?></strong></article><?php endif; ?>
+      <?php if (array_key_exists('projetos', $totais)): ?><article class="metric-card"><span>Projetos</span><strong><?= $totais['projetos'] ?></strong></article><?php endif; ?>
+      <?php if (array_key_exists('solicitacoes', $totais)): ?><article class="metric-card"><span>Solicitacoes</span><strong><?= $totais['solicitacoes'] ?></strong></article><?php endif; ?>
+      <?php if (array_key_exists('recebidas', $totais)): ?><article class="metric-card destaque"><span>Recebidas</span><strong><?= $totais['recebidas'] ?></strong></article><?php endif; ?>
     </div>
 
     <section class="panel">
@@ -64,6 +59,7 @@ $recentes = $pdo->query(
         <a href="solicitacoes.php">Ver todas</a>
       </div>
 
+      <?php if (!$recentes): ?><p class="empty">Use o menu acima para acessar os modulos liberados para o seu perfil.</p><?php endif; ?>
       <?php foreach ($recentes as $solicitacao): ?>
         <a class="list-row clickable" href="solicitacoes.php?id=<?= (int) $solicitacao['id'] ?>">
           <div>

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_funcoes.php';
 
+exigir_permissao('documentos.excluir');
+
 $id = (int) ($_GET['id'] ?? $_POST['id'] ?? 0);
 $documento = docs_buscar($pdo, $id);
 

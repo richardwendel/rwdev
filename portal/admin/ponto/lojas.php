@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_funcoes.php';
 
+exigir_permissao('lojas.visualizar');
+
 $erro = '';
 $sucesso = '';
 $editarId = (int) ($_GET['editar'] ?? 0);
@@ -38,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($id > 0) {
+            exigir_permissao('lojas.editar');
             $dados[':id'] = $id;
             $stmt = $pdo->prepare(
                 'UPDATE lojas_trabalho
@@ -50,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute($dados);
             $sucesso = 'Loja atualizada.';
         } else {
+            exigir_permissao('lojas.criar');
             $stmt = $pdo->prepare(
                 'INSERT INTO lojas_trabalho
                  (codigo_loja, numero_interno, nome, endereco, cidade, responsavel, telefone, horario_padrao, cor_identificacao, observacoes, ativo)

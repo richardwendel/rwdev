@@ -78,3 +78,10 @@
 - [ ] Painel público de status de projetos
 - [ ] Integração com Google Calendar
 - [ ] Integração com WhatsApp Business API
+
+## Roadmap - Atualizacao Sprint 1.6
+
+- Administradores com perfis e permissoes granulares: entregue.
+- Convite administrativo com ativacao de senha: entregue.
+- Proxima melhoria recomendada: tela dedicada de auditoria para `logs_seguranca`.
+- Proxima melhoria recomendada: testes automatizados de permissao por rota.

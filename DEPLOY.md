@@ -181,3 +181,24 @@ Rollback:
 2. Restaurar o banco salvo antes da migration.
 3. Testar login admin.
 4. Se a restauracao completa nao for possivel, desative contas de teste em `admins.ativo = 0` e revogue convites pendentes em `convites_admin.status = 'revogado'`.
+
+## Deploy Sprint 1.7 - Central de Auditoria
+
+Ordem exata:
+
+1. Fazer backup completo dos arquivos.
+2. Fazer backup completo do banco.
+3. Executar `sql/auditoria_admin_v1.sql` no phpMyAdmin.
+4. Conferir se a tabela `auditoria_admin` foi criada com indices e FK.
+5. Enviar os arquivos PHP/CSS/docs alterados.
+6. Entrar como superadministrador.
+7. Confirmar item `Auditoria` no menu.
+8. Confirmar que administrador de modulo nao ve o item e recebe HTTP 403 em acesso direto.
+9. Executar uma acao de teste no SONI PONTO e conferir registro na Central.
+10. Testar filtros, detalhes, impressao e CSV.
+
+Rollback:
+
+1. Restaurar arquivos do backup anterior.
+2. Restaurar banco do backup se for necessario remover a estrutura.
+3. Como alternativa parcial, manter `auditoria_admin` sem uso ate nova publicacao; a tabela nao interfere nas regras de negocio.

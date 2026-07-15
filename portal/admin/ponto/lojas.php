@@ -34,6 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':observacoes' => trim($_POST['observacoes'] ?? ''),
             ':ativo' => isset($_POST['ativo']) ? 1 : 0,
         ];
+        $dadosAuditoria = array_combine(
+            array_map(static fn (string $campo): string => ltrim($campo, ':'), array_keys($dados)),
+            array_values($dados)
+        );
 
         if ($dados[':codigo_loja'] === '' || $dados[':nome'] === '') {
             throw new RuntimeException('Código e nome da loja são obrigatórios.');
@@ -41,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($id > 0) {
             exigir_permissao('lojas.editar');
+            $lojaAntes = $lojaEditar ?: [];
             $dados[':id'] = $id;
             $stmt = $pdo->prepare(
                 'UPDATE lojas_trabalho
@@ -51,6 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  WHERE id = :id'
             );
             $stmt->execute($dados);
+            $acaoAuditoria = 'loja_editada';
+            if ($lojaAntes && (int) ($lojaAntes['ativo'] ?? 0) !== (int) $dadosAuditoria['ativo']) {
+                $acaoAuditoria = (int) $dadosAuditoria['ativo'] === 1 ? 'loja_ativada' : 'loja_desativada';
+            }
+            registrar_auditoria('lojas', $acaoAuditoria, 'lojas_trabalho', $id, $lojaAntes, $dadosAuditoria, 'sucesso', null, 'Loja atualizada');
             $sucesso = 'Loja atualizada.';
         } else {
             exigir_permissao('lojas.criar');
@@ -61,9 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  (:codigo_loja, :numero_interno, :nome, :endereco, :cidade, :responsavel, :telefone, :horario_padrao, :cor_identificacao, :observacoes, :ativo)'
             );
             $stmt->execute($dados);
+            registrar_auditoria('lojas', 'loja_criada', 'lojas_trabalho', (int) $pdo->lastInsertId(), [], $dadosAuditoria, 'sucesso', null, 'Loja cadastrada');
             $sucesso = 'Loja cadastrada.';
         }
     } catch (Throwable $e) {
+        registrar_auditoria('lojas', 'erro_salvar', 'lojas_trabalho', (int) ($_POST['id'] ?? 0) ?: null, $lojaEditar ?: [], $_POST, 'erro', $e->getMessage(), 'Falha ao salvar loja');
         $erro = ponto_mensagem_erro($e);
     }
 }

@@ -21,6 +21,7 @@ function admin_menu_itens(): array
         ['permissao' => 'ponto.visualizar', 'href' => 'ponto/index.php', 'rotulo' => '⏱️ Soni Ponto'],
         ['permissao' => 'documentos.visualizar', 'href' => 'documentos-trabalho/index.php', 'rotulo' => '📄 Documentos'],
         ['permissao' => 'admins.visualizar', 'href' => 'administradores.php', 'rotulo' => '🛡️ Administradores'],
+        ['permissao' => 'auditoria.visualizar', 'href' => 'auditoria.php', 'rotulo' => '🕵️ Auditoria', 'perfil' => 'superadministrador'],
     ];
 }
 
@@ -35,6 +36,7 @@ function admin_render_header(string $prefixo = ''): void
       <a href="<?= e(admin_url('dashboard.php', $prefixo)) ?>" class="marca">RWDEV Admin</a>
       <nav>
         <?php foreach (admin_menu_itens() as $item): ?>
+          <?php if (($item['perfil'] ?? null) && ($admin['perfil'] ?? '') !== $item['perfil']) { continue; } ?>
           <?php if (usuario_pode($item['permissao'])): ?>
             <a href="<?= e(admin_url($item['href'], $prefixo)) ?>"><span class="admin-menu-item"><?= e($item['rotulo']) ?></span></a>
           <?php endif; ?>

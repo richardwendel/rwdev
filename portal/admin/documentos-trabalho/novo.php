@@ -28,9 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              (:titulo, :categoria, :empresa, :cargo, :data_documento, :data_validade, :arquivo, :observacoes, :ponto_id, :ativo)'
         );
         $stmt->execute($dados);
+        registrar_auditoria('documentos', 'documento_cadastrado', 'documentos_trabalho', (int) $pdo->lastInsertId(), [], array_diff_key($dados, ['arquivo' => true]), 'sucesso', null, 'Documento cadastrado');
 
         redirect('index.php');
     } catch (Throwable $e) {
+        registrar_auditoria('documentos', 'erro_cadastrar', 'documentos_trabalho', null, [], array_diff_key($_POST, ['arquivo' => true]), 'erro', $e->getMessage(), 'Falha ao cadastrar documento');
         $erro = docs_mensagem_erro($e);
         $documento = array_merge($documento, $_POST);
     }

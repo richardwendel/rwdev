@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config/conexao.php';
 require_once __DIR__ . '/../includes/admin_ui.php';
+require_once __DIR__ . '/../includes/auditoria.php';
 
 exigir_admin();
 exigir_permissao('admins.visualizar');
@@ -130,6 +131,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 admin_salvar_permissoes($pdo, $id, $perfil, $permissoes);
                 admin_registrar_evento($pdo, 'admin_permissoes_alteradas', $email, 'Administrador atualizado: ' . $id);
+                registrar_auditoria(
+                    'administradores',
+                    $ativo === 1 ? 'administrador_atualizado' : 'administrador_desativado',
+                    'admins',
+                    $id,
+                    $adminAlvo,
+                    ['nome' => $nome, 'email' => $email, 'perfil' => $perfil, 'ativo' => $ativo, 'permissoes' => $permissoes],
+                    'sucesso',
+                    null,
+                    'Administrador atualizado'
+                );
                 $_SESSION['flash_admin'] = 'Administrador atualizado.';
             } else {
                 exigir_permissao('admins.criar');
@@ -153,6 +165,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $novoId = (int) $pdo->lastInsertId();
                 admin_salvar_permissoes($pdo, $novoId, $perfil, $permissoes);
                 admin_registrar_evento($pdo, 'admin_criado', $email, 'Administrador criado manualmente: ' . $novoId);
+                registrar_auditoria(
+                    'administradores',
+                    'administrador_criado',
+                    'admins',
+                    $novoId,
+                    [],
+                    ['nome' => $nome, 'email' => $email, 'perfil' => $perfil, 'ativo' => $ativo, 'permissoes' => $permissoes],
+                    'sucesso',
+                    null,
+                    'Administrador cadastrado manualmente'
+                );
                 $_SESSION['flash_admin'] = 'Administrador cadastrado.';
             }
 
@@ -220,6 +243,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $pdo->commit();
             admin_registrar_evento($pdo, 'admin_convite_criado', $email, 'Convite administrativo criado.');
+            registrar_auditoria(
+                'convites_admin',
+                'convite_criado',
+                'convites_admin',
+                (int) $pdo->lastInsertId(),
+                [],
+                ['admin_id' => $adminId, 'nome' => $nome, 'email' => $email, 'perfil' => $perfil, 'permissoes' => $permissoes],
+                'sucesso',
+                null,
+                'Convite administrativo criado'
+            );
             $_SESSION['flash_admin'] = 'Convite administrativo criado.';
             $_SESSION['flash_admin_link'] = admin_link_convite($token);
             redirect('administradores.php');
@@ -231,6 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare('UPDATE convites_admin SET status = "revogado" WHERE id = :id AND status = "pendente"');
             $stmt->execute([':id' => $conviteId]);
             admin_registrar_evento($pdo, 'admin_convite_revogado', null, 'Convite administrativo revogado: ' . $conviteId);
+            registrar_auditoria('convites_admin', 'convite_revogado', 'convites_admin', $conviteId, [], ['status' => 'revogado'], 'sucesso', null, 'Convite administrativo revogado');
             $_SESSION['flash_admin'] = 'Convite revogado.';
             redirect('administradores.php');
         }
@@ -238,6 +273,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
+        registrar_auditoria('administradores', 'erro_operacao', 'admins', null, [], [], 'erro', $e->getMessage(), 'Falha em operacao administrativa');
         $erro = $e->getMessage();
     }
 }

@@ -232,3 +232,13 @@ Cada página administrativa deve validar sessão admin e usar PDO.
 
 Ricardo Sousa  
 RWDEV
+
+## Sprint 1.7 - Central de Auditoria
+
+A Central de Auditoria fica em `portal/admin/auditoria.php` e aparece no menu apenas para superadministrador. Ela registra acoes administrativas internas, com filtros, detalhes, impressao e exportacao CSV. O registro e feito pelo helper `portal/includes/auditoria.php`, que remove senhas, tokens, CSRF, cookies, dados de sessao e outros segredos antes de gravar.
+
+SQL incremental:
+
+```text
+sql/auditoria_admin_v1.sql
+```

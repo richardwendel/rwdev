@@ -28,6 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':observacoes' => trim($_POST['observacoes'] ?? ''),
             ':ativo' => isset($_POST['ativo']) ? 1 : 0,
         ];
+        $dadosAuditoria = array_combine(
+            array_map(static fn (string $campo): string => ltrim($campo, ':'), array_keys($dados)),
+            array_values($dados)
+        );
 
         if ($dados[':loja_id'] <= 0 || $dados[':nome_trajeto'] === '') {
             throw new RuntimeException('Loja e nome do trajeto são obrigatórios.');
@@ -35,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($id > 0) {
             exigir_permissao('trajetos.editar');
+            $trajetoAntes = $trajetoEditar ?: [];
             $dados[':id'] = $id;
             $stmt = $pdo->prepare(
                 'UPDATE trajetos_trabalho
@@ -42,6 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  WHERE id = :id'
             );
             $stmt->execute($dados);
+            $acaoAuditoria = 'trajeto_editado';
+            if ($trajetoAntes && (int) ($trajetoAntes['ativo'] ?? 0) !== (int) $dadosAuditoria['ativo']) {
+                $acaoAuditoria = (int) $dadosAuditoria['ativo'] === 1 ? 'trajeto_ativado' : 'trajeto_desativado';
+            }
+            registrar_auditoria('trajetos', $acaoAuditoria, 'trajetos_trabalho', $id, $trajetoAntes, $dadosAuditoria, 'sucesso', null, 'Trajeto atualizado');
             $sucesso = 'Trajeto atualizado.';
         } else {
             exigir_permissao('trajetos.criar');
@@ -52,9 +62,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  (:loja_id, :nome_trajeto, :observacoes, :ativo)'
             );
             $stmt->execute($dados);
+            registrar_auditoria('trajetos', 'trajeto_criado', 'trajetos_trabalho', (int) $pdo->lastInsertId(), [], $dadosAuditoria, 'sucesso', null, 'Trajeto cadastrado');
             $sucesso = 'Trajeto cadastrado.';
         }
     } catch (Throwable $e) {
+        registrar_auditoria('trajetos', 'erro_salvar', 'trajetos_trabalho', (int) ($_POST['id'] ?? 0) ?: null, $trajetoEditar ?: [], $_POST, 'erro', $e->getMessage(), 'Falha ao salvar trajeto');
         $erro = ponto_mensagem_erro($e);
     }
 }

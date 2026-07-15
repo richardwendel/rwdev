@@ -109,3 +109,22 @@ Data: 2026-07-14
 - Rotas administrativas passam a validar permissao no backend.
 - Tentativas negadas sao registradas em `logs_seguranca` quando a migration ja foi aplicada.
 - Documentos do Trabalho nao entram no perfil de teste do Marquinhos.
+
+## 2.3.0
+
+Data: 2026-07-15
+
+### Adicionado
+
+- Migration `sql/auditoria_admin_v1.sql`.
+- Helper central `portal/includes/auditoria.php`.
+- Central de Auditoria em `portal/admin/auditoria.php`.
+- Menu `Auditoria` exclusivo para superadministrador.
+- Auditoria de login, logout, acesso negado, administradores, convites, pontos, lojas, trajetos e documentos seguros.
+- Filtros, detalhes, impressao e exportacao CSV.
+
+### Seguranca
+
+- Sanitizacao automatica de campos sensiveis.
+- Mascaramento de e-mail, telefone, CPF e dados bancarios.
+- Falha de auditoria nao interrompe a operacao principal.

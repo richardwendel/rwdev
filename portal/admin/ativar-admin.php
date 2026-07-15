@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config/conexao.php';
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/auditoria.php';
 
 $token = trim((string) ($_GET['token'] ?? $_POST['token'] ?? ''));
 $tokenHash = $token !== '' ? hash('sha256', $token) : '';
@@ -65,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $convite && $erro === '') {
 
             $pdo->commit();
             admin_registrar_evento($pdo, 'admin_conta_ativada', (string) $convite['email'], 'Conta administrativa ativada por convite.');
+            registrar_auditoria('convites_admin', 'convite_utilizado', 'convites_admin', (int) $convite['id'], ['status' => 'pendente'], ['status' => 'usado', 'admin_id' => (int) $convite['admin_id'], 'email' => (string) $convite['email']], 'sucesso', null, 'Conta administrativa ativada por convite');
             $sucesso = 'Conta ativada. Voce ja pode acessar o painel administrativo.';
             $convite = null;
         } catch (Throwable $e) {
@@ -72,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $convite && $erro === '') {
                 $pdo->rollBack();
             }
             $erro = 'Nao foi possivel ativar a conta agora.';
+            registrar_auditoria('convites_admin', 'erro_ativacao', 'convites_admin', (int) ($convite['id'] ?? 0), [], ['email' => (string) ($convite['email'] ?? '')], 'erro', $e->getMessage(), 'Falha na ativacao de conta administrativa');
             error_log('Falha ativacao admin: ' . $e->getMessage());
         }
     }

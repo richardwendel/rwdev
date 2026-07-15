@@ -72,6 +72,7 @@ function permissoes_admin_disponiveis(): array
         'Depoimentos' => ['depoimentos.visualizar', 'depoimentos.editar', 'depoimentos.excluir'],
         'Diagnostico' => ['diagnostico.visualizar'],
         'Administradores' => ['admins.visualizar', 'admins.criar', 'admins.editar', 'admins.excluir', 'admins.convidar'],
+        'Auditoria' => ['auditoria.visualizar'],
     ];
 }
 
@@ -201,6 +202,27 @@ function exigir_permissao(string $permissao): void
         $admin['email'] ?? null,
         'Permissao negada: ' . $permissao . ' | URI: ' . ($_SERVER['REQUEST_URI'] ?? '')
     );
+
+    if (!function_exists('registrar_auditoria')) {
+        $auditoriaPath = __DIR__ . '/auditoria.php';
+        if (is_file($auditoriaPath)) {
+            require_once $auditoriaPath;
+        }
+    }
+
+    if (function_exists('registrar_auditoria')) {
+        registrar_auditoria(
+            'seguranca',
+            'acesso_negado',
+            'permissao',
+            null,
+            [],
+            ['permissao' => $permissao],
+            'negado',
+            'Permissao negada',
+            'Tentativa de acesso sem permissao'
+        );
+    }
 
     http_response_code(403);
     exit('Acesso negado. Seu usuario nao possui permissao para esta acao.');

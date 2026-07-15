@@ -164,3 +164,27 @@ O menu administrativo foi centralizado em `portal/includes/admin_ui.php` e rende
 O convite administrativo usa `convites_admin`, separado de `convites_cliente`. O token cru nunca e persistido; o banco recebe apenas `token_hash` com SHA-256. A conta convidada nasce em `admins` com `ativo = 0` e senha vazia, e so fica ativa depois da definicao de senha em `portal/admin/ativar-admin.php`.
 
 Rotas privadas validam permissao no backend. O SONI PONTO exige permissoes separadas para registros, resumo, lojas e trajetos. Documentos do Trabalho exige `documentos.*` e nao deve ser liberado para o teste do Marquinhos.
+
+## Sprint 1.7 - Central de Auditoria
+
+A Sprint 1.7 adiciona a Central de Auditoria administrativa em `portal/admin/auditoria.php`, visivel somente para superadministrador.
+
+Arquitetura:
+
+- `logs_seguranca` continua para eventos tecnicos simples de seguranca.
+- `auditoria_admin` registra historico administrativo detalhado, com snapshots do usuario, modulo, acao, entidade, registro, antes/depois, resultado, rota, IP e navegador.
+- `portal/includes/auditoria.php` centraliza o registro, sanitizacao e mascaramento dos dados.
+
+Privacidade:
+
+- Nao registrar senhas, tokens, CSRF, cookies, sessao, secrets, API keys ou authorization.
+- Nao registrar conteudo de arquivos enviados.
+- Mascarar e-mail, telefone, CPF e dados bancarios quando aparecerem em campos auditados.
+- Acoes administrativas realizadas no painel podem ser registradas para seguranca, suporte e auditoria.
+
+Retencao futura recomendada:
+
+- Manter auditoria por periodo configuravel.
+- Arquivar registros antigos.
+- Evitar crescimento ilimitado da tabela.
+- Nunca permitir que administrador de modulo limpe ou altere auditoria.

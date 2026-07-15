@@ -35,9 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              WHERE id = :id'
         );
         $stmt->execute($dados);
+        registrar_auditoria('ponto', 'ponto_editado', 'pontos_trabalho', $id, $ponto, $dados, 'sucesso', null, 'Registro de ponto editado');
 
         redirect('index.php?mes=' . (int) date('n', strtotime($dados['data'])) . '&ano=' . (int) date('Y', strtotime($dados['data'])));
     } catch (Throwable $e) {
+        registrar_auditoria('ponto', 'erro_editar', 'pontos_trabalho', $id, $ponto, $_POST, 'erro', $e->getMessage(), 'Falha ao editar ponto');
         $erro = ponto_mensagem_erro($e);
         $ponto = array_merge($ponto, $_POST);
     }

@@ -30,6 +30,7 @@ if (($_GET['arquivo'] ?? '') === '1') {
     header('Content-Type: ' . $mime);
     header('Content-Disposition: inline; filename="' . basename((string) $documento['arquivo']) . '"');
     header('Content-Length: ' . filesize($arquivo));
+    registrar_auditoria('documentos', 'documento_visualizado', 'documentos_trabalho', $id, [], ['titulo' => $documento['titulo'] ?? '', 'categoria' => $documento['categoria'] ?? ''], 'sucesso', null, 'Arquivo de documento visualizado');
     readfile($arquivo);
     exit;
 }

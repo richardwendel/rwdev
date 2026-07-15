@@ -85,3 +85,10 @@
 - Convite administrativo com ativacao de senha: entregue.
 - Proxima melhoria recomendada: tela dedicada de auditoria para `logs_seguranca`.
 - Proxima melhoria recomendada: testes automatizados de permissao por rota.
+
+## Roadmap - Atualizacao Sprint 1.7
+
+- Central de Auditoria administrativa: entregue.
+- Exportacao CSV simples e impressao: entregue.
+- Proxima melhoria recomendada: politica configuravel de retencao/arquivamento.
+- Proxima melhoria recomendada: pagina de indicadores avancados de auditoria por usuario e modulo.

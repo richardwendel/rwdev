@@ -42,3 +42,10 @@
 - [ ] Desativar a conta de teste apos validacao do SONI PONTO.
 - [ ] Validar manualmente todos os cenarios de convite expirado, revogado e usado.
 - [ ] Criar futuramente uma tela de consulta de auditoria.
+
+## TODO - Sprint 1.7
+
+- [ ] Aplicar `sql/auditoria_admin_v1.sql` em producao antes dos arquivos.
+- [ ] Definir politica de retencao dos registros de auditoria.
+- [ ] Testar volume crescente de registros em producao.
+- [ ] Revisar periodicamente os eventos auditados conforme novos modulos surgirem.

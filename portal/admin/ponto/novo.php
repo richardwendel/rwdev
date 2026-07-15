@@ -6,6 +6,7 @@ require_once __DIR__ . '/_funcoes.php';
 exigir_permissao(isset($_GET['duplicar']) ? 'ponto.duplicar' : 'ponto.criar');
 
 $erro = '';
+$origemDuplicacao = null;
 $lojas = ponto_lojas($pdo);
 $trajetosPorLoja = ponto_trajetos_ativos_por_loja($pdo);
 $ponto = [
@@ -21,6 +22,7 @@ if (isset($_GET['duplicar'])) {
     $origem = ponto_buscar_ponto($pdo, (int) $_GET['duplicar']);
 
     if ($origem) {
+        $origemDuplicacao = $origem;
         $ponto = $origem;
         unset($ponto['id'], $ponto['criado_em'], $ponto['atualizado_em']);
         $data = new DateTime((string) $origem['data']);
@@ -43,9 +45,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              (:data, :dia_semana, :status_dia, :loja_id, :trajeto_ida_id, :trajeto_volta_id, :entrada, :cafe_saida, :cafe_retorno, :almoco_saida, :almoco_retorno, :saida, :transporte_observacao, :gasto_transporte, :bilhetes_perdidos, :valor_bilhetes_perdidos, :observacoes)'
         );
         $stmt->execute($dados);
+        $novoId = (int) $pdo->lastInsertId();
+
+        registrar_auditoria(
+            'ponto',
+            $origemDuplicacao ? 'ponto_duplicado' : 'ponto_criado',
+            'pontos_trabalho',
+            $novoId,
+            $origemDuplicacao ?: [],
+            $dados,
+            'sucesso',
+            null,
+            $origemDuplicacao ? 'Registro de ponto duplicado' : 'Registro de ponto criado'
+        );
 
         redirect('index.php?mes=' . (int) date('n', strtotime($dados['data'])) . '&ano=' . (int) date('Y', strtotime($dados['data'])));
     } catch (Throwable $e) {
+        registrar_auditoria('ponto', $origemDuplicacao ? 'erro_duplicar' : 'erro_criar', 'pontos_trabalho', null, $origemDuplicacao ?: [], $_POST, 'erro', $e->getMessage(), 'Falha ao salvar ponto');
         $erro = ponto_mensagem_erro($e);
         $ponto = array_merge($ponto, $_POST);
     }

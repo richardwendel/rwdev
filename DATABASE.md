@@ -407,3 +407,20 @@ Novas tabelas:
 Eventos novos em `logs_seguranca`: convite criado/revogado, conta ativada, admin criado, permissoes alteradas, status alterado e acesso negado.
 
 O superadministrador atual recebe automaticamente `perfil = superadministrador` e `ativo = 1`. A migration nao apaga usuarios e nao altera hashes de senha existentes.
+
+## Sprint 1.7 - Auditoria Administrativa
+
+Script incremental: `sql/auditoria_admin_v1.sql`.
+
+Nova tabela: `auditoria_admin`.
+
+Campos principais:
+
+- `admin_id` com FK para `admins.id` e `ON DELETE SET NULL`.
+- Snapshots: `admin_nome_snapshot`, `admin_email_snapshot`, `admin_perfil_snapshot`.
+- Contexto: `modulo`, `acao`, `entidade`, `registro_id`, `descricao`.
+- Dados: `dados_anteriores_json`, `dados_posteriores_json`, `campos_alterados_json` em LONGTEXT para compatibilidade MariaDB.
+- Resultado: `resultado`, `mensagem_resultado`.
+- Tecnico seguro: `rota`, `metodo_http`, `ip`, `user_agent`, `request_id`, `sessao_id_hash`, `criado_em`.
+
+Indices criados para `criado_em`, `admin_id`, `modulo`, `acao`, `resultado`, `entidade` e `registro_id`.

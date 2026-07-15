@@ -16,8 +16,14 @@ if (!$ponto) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     validar_csrf();
 
-    $stmt = $pdo->prepare('DELETE FROM pontos_trabalho WHERE id = :id');
-    $stmt->execute([':id' => $id]);
+    try {
+        $stmt = $pdo->prepare('DELETE FROM pontos_trabalho WHERE id = :id');
+        $stmt->execute([':id' => $id]);
+        registrar_auditoria('ponto', 'ponto_excluido', 'pontos_trabalho', $id, $ponto, [], 'sucesso', null, 'Registro de ponto excluido');
+    } catch (Throwable $e) {
+        registrar_auditoria('ponto', 'erro_excluir', 'pontos_trabalho', $id, $ponto, [], 'erro', $e->getMessage(), 'Falha ao excluir ponto');
+        throw $e;
+    }
 
     redirect('index.php?mes=' . (int) date('n', strtotime($ponto['data'])) . '&ano=' . (int) date('Y', strtotime($ponto['data'])));
 }

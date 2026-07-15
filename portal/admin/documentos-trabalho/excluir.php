@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt = $pdo->prepare('DELETE FROM documentos_trabalho WHERE id = :id');
     $stmt->execute([':id' => $id]);
+    registrar_auditoria('documentos', 'documento_excluido', 'documentos_trabalho', $id, array_diff_key($documento, ['arquivo' => true]), [], 'sucesso', null, 'Documento excluido');
 
     $arquivo = docs_upload_dir() . '/' . basename((string) $documento['arquivo']);
     if (is_file($arquivo)) {

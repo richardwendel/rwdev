@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/conexao.php';
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/auditoria.php';
 
 if (isset($_SESSION['admin_id'])) {
     redirect('dashboard.php');
@@ -33,10 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         admin_registrar_evento($pdo, 'login_sucesso', $email, 'Login administrativo realizado.');
+        registrar_auditoria('autenticacao', 'login_sucesso', 'admins', (int) $admin['id'], [], ['email' => $email], 'sucesso', null, 'Login administrativo realizado');
         redirect('dashboard.php');
     }
 
     admin_registrar_evento($pdo, $admin && $ativo !== 1 ? 'login_bloqueado' : 'login_falha', $email, 'Login administrativo recusado.');
+    registrar_auditoria('autenticacao', $admin && $ativo !== 1 ? 'conta_inativa' : 'login_falha', 'admins', $admin ? (int) $admin['id'] : null, [], ['email' => $email], $admin && $ativo !== 1 ? 'negado' : 'erro', 'Login administrativo recusado', 'Tentativa de login administrativo');
     $erro = 'E-mail ou senha invalidos.';
 }
 ?>

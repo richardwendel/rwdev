@@ -33,9 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              WHERE id = :id'
         );
         $stmt->execute($dados);
+        registrar_auditoria('documentos', 'metadados_editados', 'documentos_trabalho', $id, array_diff_key($documento, ['arquivo' => true]), array_diff_key($dados, ['arquivo' => true, 'id' => true]), 'sucesso', null, 'Metadados de documento editados');
 
         redirect('visualizar.php?id=' . $id);
     } catch (Throwable $e) {
+        registrar_auditoria('documentos', 'erro_editar', 'documentos_trabalho', $id, array_diff_key($documento, ['arquivo' => true]), array_diff_key($_POST, ['arquivo' => true]), 'erro', $e->getMessage(), 'Falha ao editar documento');
         $erro = docs_mensagem_erro($e);
         $documento = array_merge($documento, $_POST);
     }

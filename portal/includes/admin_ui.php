@@ -144,11 +144,11 @@ function admin_render_header(string $prefixo = ''): void
           const panel = document.querySelector("#admin-mobile-menu");
           const overlay = document.querySelector(".admin-mobile-menu-overlay");
 
-          if (!button || !panel || !overlay || button.dataset.ready === "true") {
+          if (!button || !panel || !overlay || document.documentElement.dataset.adminMobileMenuReady === "true") {
             return;
           }
 
-          button.dataset.ready = "true";
+          document.documentElement.dataset.adminMobileMenuReady = "true";
 
           let closeTimer = null;
 
@@ -171,14 +171,21 @@ function admin_render_header(string $prefixo = ''): void
             }
           }
 
-          button.addEventListener("click", () => {
-            setOpen(button.getAttribute("aria-expanded") !== "true");
-          });
+          document.addEventListener("click", (event) => {
+            const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+            if (!target) {
+              return;
+            }
 
-          overlay.addEventListener("click", () => setOpen(false));
+            if (target.closest(".admin-mobile-menu-button")) {
+              event.preventDefault();
+              setOpen(button.getAttribute("aria-expanded") !== "true");
+              return;
+            }
 
-          panel.querySelectorAll("[data-admin-mobile-link]").forEach((link) => {
-            link.addEventListener("click", () => setOpen(false));
+            if (target.closest(".admin-mobile-menu-overlay") || target.closest("[data-admin-mobile-link]")) {
+              setOpen(false);
+            }
           });
 
           document.addEventListener("keydown", (event) => {

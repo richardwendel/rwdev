@@ -75,12 +75,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input id="email" name="email" type="email" required autocomplete="email">
 
       <label for="senha">Senha</label>
-      <input id="senha" name="senha" type="password" required autocomplete="current-password">
+      <div class="password-field">
+        <input id="senha" name="senha" type="password" required autocomplete="current-password">
+        <button type="button" class="password-toggle" aria-label="Mostrar senha" data-password-toggle="senha">👁️</button>
+      </div>
 
       <button type="submit">Entrar</button>
     </form>
 
     <a class="auth-link" href="../../index.html">← Voltar para o site</a>
   </main>
+  <script>
+    (() => {
+      const button = document.querySelector("[data-password-toggle]");
+      if (!button) {
+        return;
+      }
+
+      const input = document.getElementById(button.dataset.passwordToggle || "");
+      if (!input) {
+        return;
+      }
+
+      button.addEventListener("click", () => {
+        const shouldShow = input.type === "password";
+        input.type = shouldShow ? "text" : "password";
+        button.setAttribute("aria-label", shouldShow ? "Ocultar senha" : "Mostrar senha");
+        input.focus();
+      });
+    })();
+  </script>
 </body>
 </html>

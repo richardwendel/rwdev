@@ -108,102 +108,28 @@ function admin_render_header(string $prefixo = ''): void
         </span>
         <a href="<?= e(admin_url('../logout.php', $prefixo)) ?>"><span class="admin-menu-item">🚪 Sair</span></a>
       </nav>
-      <button
-        type="button"
-        class="admin-mobile-menu-button"
-        aria-label="Abrir menu administrativo"
-        aria-expanded="false"
-        aria-controls="admin-mobile-menu"
-      >☰ Menu</button>
+      <details class="admin-mobile-details">
+        <summary>☰ Menu</summary>
+        <nav class="admin-mobile-details-nav" aria-label="Menu administrativo">
+          <?php foreach (admin_menu_itens() as $item): ?>
+            <?php if (($item['perfil'] ?? null) && ($admin['perfil'] ?? '') !== $item['perfil']) { continue; } ?>
+            <?php if (usuario_pode($item['permissao'])): ?>
+              <a href="<?= e(admin_url($item['href'], $prefixo)) ?>"><?= e($item['mobile_rotulo'] ?? $item['rotulo']) ?></a>
+            <?php endif; ?>
+          <?php endforeach; ?>
+        </nav>
+        <div class="admin-mobile-details-separator"></div>
+        <div class="admin-mobile-details-user">
+          <span>🟢 Usuário Online</span>
+          <strong><?= e((string) ($_SESSION['admin_nome'] ?? $admin['nome'] ?? 'Admin')) ?></strong>
+          <span><?= e($perfilRotulo) ?></span>
+          <small><?= e($ambiente) ?></small>
+          <small>Versão <?= e($versao) ?></small>
+        </div>
+        <div class="admin-mobile-details-separator"></div>
+        <a class="admin-mobile-details-logout" href="<?= e(admin_url('../logout.php', $prefixo)) ?>">🚪 Sair</a>
+      </details>
     </header>
-    <div class="admin-mobile-menu-overlay" data-admin-mobile-close hidden></div>
-    <aside class="admin-mobile-menu" id="admin-mobile-menu" aria-hidden="true">
-      <nav class="admin-mobile-menu-nav" aria-label="Menu administrativo">
-        <?php foreach (admin_menu_itens() as $item): ?>
-          <?php if (($item['perfil'] ?? null) && ($admin['perfil'] ?? '') !== $item['perfil']) { continue; } ?>
-          <?php if (usuario_pode($item['permissao'])): ?>
-            <a href="<?= e(admin_url($item['href'], $prefixo)) ?>" data-admin-mobile-link><?= e($item['mobile_rotulo'] ?? $item['rotulo']) ?></a>
-          <?php endif; ?>
-        <?php endforeach; ?>
-      </nav>
-      <div class="admin-mobile-menu-separator"></div>
-      <div class="admin-mobile-user">
-        <span>🟢 Usuário Online</span>
-        <strong><?= e((string) ($_SESSION['admin_nome'] ?? $admin['nome'] ?? 'Admin')) ?></strong>
-        <span><?= e($perfilRotulo) ?></span>
-        <small><?= e($ambiente) ?></small>
-        <small>Versão <?= e($versao) ?></small>
-      </div>
-      <div class="admin-mobile-menu-separator"></div>
-      <a class="admin-mobile-logout" href="<?= e(admin_url('../logout.php', $prefixo)) ?>" data-admin-mobile-link>🚪 Sair</a>
-    </aside>
-    <script>
-      (() => {
-        function initAdminMobileMenu() {
-          const button = document.querySelector(".admin-mobile-menu-button");
-          const panel = document.querySelector("#admin-mobile-menu");
-          const overlay = document.querySelector(".admin-mobile-menu-overlay");
-
-          if (!button || !panel || !overlay || document.documentElement.dataset.adminMobileMenuReady === "true") {
-            return;
-          }
-
-          document.documentElement.dataset.adminMobileMenuReady = "true";
-
-          let closeTimer = null;
-
-          function setOpen(isOpen) {
-            window.clearTimeout(closeTimer);
-            button.setAttribute("aria-expanded", isOpen ? "true" : "false");
-            panel.setAttribute("aria-hidden", isOpen ? "false" : "true");
-
-            if (isOpen) {
-              overlay.hidden = false;
-            }
-
-            panel.classList.toggle("is-open", isOpen);
-            overlay.classList.toggle("is-open", isOpen);
-
-            if (!isOpen) {
-              closeTimer = window.setTimeout(() => {
-                overlay.hidden = true;
-              }, 240);
-            }
-          }
-
-          button.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            setOpen(!panel.classList.contains("is-open"));
-          });
-
-          document.addEventListener("click", (event) => {
-            const target = event.target instanceof Element ? event.target : event.target?.parentElement;
-            if (!target || !panel.classList.contains("is-open")) {
-              return;
-            }
-
-            if (panel.contains(target) || button.contains(target)) {
-              return;
-            }
-
-            setOpen(false);
-          });
-
-          document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape") {
-              setOpen(false);
-            }
-          });
-        }
-
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", initAdminMobileMenu, { once: true });
-        } else {
-          initAdminMobileMenu();
-        }
-      })();
-    </script>
     <?php
 }
 

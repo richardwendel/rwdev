@@ -159,18 +159,6 @@ function admin_render_header(string $prefixo = ''): void
 
             if (isOpen) {
               overlay.hidden = false;
-              overlay.style.display = "block";
-              overlay.style.opacity = "1";
-              overlay.style.pointerEvents = "auto";
-              panel.style.display = "flex";
-              panel.style.transform = "translateX(0)";
-              panel.style.visibility = "visible";
-              panel.style.pointerEvents = "auto";
-            } else {
-              overlay.style.opacity = "0";
-              overlay.style.pointerEvents = "none";
-              panel.style.transform = "translateX(-100%)";
-              panel.style.pointerEvents = "none";
             }
 
             panel.classList.toggle("is-open", isOpen);
@@ -179,31 +167,27 @@ function admin_render_header(string $prefixo = ''): void
             if (!isOpen) {
               closeTimer = window.setTimeout(() => {
                 overlay.hidden = true;
-                overlay.style.display = "";
-                overlay.style.opacity = "";
-                overlay.style.pointerEvents = "";
-                panel.style.display = "";
-                panel.style.transform = "";
-                panel.style.visibility = "";
-                panel.style.pointerEvents = "";
               }, 240);
             }
           }
 
-          button.addEventListener("pointerup", (event) => {
+          button.addEventListener("click", (event) => {
             event.preventDefault();
-            setOpen(button.getAttribute("aria-expanded") !== "true");
+            event.stopPropagation();
+            setOpen(!panel.classList.contains("is-open"));
           });
 
           document.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : event.target?.parentElement;
-            if (!target) {
+            if (!target || !panel.classList.contains("is-open")) {
               return;
             }
 
-            if (target.closest(".admin-mobile-menu-overlay") || target.closest("[data-admin-mobile-link]")) {
-              setOpen(false);
+            if (panel.contains(target) || button.contains(target)) {
+              return;
             }
+
+            setOpen(false);
           });
 
           document.addEventListener("keydown", (event) => {

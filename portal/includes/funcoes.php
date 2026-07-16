@@ -25,6 +25,19 @@ function portal_url(string $caminho): string
     return $base . '/portal/' . ltrim($caminho, '/');
 }
 
+function asset_url(string $caminho): string
+{
+    $caminho = ltrim($caminho, '/');
+    $arquivo = dirname(__DIR__) . '/' . $caminho;
+    $url = portal_url($caminho);
+
+    if (!is_file($arquivo)) {
+        return $url;
+    }
+
+    return $url . '?v=' . rawurlencode((string) filemtime($arquivo));
+}
+
 function csrf_token(): string
 {
     if (empty($_SESSION['csrf_token'])) {

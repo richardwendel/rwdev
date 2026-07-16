@@ -967,17 +967,16 @@ th {
     background: transparent;
     border: 1px solid rgba(215, 168, 79, 0.56);
     color: #fff;
-    cursor: pointer;
     display: inline-flex;
     min-height: 42px;
     padding: 10px 14px;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
   }
 
-  .app-header.admin > .admin-mobile-menu-button:hover {
-    background: transparent;
-    color: #fff;
+  @media (hover: hover) {
+    .app-header.admin > .admin-mobile-menu-button:hover {
+      background: rgba(215, 168, 79, 0.16);
+      color: #fff;
+    }
   }
 
   .admin-mobile-menu-overlay {

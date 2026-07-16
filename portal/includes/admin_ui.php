@@ -139,52 +139,60 @@ function admin_render_header(string $prefixo = ''): void
     </aside>
     <script>
       (() => {
-        const button = document.querySelector(".admin-mobile-menu-button");
-        const panel = document.querySelector("#admin-mobile-menu");
-        const overlay = document.querySelector(".admin-mobile-menu-overlay");
+        function initAdminMobileMenu() {
+          const button = document.querySelector(".admin-mobile-menu-button");
+          const panel = document.querySelector("#admin-mobile-menu");
+          const overlay = document.querySelector(".admin-mobile-menu-overlay");
 
-        if (!button || !panel || !overlay || button.dataset.ready === "true") {
-          return;
+          if (!button || !panel || !overlay || button.dataset.ready === "true") {
+            return;
+          }
+
+          button.dataset.ready = "true";
+
+          let closeTimer = null;
+
+          function setOpen(isOpen) {
+            window.clearTimeout(closeTimer);
+            button.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            panel.setAttribute("aria-hidden", isOpen ? "false" : "true");
+
+            if (isOpen) {
+              overlay.hidden = false;
+            }
+
+            panel.classList.toggle("is-open", isOpen);
+            overlay.classList.toggle("is-open", isOpen);
+
+            if (!isOpen) {
+              closeTimer = window.setTimeout(() => {
+                overlay.hidden = true;
+              }, 240);
+            }
+          }
+
+          button.addEventListener("click", () => {
+            setOpen(button.getAttribute("aria-expanded") !== "true");
+          });
+
+          overlay.addEventListener("click", () => setOpen(false));
+
+          panel.querySelectorAll("[data-admin-mobile-link]").forEach((link) => {
+            link.addEventListener("click", () => setOpen(false));
+          });
+
+          document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+              setOpen(false);
+            }
+          });
         }
 
-        button.dataset.ready = "true";
-
-        let closeTimer = null;
-
-        function setOpen(isOpen) {
-          window.clearTimeout(closeTimer);
-          button.setAttribute("aria-expanded", isOpen ? "true" : "false");
-          panel.setAttribute("aria-hidden", isOpen ? "false" : "true");
-
-          if (isOpen) {
-            overlay.hidden = false;
-          }
-
-          panel.classList.toggle("is-open", isOpen);
-          overlay.classList.toggle("is-open", isOpen);
-
-          if (!isOpen) {
-            closeTimer = window.setTimeout(() => {
-              overlay.hidden = true;
-            }, 240);
-          }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initAdminMobileMenu, { once: true });
+        } else {
+          initAdminMobileMenu();
         }
-
-        button.addEventListener("click", () => {
-          setOpen(button.getAttribute("aria-expanded") !== "true");
-        });
-
-        overlay.addEventListener("click", () => setOpen(false));
-
-        panel.querySelectorAll("[data-admin-mobile-link]").forEach((link) => {
-          link.addEventListener("click", () => setOpen(false));
-        });
-
-        document.addEventListener("keydown", (event) => {
-          if (event.key === "Escape") {
-            setOpen(false);
-          }
-        });
       })();
     </script>
     <?php

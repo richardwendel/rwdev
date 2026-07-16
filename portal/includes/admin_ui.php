@@ -159,6 +159,18 @@ function admin_render_header(string $prefixo = ''): void
 
             if (isOpen) {
               overlay.hidden = false;
+              overlay.style.display = "block";
+              overlay.style.opacity = "1";
+              overlay.style.pointerEvents = "auto";
+              panel.style.display = "flex";
+              panel.style.transform = "translateX(0)";
+              panel.style.visibility = "visible";
+              panel.style.pointerEvents = "auto";
+            } else {
+              overlay.style.opacity = "0";
+              overlay.style.pointerEvents = "none";
+              panel.style.transform = "translateX(-100%)";
+              panel.style.pointerEvents = "none";
             }
 
             panel.classList.toggle("is-open", isOpen);
@@ -167,6 +179,13 @@ function admin_render_header(string $prefixo = ''): void
             if (!isOpen) {
               closeTimer = window.setTimeout(() => {
                 overlay.hidden = true;
+                overlay.style.display = "";
+                overlay.style.opacity = "";
+                overlay.style.pointerEvents = "";
+                panel.style.display = "";
+                panel.style.transform = "";
+                panel.style.visibility = "";
+                panel.style.pointerEvents = "";
               }, 240);
             }
           }

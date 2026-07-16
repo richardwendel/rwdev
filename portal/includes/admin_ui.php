@@ -190,15 +190,14 @@ function admin_render_header(string $prefixo = ''): void
             }
           }
 
+          button.addEventListener("pointerup", (event) => {
+            event.preventDefault();
+            setOpen(button.getAttribute("aria-expanded") !== "true");
+          });
+
           document.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : event.target?.parentElement;
             if (!target) {
-              return;
-            }
-
-            if (target.closest(".admin-mobile-menu-button")) {
-              event.preventDefault();
-              setOpen(button.getAttribute("aria-expanded") !== "true");
               return;
             }
 

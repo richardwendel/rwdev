@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
         $stmt->execute($dados);
         $novoId = (int) $pdo->lastInsertId();
+        ponto_reembolso_sincronizar($pdo, $novoId, $dados);
         ponto_historico($pdo, 'pontos_trabalho', $novoId, 'criacao', [], $dados);
 
         registrar_auditoria(

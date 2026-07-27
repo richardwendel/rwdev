@@ -25,6 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $dados = [
             ':loja_id' => (int) ($_POST['loja_id'] ?? 0),
             ':nome_trajeto' => trim($_POST['nome_trajeto'] ?? ''),
+            ':tipo_transporte' => trim($_POST['tipo_transporte'] ?? ''),
+            ':valor_ida' => ponto_decimal($_POST['valor_ida'] ?? ''),
+            ':valor_volta' => ponto_decimal($_POST['valor_volta'] ?? ''),
+            ':valor_total' => ponto_decimal($_POST['valor_total'] ?? ''),
+            ':tempo_medio' => trim($_POST['tempo_medio'] ?? ''),
+            ':padrao_loja' => isset($_POST['padrao_loja']) ? 1 : 0,
             ':observacoes' => trim($_POST['observacoes'] ?? ''),
             ':ativo' => isset($_POST['ativo']) ? 1 : 0,
         ];
@@ -36,17 +42,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($dados[':loja_id'] <= 0 || $dados[':nome_trajeto'] === '') {
             throw new RuntimeException('Loja e nome do trajeto são obrigatórios.');
         }
-
+        $soma = round((float)$dados[':valor_ida'] + (float)$dados[':valor_volta'], 2);
+        if (abs((float)$dados[':valor_total'] - $soma) > 0.01) {
+            $dados[':valor_total'] = $soma;
+            $dadosAuditoria['valor_total'] = $soma;
+        }
+        exigir_permissao($id > 0 ? 'trajetos.editar' : 'trajetos.criar');
+        $pdo->beginTransaction();
         if ($id > 0) {
-            exigir_permissao('trajetos.editar');
+            if ($dados[':padrao_loja'] === 1) {
+                $stmtPadrao = $pdo->prepare('UPDATE trajetos_trabalho SET padrao_loja = 0 WHERE loja_id = :loja_id AND id <> :id');
+                $stmtPadrao->execute([':loja_id'=>$dados[':loja_id'], ':id'=>$id]);
+            }
             $trajetoAntes = $trajetoEditar ?: [];
             $dados[':id'] = $id;
             $stmt = $pdo->prepare(
                 'UPDATE trajetos_trabalho
-                 SET loja_id = :loja_id, nome_trajeto = :nome_trajeto, observacoes = :observacoes, ativo = :ativo
+                 SET loja_id = :loja_id, nome_trajeto = :nome_trajeto, tipo_transporte = :tipo_transporte,
+                     valor_ida = :valor_ida, valor_volta = :valor_volta, valor_total = :valor_total,
+                     tempo_medio = :tempo_medio, padrao_loja = :padrao_loja,
+                     observacoes = :observacoes, ativo = :ativo
                  WHERE id = :id'
             );
             $stmt->execute($dados);
+            ponto_historico($pdo, 'trajetos_trabalho', $id, 'alteracao_trajeto', $trajetoAntes, $dados);
+            if ((float)($trajetoAntes['valor_total'] ?? 0) !== (float)$dadosAuditoria['valor_total']) {
+                ponto_historico($pdo, 'trajetos_trabalho', $id, 'alteracao_tarifa', $trajetoAntes, $dados);
+            }
             $acaoAuditoria = 'trajeto_editado';
             if ($trajetoAntes && (int) ($trajetoAntes['ativo'] ?? 0) !== (int) $dadosAuditoria['ativo']) {
                 $acaoAuditoria = (int) $dadosAuditoria['ativo'] === 1 ? 'trajeto_ativado' : 'trajeto_desativado';
@@ -54,18 +76,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             registrar_auditoria('trajetos', $acaoAuditoria, 'trajetos_trabalho', $id, $trajetoAntes, $dadosAuditoria, 'sucesso', null, 'Trajeto atualizado');
             $sucesso = 'Trajeto atualizado.';
         } else {
-            exigir_permissao('trajetos.criar');
             $stmt = $pdo->prepare(
                 'INSERT INTO trajetos_trabalho
-                 (loja_id, nome_trajeto, observacoes, ativo)
+                 (loja_id, nome_trajeto, tipo_transporte, valor_ida, valor_volta, valor_total, tempo_medio, padrao_loja, observacoes, ativo)
                  VALUES
-                 (:loja_id, :nome_trajeto, :observacoes, :ativo)'
+                 (:loja_id, :nome_trajeto, :tipo_transporte, :valor_ida, :valor_volta, :valor_total, :tempo_medio, :padrao_loja, :observacoes, :ativo)'
             );
             $stmt->execute($dados);
-            registrar_auditoria('trajetos', 'trajeto_criado', 'trajetos_trabalho', (int) $pdo->lastInsertId(), [], $dadosAuditoria, 'sucesso', null, 'Trajeto cadastrado');
+            $novoTrajetoId = (int)$pdo->lastInsertId();
+            if ($dados[':padrao_loja'] === 1) {
+                $stmtPadrao = $pdo->prepare('UPDATE trajetos_trabalho SET padrao_loja = 0 WHERE loja_id = :loja_id AND id <> :id');
+                $stmtPadrao->execute([':loja_id'=>$dados[':loja_id'], ':id'=>$novoTrajetoId]);
+            }
+            ponto_historico($pdo, 'trajetos_trabalho', $novoTrajetoId, 'criacao', [], $dados);
+            registrar_auditoria('trajetos', 'trajeto_criado', 'trajetos_trabalho', $novoTrajetoId, [], $dadosAuditoria, 'sucesso', null, 'Trajeto cadastrado');
             $sucesso = 'Trajeto cadastrado.';
         }
+        $pdo->commit();
     } catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         registrar_auditoria('trajetos', 'erro_salvar', 'trajetos_trabalho', (int) ($_POST['id'] ?? 0) ?: null, $trajetoEditar ?: [], $_POST, 'erro', $e->getMessage(), 'Falha ao salvar trajeto');
         $erro = ponto_mensagem_erro($e);
     }
@@ -111,8 +142,14 @@ $trajetos = $pdo->query(
         </select>
       </label>
       <label>Nome do trajeto<input name="nome_trajeto" placeholder="Econômico, Rápido, Via Aracaré..." value="<?= e((string) ($trajetoEditar['nome_trajeto'] ?? '')) ?>" required></label>
+      <label>Tipo de transporte<input name="tipo_transporte" value="<?= e((string) ($trajetoEditar['tipo_transporte'] ?? '')) ?>" placeholder="Ônibus, trem, metrô..."></label>
+      <label>Valor ida<input name="valor_ida" inputmode="decimal" value="<?= e((string) ($trajetoEditar['valor_ida'] ?? '0.00')) ?>"></label>
+      <label>Valor volta<input name="valor_volta" inputmode="decimal" value="<?= e((string) ($trajetoEditar['valor_volta'] ?? '0.00')) ?>"></label>
+      <label>Total diário<input name="valor_total" inputmode="decimal" value="<?= e((string) ($trajetoEditar['valor_total'] ?? '0.00')) ?>"><small>O back-end confirma ida + volta.</small></label>
+      <label>Tempo médio<input name="tempo_medio" value="<?= e((string) ($trajetoEditar['tempo_medio'] ?? '')) ?>"></label>
       <label class="full">Observações<textarea name="observacoes" rows="3"><?= e((string) ($trajetoEditar['observacoes'] ?? '')) ?></textarea></label>
       <label class="ponto-checkbox"><input type="checkbox" name="ativo" <?= (int) ($trajetoEditar['ativo'] ?? 1) === 1 ? 'checked' : '' ?>> Ativo</label>
+      <label class="ponto-checkbox"><input type="checkbox" name="padrao_loja" <?= (int) ($trajetoEditar['padrao_loja'] ?? 0) === 1 ? 'checked' : '' ?>> Trajeto padrão da loja</label>
       <button type="submit"><?= $trajetoEditar ? 'Salvar trajeto' : 'Cadastrar trajeto' ?></button>
     </form>
 
@@ -120,16 +157,17 @@ $trajetos = $pdo->query(
       <h2>Trajetos cadastrados</h2>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Loja</th><th>Trajeto</th><th>Observações</th><th>Status</th><th>Ações</th></tr></thead>
+          <thead><tr><th>Loja</th><th>Trajeto</th><th>Valores</th><th>Observações</th><th>Status</th><th>Ações</th></tr></thead>
           <tbody>
-            <?php if (!$trajetos): ?><tr><td colspan="5">Nenhum trajeto cadastrado.</td></tr><?php endif; ?>
+            <?php if (!$trajetos): ?><tr><td colspan="6">Nenhum trajeto cadastrado.</td></tr><?php endif; ?>
             <?php foreach ($trajetos as $trajeto): ?>
               <tr>
                 <td><?= e((string) $trajeto['codigo_loja']) ?><br><small><?= e((string) $trajeto['loja_nome']) ?></small></td>
                 <td><?= e((string) $trajeto['nome_trajeto']) ?></td>
+                <td>Ida <?= e(ponto_moeda((float)$trajeto['valor_ida'])) ?><br>Volta <?= e(ponto_moeda((float)$trajeto['valor_volta'])) ?><br><strong><?= e(ponto_moeda((float)$trajeto['valor_total'])) ?></strong></td>
                 <td><?= e((string) ($trajeto['observacoes'] ?? '')) ?></td>
                 <td><span class="status <?= (int) $trajeto['ativo'] === 1 ? 'status-concluido' : 'status-expirado' ?>"><?= (int) $trajeto['ativo'] === 1 ? 'ativo' : 'inativo' ?></span></td>
-                <td><a href="trajetos.php?editar=<?= (int) $trajeto['id'] ?>">Editar</a></td>
+                <td><a href="trajetos.php?editar=<?= (int) $trajeto['id'] ?>">Editar</a> · <a href="trechos.php?trajeto_id=<?= (int)$trajeto['id'] ?>">Trechos</a></td>
               </tr>
             <?php endforeach; ?>
           </tbody>

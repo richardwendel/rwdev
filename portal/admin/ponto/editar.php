@@ -40,7 +40,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              WHERE id = :id'
         );
         $stmt->execute($dados);
+        ponto_reembolso_sincronizar($pdo, $id, $dados);
         ponto_historico($pdo, 'pontos_trabalho', $id, 'edicao', $ponto, $dados);
+        foreach (['trajeto_ida_id'=>'alteracao_trajeto','trajeto_volta_id'=>'alteracao_trajeto',
+            'transporte_previsto'=>'alteracao_transporte_previsto','transporte_recebido'=>'alteracao_transporte_recebido',
+            'gasto_transporte'=>'alteracao_transporte_gasto'] as $campo=>$acaoHistorico) {
+            if (($ponto[$campo] ?? null) != ($dados[$campo] ?? null)) {
+                ponto_historico($pdo,'pontos_trabalho',$id,$acaoHistorico,[$campo=>$ponto[$campo]??null],[$campo=>$dados[$campo]??null]);
+            }
+        }
         registrar_auditoria('ponto', 'ponto_editado', 'pontos_trabalho', $id, $ponto, $dados, 'sucesso', null, 'Registro de ponto editado');
 
         redirect('index.php?mes=' . (int) date('n', strtotime($dados['data'])) . '&ano=' . (int) date('Y', strtotime($dados['data'])));

@@ -92,8 +92,59 @@
 
     });
 
+    if (limparSelecao) {
+      var padrao = opcoes.filter(function (trajeto) { return trajeto.padrao; })[0];
+      if (padrao) {
+        form.querySelectorAll('[data-ponto-trajeto]').forEach(function (select) {
+          select.value = String(padrao.id);
+        });
+      }
+    }
+
     if (avisoSemTrajeto) {
       avisoSemTrajeto.hidden = !lojaId || opcoes.length > 0;
+    }
+    atualizarTransporte(form, limparSelecao);
+  }
+
+  function moedaNumero(valor) {
+    return Number(valor || 0).toFixed(2).replace('.', ',');
+  }
+
+  function composicao(trajeto, direcao) {
+    if (!trajeto) return 'selecione um trajeto.';
+    var trechos = (trajeto.trechos || []).filter(function (trecho) { return trecho.direcao === direcao; });
+    if (!trechos.length) return 'R$ ' + moedaNumero(trajeto['valor_' + direcao]) + ' (sem trechos detalhados).';
+    return trechos.map(function (trecho) {
+      return trecho.descricao + ': ' + trecho.quantidade + ' × R$ ' + moedaNumero(trecho.tarifa_unitaria);
+    }).join(' + ');
+  }
+
+  function atualizarTransporte(form, preencherValores) {
+    var origemJson = form.querySelector('[data-ponto-trajetos-json]');
+    var loja = form.querySelector('[data-ponto-loja]');
+    if (!origemJson || !loja) return;
+    var dados = {}; try { dados = JSON.parse(origemJson.textContent || '{}'); } catch (erro) {}
+    var opcao = loja.options[loja.selectedIndex];
+    var codigo = opcao ? opcao.getAttribute('data-loja-codigo') : '';
+    var trajetos = dados[codigo] || [];
+    function selecionado(direcao) {
+      var select = form.querySelector('[data-ponto-trajeto="' + direcao + '"]');
+      return trajetos.filter(function (t) { return select && String(t.id) === select.value; })[0];
+    }
+    var ida = selecionado('ida'); var volta = selecionado('volta');
+    var total = Number(ida ? ida.valor_ida : 0) + Number(volta ? volta.valor_volta : 0);
+    var idaTexto = form.querySelector('[data-ponto-composicao-ida]');
+    var voltaTexto = form.querySelector('[data-ponto-composicao-volta]');
+    var totalTexto = form.querySelector('[data-ponto-total-transporte]');
+    if (idaTexto) idaTexto.textContent = 'Ida: ' + composicao(ida, 'ida');
+    if (voltaTexto) voltaTexto.textContent = 'Volta: ' + composicao(volta, 'volta');
+    if (totalTexto) totalTexto.textContent = total > 0 ? 'Total diário: R$ ' + moedaNumero(total) : 'Transporte ainda não configurado.';
+    if (preencherValores) {
+      var previsto = form.querySelector('[data-ponto-transporte-previsto]');
+      var recebido = form.querySelector('[data-ponto-transporte-recebido]');
+      if (previsto) previsto.value = total > 0 ? moedaNumero(total) : '';
+      if (recebido) recebido.value = total > 0 ? moedaNumero(total) : '';
     }
   }
 
@@ -164,7 +215,7 @@
 
     form.querySelectorAll('[data-ponto-trajeto]').forEach(function (select) {
       select.addEventListener('change', function () {
-        atualizarTrajetos(form, false);
+        atualizarTransporte(form, true);
       });
     });
 

@@ -78,14 +78,21 @@ $trajetosJson = json_encode($trajetosPorLoja, JSON_UNESCAPED_UNICODE | JSON_UNES
     <a href="trajetos.php">➕ Cadastrar trajeto</a>
   </div>
   <p class="ponto-link-discreto full" data-ponto-trabalhado><a href="trajetos.php">🛣️ Gerenciar Trajetos</a></p>
+  <div class="ponto-escala-card full" data-ponto-transporte-detalhes data-ponto-trabalhado>
+    <strong>Composição do transporte</strong>
+    <span data-ponto-composicao-ida>Ida: selecione um trajeto.</span>
+    <span data-ponto-composicao-volta>Volta: selecione um trajeto.</span>
+    <span data-ponto-total-transporte>Total diário: não configurado.</span>
+    <small>Os valores são uma previsão configurável e permanecem editáveis.</small>
+  </div>
   <label data-ponto-trabalhado>Gasto com transporte
     <input name="gasto_transporte" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['gasto_transporte'] ?? 0), 2, ',', '.')) ?>">
   </label>
   <label data-ponto-trabalhado>Transporte previsto
-    <input name="transporte_previsto" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['transporte_previsto'] ?? 0), 2, ',', '.')) ?>">
+    <input name="transporte_previsto" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['transporte_previsto'] ?? 0), 2, ',', '.')) ?>" data-ponto-transporte-previsto>
   </label>
   <label data-ponto-trabalhado>Valor recebido
-    <input name="transporte_recebido" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['transporte_recebido'] ?? 0), 2, ',', '.')) ?>">
+    <input name="transporte_recebido" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['transporte_recebido'] ?? 0), 2, ',', '.')) ?>" data-ponto-transporte-recebido>
   </label>
   <label data-ponto-trabalhado>Bilhetes perdidos<input name="bilhetes_perdidos" inputmode="numeric" value="<?= e((string) ($ponto['bilhetes_perdidos'] ?? 0)) ?>"></label>
   <label data-ponto-trabalhado>Valor dos bilhetes perdidos<input name="valor_bilhetes_perdidos" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['valor_bilhetes_perdidos'] ?? 0), 2, ',', '.')) ?>"></label>

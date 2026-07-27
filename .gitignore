@@ -29,6 +29,11 @@ portal/uploads/documentos-trabalho/*
 !portal/uploads/documentos-trabalho/.htaccess
 !portal/uploads/documentos-trabalho/.gitkeep
 
+# Comprovantes reais do SONI PONTO
+portal/uploads/ponto-reembolsos/*
+!portal/uploads/ponto-reembolsos/.htaccess
+!portal/uploads/ponto-reembolsos/.gitkeep
+
 # Logs e arquivos temporarios
 *.log
 *.tmp

@@ -26,6 +26,7 @@ function ponto_render_nav(string $ativo): void
         'resumo.php' => ['Resumo mensal', 'resumo.visualizar'],
         'configuracoes.php' => ['Jornadas', 'ponto.visualizar'],
         'direitos.php' => ['Direitos', 'ponto.visualizar'],
+        'reembolsos.php' => ['Reembolsos', 'ponto.visualizar'],
         'ocorrencias.php' => ['Ocorrências', 'ponto.visualizar'],
         'competencias.php' => ['Fechamento', 'resumo.visualizar'],
         'historico.php' => ['Histórico', 'ponto.visualizar'],
@@ -350,7 +351,8 @@ function ponto_lojas(PDO $pdo, bool $somenteAtivas = true): array
 function ponto_trajetos_ativos_por_loja(PDO $pdo): array
 {
     $trajetos = $pdo->query(
-        'SELECT t.id, t.loja_id, l.codigo_loja, t.nome_trajeto, t.observacoes
+        'SELECT t.id, t.loja_id, l.codigo_loja, t.nome_trajeto, t.tipo_transporte,
+                t.valor_ida, t.valor_volta, t.valor_total, t.padrao_loja, t.observacoes
          FROM trajetos_trabalho t
          INNER JOIN lojas_trabalho l ON l.id = t.loja_id
          WHERE t.ativo = 1
@@ -369,10 +371,114 @@ function ponto_trajetos_ativos_por_loja(PDO $pdo): array
             'nome' => (string) $trajeto['nome_trajeto'],
             'rotulo' => (string) $trajeto['nome_trajeto'],
             'observacoes' => (string) ($trajeto['observacoes'] ?? ''),
+            'valor_ida' => (float) $trajeto['valor_ida'],
+            'valor_volta' => (float) $trajeto['valor_volta'],
+            'valor_total' => (float) $trajeto['valor_total'],
+            'padrao' => (int) $trajeto['padrao_loja'] === 1,
+            'trechos' => ponto_trajeto_trechos($pdo, $id),
         ];
     }
 
     return $porLoja;
+}
+
+function ponto_trajeto_trechos(PDO $pdo, int $trajetoId, ?string $data = null): array
+{
+    $data = $data ?: date('Y-m-d');
+    $stmt = $pdo->prepare(
+        'SELECT direcao, ordem_trecho, tipo_transporte, descricao, tarifa_unitaria, quantidade, subtotal
+         FROM trajeto_trechos_trabalho
+         WHERE trajeto_id = :trajeto_id AND ativo = 1
+           AND vigencia_inicio <= :data AND (vigencia_fim IS NULL OR vigencia_fim >= :data)
+         ORDER BY direcao, ordem_trecho'
+    );
+    $stmt->execute([':trajeto_id' => $trajetoId, ':data' => $data]);
+    return $stmt->fetchAll();
+}
+
+function ponto_transporte_trajetos(PDO $pdo, ?int $idaId, ?int $voltaId, int $lojaId, string $data): array
+{
+    $resultado = ['configurado' => false, 'previsto' => 0.0, 'ida' => [], 'volta' => []];
+    foreach ([['id'=>$idaId,'direcao'=>'ida'], ['id'=>$voltaId,'direcao'=>'volta']] as $item) {
+        if (!$item['id']) continue;
+        $stmt = $pdo->prepare(
+            'SELECT id, valor_ida, valor_volta FROM trajetos_trabalho
+             WHERE id = :id AND loja_id = :loja_id AND ativo = 1'
+        );
+        $stmt->execute([':id'=>$item['id'], ':loja_id'=>$lojaId]);
+        $trajeto = $stmt->fetch();
+        if (!$trajeto) throw new RuntimeException('Trajeto de transporte inválido para a loja.');
+        $resultado['configurado'] = true;
+        $resultado['previsto'] += (float) $trajeto['valor_' . $item['direcao']];
+        $trechos = ponto_trajeto_trechos($pdo, (int)$trajeto['id'], $data);
+        $resultado[$item['direcao']] = array_values(array_filter($trechos, static fn(array $t): bool => $t['direcao'] === $item['direcao']));
+    }
+    return $resultado;
+}
+
+function ponto_reembolso_calculos(float $recebido, float $gasto, float $aprovado = 0.0, float $reembolsado = 0.0): array
+{
+    $diferenca = max(0.0, round($gasto - $recebido, 2));
+    return [
+        'diferenca' => $diferenca,
+        'saldo_vt' => max(0.0, round($recebido - $gasto, 2)),
+        'saldo_reembolso' => max(0.0, round(($aprovado > 0 ? $aprovado : $diferenca) - $reembolsado, 2)),
+    ];
+}
+
+function ponto_reembolso_situacao_pagamento(float $aprovado, float $jaPago, float $novoPagamento): array
+{
+    $total = round($jaPago + $novoPagamento, 2);
+    if ($novoPagamento <= 0 || $aprovado <= 0 || $total > $aprovado) {
+        throw new RuntimeException('Pagamento excede o valor aprovado.');
+    }
+    return ['total'=>$total, 'situacao'=>$total < $aprovado ? 'parcialmente_pago' : 'pago'];
+}
+
+function ponto_upload_comprovante(array $arquivo, ?string $atual = null): ?string
+{
+    if (($arquivo['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) return $atual;
+    if (($arquivo['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) throw new RuntimeException('Falha no envio do comprovante.');
+    if ((int)($arquivo['size'] ?? 0) > 5 * 1024 * 1024) throw new RuntimeException('O comprovante deve ter no máximo 5 MB.');
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file((string)$arquivo['tmp_name']) ?: '';
+    $extensoes = ['application/pdf'=>'pdf','image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp'];
+    if (!isset($extensoes[$mime])) throw new RuntimeException('Envie comprovante PDF, JPG, PNG ou WEBP.');
+    $pasta = dirname(__DIR__, 2) . '/uploads/ponto-reembolsos';
+    if (!is_dir($pasta) && !mkdir($pasta, 0750, true) && !is_dir($pasta)) throw new RuntimeException('Não foi possível preparar o armazenamento.');
+    $nome = bin2hex(random_bytes(20)) . '.' . $extensoes[$mime];
+    if (!move_uploaded_file((string)$arquivo['tmp_name'], $pasta . '/' . $nome)) throw new RuntimeException('Não foi possível armazenar o comprovante.');
+    return $nome;
+}
+
+function ponto_reembolso_sincronizar(PDO $pdo, int $pontoId, array $dados): void
+{
+    $calculo = ponto_reembolso_calculos((float)$dados['transporte_recebido'], (float)$dados['gasto_transporte']);
+    if ($calculo['diferenca'] <= 0 || empty($dados['loja_id'])) return;
+    $stmt = $pdo->prepare('SELECT * FROM ponto_reembolsos_transporte WHERE ponto_id = :ponto_id');
+    $stmt->execute([':ponto_id'=>$pontoId]); $antes = $stmt->fetch() ?: [];
+    $trajetoId = $dados['trajeto_ida_id'] ?: $dados['trajeto_volta_id'];
+    $params = [
+        ':ponto_id'=>$pontoId, ':loja_id'=>$dados['loja_id'], ':trajeto_id'=>$trajetoId,
+        ':previsto'=>$dados['transporte_previsto'], ':recebido'=>$dados['transporte_recebido'],
+        ':gasto'=>$dados['gasto_transporte'], ':diferenca'=>$calculo['diferenca'],
+    ];
+    if (!$antes) {
+        $pdo->prepare(
+            "INSERT INTO ponto_reembolsos_transporte
+             (ponto_id,loja_id,trajeto_id,valor_previsto,valor_recebido,valor_gasto,diferenca_calculada,situacao)
+             VALUES (:ponto_id,:loja_id,:trajeto_id,:previsto,:recebido,:gasto,:diferenca,'calculado')"
+        )->execute($params);
+        $id=(int)$pdo->lastInsertId();
+        ponto_historico($pdo,'ponto_reembolsos_transporte',$id,'geracao_diferenca',[],$params);
+    } elseif ($antes['situacao'] === 'calculado') {
+        $params[':id']=$antes['id'];
+        $pdo->prepare(
+            'UPDATE ponto_reembolsos_transporte SET loja_id=:loja_id,trajeto_id=:trajeto_id,
+             valor_previsto=:previsto,valor_recebido=:recebido,valor_gasto=:gasto,diferenca_calculada=:diferenca
+             WHERE id=:id'
+        )->execute(array_diff_key($params,[':ponto_id'=>true]));
+        ponto_historico($pdo,'ponto_reembolsos_transporte',(int)$antes['id'],'geracao_diferenca',$antes,$params);
+    }
 }
 
 function ponto_validar_trajeto_loja(PDO $pdo, int $trajetoId, int $lojaId): ?int
@@ -528,6 +634,15 @@ function ponto_dados_post(): array
     $trajetoVoltaId = (int) ($_POST['trajeto_volta_id'] ?? 0);
     $trajetoIdaId = ponto_validar_trajeto_loja($pdo, $trajetoIdaId, $lojaId);
     $trajetoVoltaId = ponto_validar_trajeto_loja($pdo, $trajetoVoltaId, $lojaId);
+    $transporteConfig = ponto_transporte_trajetos($pdo, $trajetoIdaId, $trajetoVoltaId, $lojaId, $data);
+    $previstoInformado = trim((string) ($_POST['transporte_previsto'] ?? ''));
+    $recebidoInformado = trim((string) ($_POST['transporte_recebido'] ?? ''));
+    $transportePrevisto = $previstoInformado === '' && $transporteConfig['configurado']
+        ? (float) $transporteConfig['previsto']
+        : ponto_decimal($previstoInformado);
+    $transporteRecebido = $recebidoInformado === '' && $transporteConfig['configurado']
+        ? (float) $transporteConfig['previsto']
+        : ponto_decimal($recebidoInformado);
 
     return [
         'data' => $data,
@@ -543,8 +658,8 @@ function ponto_dados_post(): array
         'almoco_retorno' => ponto_normalizar_hora($_POST['almoco_retorno'] ?? ''),
         'saida' => ponto_normalizar_hora($_POST['saida'] ?? ''),
         'transporte_observacao' => trim($_POST['transporte_observacao'] ?? ''),
-        'transporte_previsto' => ponto_decimal($_POST['transporte_previsto'] ?? ''),
-        'transporte_recebido' => ponto_decimal($_POST['transporte_recebido'] ?? ''),
+        'transporte_previsto' => $transportePrevisto,
+        'transporte_recebido' => $transporteRecebido,
         'gasto_transporte' => ponto_decimal($_POST['gasto_transporte'] ?? ''),
         'bilhetes_perdidos' => ponto_int($_POST['bilhetes_perdidos'] ?? ''),
         'valor_bilhetes_perdidos' => ponto_decimal($_POST['valor_bilhetes_perdidos'] ?? ''),

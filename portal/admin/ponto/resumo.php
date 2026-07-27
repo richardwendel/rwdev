@@ -86,6 +86,19 @@ foreach ($stmtDireitos->fetchAll() as $direito) {
     $direitos[$direito['tipo']][$direito['situacao']] = (float) $direito['total'];
 }
 $escala = ponto_escala_domingo($pdo, sprintf('%04d-%02d-%02d', $ano, $mes, $diasNoMes));
+$stmtReembolsos = $pdo->prepare(
+    'SELECT COALESCE(SUM(diferenca_calculada),0) calculado,
+            COALESCE(SUM(valor_solicitado),0) solicitado,
+            COALESCE(SUM(valor_aprovado),0) aprovado,
+            COALESCE(SUM(valor_reembolsado),0) reembolsado,
+            COALESCE(SUM(GREATEST(IF(valor_aprovado>0,valor_aprovado,diferenca_calculada)-valor_reembolsado,0)),0) saldo_pendente
+     FROM ponto_reembolsos_transporte r
+     INNER JOIN pontos_trabalho p ON p.id=r.ponto_id
+     WHERE YEAR(p.data)=:ano AND MONTH(p.data)=:mes'
+);
+$stmtReembolsos->execute([':ano'=>$ano, ':mes'=>$mes]);
+$reembolsosResumo = $stmtReembolsos->fetch() ?: ['calculado'=>0,'solicitado'=>0,'aprovado'=>0,'reembolsado'=>0];
+$saldoReembolso = (float)($reembolsosResumo['saldo_pendente'] ?? 0);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -146,8 +159,13 @@ $escala = ponto_escala_domingo($pdo, sprintf('%04d-%02d-%02d', $ano, $mes, $dias
       <article class="metric-card"><span>Transporte</span><strong><?= e(ponto_moeda($totalTransporte)) ?></strong></article>
       <article class="metric-card"><span>Transporte previsto</span><strong><?= e(ponto_moeda((float) $resumo['transporte_previsto'])) ?></strong></article>
       <article class="metric-card"><span>Transporte recebido</span><strong><?= e(ponto_moeda((float) $resumo['transporte_recebido'])) ?></strong></article>
-      <article class="metric-card"><span>Economia</span><strong><?= e(ponto_moeda((float) $resumo['economia'])) ?></strong></article>
-      <article class="metric-card"><span>Próprio bolso</span><strong><?= e(ponto_moeda((float) $resumo['proprio_bolso'])) ?></strong></article>
+      <article class="metric-card"><span>Saldo de vale-transporte</span><strong><?= e(ponto_moeda((float) $resumo['economia'])) ?></strong></article>
+      <article class="metric-card"><span>Total pago do próprio bolso</span><strong><?= e(ponto_moeda((float) $resumo['proprio_bolso'])) ?></strong></article>
+      <article class="metric-card"><span>Diferenças calculadas</span><strong><?= e(ponto_moeda((float)$reembolsosResumo['calculado'])) ?></strong></article>
+      <article class="metric-card"><span>Total solicitado</span><strong><?= e(ponto_moeda((float)$reembolsosResumo['solicitado'])) ?></strong></article>
+      <article class="metric-card"><span>Total aprovado</span><strong><?= e(ponto_moeda((float)$reembolsosResumo['aprovado'])) ?></strong></article>
+      <article class="metric-card"><span>Total reembolsado</span><strong><?= e(ponto_moeda((float)$reembolsosResumo['reembolsado'])) ?></strong></article>
+      <article class="metric-card"><span>Saldo pendente</span><strong><?= e(ponto_moeda($saldoReembolso)) ?></strong></article>
       <article class="metric-card"><span>Dias sem registro</span><strong><?= (int) $resumo['dias_sem_registro'] ?></strong></article>
       <article class="metric-card destaque"><span>Valor perdido</span><strong><?= e(ponto_moeda($totalValorBilhetes)) ?></strong></article>
     </div>

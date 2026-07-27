@@ -4,6 +4,8 @@
 
 1. Faça backup externo e valide em homologação.
 2. Execute `sql/soni_ponto_migration_20260726_acompanhamento.sql`.
+3. Para a etapa de transportes, execute `sql/soni_ponto_migration_20260727_transportes_reembolsos.sql`
+   e depois o bloco configurável de `SQL_MANUAL_TRANSPORTES.md`.
 3. Cadastre uma configuração de jornada com vigência. Até isso ocorrer, a interface deve informar “jornada não configurada”.
 4. Não importe nem versione o dump de produção. O arquivo em `sql/` é apenas referência local.
 
@@ -31,8 +33,12 @@ comparação de marcações, ciclo de direitos, ocorrências, fechamento, reaber
 - `ocorrencias.php`: registro e resolução de ocorrências estruturadas.
 - `competencias.php`: revisão, fechamento e reabertura justificada.
 - `historico.php`: consulta filtrável do histórico do módulo.
+- `trechos.php`: composição e vigência das tarifas por direção.
+- `reembolsos.php`: diferenças pendentes de conferência/reembolso, solicitações, aprovações e pagamentos.
 
 ## Limitações
 
 Não há integração automática com RHID nem conclusão jurídica automática. As marcações do RHID são
 informadas manualmente e nunca substituem o ponto. PDF/Excel continuam preparados para evolução.
+O saldo de vale-transporte não é apresentado como salário, lucro ou dinheiro livre. Uma diferença
+calculada começa como pendente de conferência e não constitui reconhecimento automático de dívida.

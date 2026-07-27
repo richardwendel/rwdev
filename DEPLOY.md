@@ -20,6 +20,12 @@ Ordem recomendada na Hostinger:
 
 Este documento descreve o processo recomendado para publicar o projeto RWDEV na Hostinger.
 
+> **Backups e dumps:** nunca armazene arquivos de banco de dados em `public_html`
+> nem em outro diretório publicado pelo servidor web. Mantenha-os em uma pasta
+> privada da conta de hospedagem, fora da raiz pública, com acesso restrito, ou em
+> armazenamento externo protegido. Antes de cada envio, confirme que dumps não
+> fazem parte do pacote de deploy.
+
 ## Ambiente
 
 - Hospedagem: Hostinger

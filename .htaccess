@@ -1,6 +1,12 @@
 RewriteEngine On
 DirectoryIndex index.php index.html
 
+# Impede download direto de dumps, configuracoes, logs e arquivos de backup.
+# Compativel com Apache 2.4, utilizado na hospedagem Hostinger.
+<FilesMatch "\.(sql|env|log|ini|bak|zip|gz)$">
+    Require all denied
+</FilesMatch>
+
 RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC,OR]
 RewriteCond %{HTTP_HOST} !^www\.rwdev\.com\.br$ [NC]
 RewriteRule ^ https://www.rwdev.com.br%{REQUEST_URI} [L,R=301]

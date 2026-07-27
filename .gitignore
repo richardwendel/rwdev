@@ -38,3 +38,7 @@ portal/uploads/documentos-trabalho/*
 .env
 .env.*
 !.env.example
+
+# Dumps reais; migrations do SONI PONTO permanecem versionadas.
+sql/*.sql
+!sql/soni_ponto_migration_*.sql

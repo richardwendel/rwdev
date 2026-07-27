@@ -17,6 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     validar_csrf();
 
     try {
+        if (ponto_competencia_fechada($pdo, (string) $ponto['data'])) {
+            throw new RuntimeException('A competência está fechada e não permite exclusão.');
+        }
         $stmt = $pdo->prepare('DELETE FROM pontos_trabalho WHERE id = :id');
         $stmt->execute([':id' => $id]);
         registrar_auditoria('ponto', 'ponto_excluido', 'pontos_trabalho', $id, $ponto, [], 'sucesso', null, 'Registro de ponto excluido');

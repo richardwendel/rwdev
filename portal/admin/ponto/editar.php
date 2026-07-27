@@ -23,6 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $dados = ponto_dados_post();
         $dados['id'] = $id;
+        if (ponto_competencia_fechada($pdo, (string) $ponto['data'])
+            || ponto_competencia_fechada($pdo, (string) $dados['data'])) {
+            throw new RuntimeException('A competência está fechada. Reabra o mês com justificativa antes de editar.');
+        }
 
         $stmt = $pdo->prepare(
             'UPDATE pontos_trabalho
@@ -30,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  trajeto_ida_id = :trajeto_ida_id, trajeto_volta_id = :trajeto_volta_id, entrada = :entrada,
                  cafe_saida = :cafe_saida, cafe_retorno = :cafe_retorno, almoco_saida = :almoco_saida,
                  almoco_retorno = :almoco_retorno, saida = :saida, transporte_observacao = :transporte_observacao,
+                 transporte_previsto = :transporte_previsto, transporte_recebido = :transporte_recebido,
                  gasto_transporte = :gasto_transporte, bilhetes_perdidos = :bilhetes_perdidos,
                  valor_bilhetes_perdidos = :valor_bilhetes_perdidos, observacoes = :observacoes
              WHERE id = :id'

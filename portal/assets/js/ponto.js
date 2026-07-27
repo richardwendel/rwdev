@@ -55,7 +55,7 @@
       return;
     }
 
-    if (statusSelect && statusSelect.value !== 'trabalhado') {
+    if (statusSelect && ['trabalhado', 'feriado_trabalhado'].indexOf(statusSelect.value) === -1) {
       form.querySelectorAll('[data-ponto-trajeto]').forEach(function (select) {
         select.innerHTML = '<option value="">Selecione a loja primeiro</option>';
       });
@@ -100,7 +100,7 @@
   function atualizarStatusDia(form) {
     var statusSelect = form.querySelector('[data-ponto-status]');
     var lojaSelect = form.querySelector('[data-ponto-loja]');
-    var trabalhado = !statusSelect || statusSelect.value === 'trabalhado';
+    var trabalhado = !statusSelect || ['trabalhado', 'feriado_trabalhado'].indexOf(statusSelect.value) !== -1;
 
     form.querySelectorAll('[data-ponto-trabalhado]').forEach(function (elemento) {
       elemento.hidden = !trabalhado;

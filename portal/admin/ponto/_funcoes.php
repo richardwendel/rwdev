@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../config/conexao.php';
 require_once __DIR__ . '/../../includes/admin_ui.php';
 require_once __DIR__ . '/../../includes/auditoria.php';
+require_once __DIR__ . '/_calculos.php';
 
 exigir_admin();
 
@@ -52,17 +53,13 @@ function ponto_dias_semana(): array
 
 function ponto_status_dia_opcoes(): array
 {
-    return [
-        'trabalhado' => '🟢 Trabalhado',
-        'folga_semanal' => '🟡 Folga Semanal',
-        'folga_domingo' => '🟡 Folga de Domingo',
-        'integracao_treinamento' => '🟠 Integração / Treinamento',
-        'feriado' => '⚫ Feriado',
-        'falta' => '🔴 Falta',
-        'atestado' => '🟣 Atestado',
-        'ferias' => '🔵 Férias',
-        'outro' => '⚪ Outro',
-    ];
+    $opcoes = [];
+    foreach (['trabalhado', 'folga_semanal', 'folga_domingo', 'feriado_folgado',
+        'feriado_trabalhado', 'integracao_treinamento', 'ausencia', 'feriado',
+        'falta', 'atestado', 'ferias', 'outro'] as $status) {
+        $opcoes[$status] = ponto_status_meta($status)['label'];
+    }
+    return $opcoes;
 }
 
 function ponto_status_dia_valido(string $status): bool
@@ -80,7 +77,7 @@ function ponto_status_dia_label(?string $status): string
 
 function ponto_dia_trabalhado(?string $status): bool
 {
-    return ($status ?: 'trabalhado') === 'trabalhado';
+    return (bool) ponto_status_meta($status)['trabalha'];
 }
 
 function ponto_proximo_domingo(string $dataReferencia): string
@@ -410,6 +407,27 @@ function ponto_buscar_ponto(PDO $pdo, int $id): ?array
     return $ponto ?: null;
 }
 
+function ponto_configuracao_vigente(PDO $pdo, string $data): ?array
+{
+    $stmt = $pdo->prepare(
+        'SELECT * FROM ponto_configuracoes
+         WHERE vigencia_inicio <= :data AND (vigencia_fim IS NULL OR vigencia_fim >= :data)
+         ORDER BY vigencia_inicio DESC, id DESC LIMIT 1'
+    );
+    $stmt->execute([':data' => $data]);
+    return $stmt->fetch() ?: null;
+}
+
+function ponto_competencia_fechada(PDO $pdo, string $data): bool
+{
+    $stmt = $pdo->prepare(
+        "SELECT 1 FROM ponto_competencias
+         WHERE ano = YEAR(:data) AND mes = MONTH(:data) AND situacao = 'fechada' LIMIT 1"
+    );
+    $stmt->execute([':data' => $data]);
+    return (bool) $stmt->fetchColumn();
+}
+
 function ponto_dados_post(): array
 {
     global $pdo;
@@ -436,6 +454,8 @@ function ponto_dados_post(): array
             'almoco_retorno' => null,
             'saida' => null,
             'transporte_observacao' => '',
+            'transporte_previsto' => 0.0,
+            'transporte_recebido' => 0.0,
             'gasto_transporte' => 0.0,
             'bilhetes_perdidos' => 0,
             'valor_bilhetes_perdidos' => 0.0,
@@ -468,6 +488,8 @@ function ponto_dados_post(): array
         'almoco_retorno' => ponto_normalizar_hora($_POST['almoco_retorno'] ?? ''),
         'saida' => ponto_normalizar_hora($_POST['saida'] ?? ''),
         'transporte_observacao' => trim($_POST['transporte_observacao'] ?? ''),
+        'transporte_previsto' => ponto_decimal($_POST['transporte_previsto'] ?? ''),
+        'transporte_recebido' => ponto_decimal($_POST['transporte_recebido'] ?? ''),
         'gasto_transporte' => ponto_decimal($_POST['gasto_transporte'] ?? ''),
         'bilhetes_perdidos' => ponto_int($_POST['bilhetes_perdidos'] ?? ''),
         'valor_bilhetes_perdidos' => ponto_decimal($_POST['valor_bilhetes_perdidos'] ?? ''),

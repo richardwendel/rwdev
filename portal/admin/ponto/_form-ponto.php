@@ -81,6 +81,12 @@ $trajetosJson = json_encode($trajetosPorLoja, JSON_UNESCAPED_UNICODE | JSON_UNES
   <label data-ponto-trabalhado>Gasto com transporte
     <input name="gasto_transporte" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['gasto_transporte'] ?? 0), 2, ',', '.')) ?>">
   </label>
+  <label data-ponto-trabalhado>Transporte previsto
+    <input name="transporte_previsto" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['transporte_previsto'] ?? 0), 2, ',', '.')) ?>">
+  </label>
+  <label data-ponto-trabalhado>Valor recebido
+    <input name="transporte_recebido" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['transporte_recebido'] ?? 0), 2, ',', '.')) ?>">
+  </label>
   <label data-ponto-trabalhado>Bilhetes perdidos<input name="bilhetes_perdidos" inputmode="numeric" value="<?= e((string) ($ponto['bilhetes_perdidos'] ?? 0)) ?>"></label>
   <label data-ponto-trabalhado>Valor dos bilhetes perdidos<input name="valor_bilhetes_perdidos" inputmode="decimal" placeholder="0,00" value="<?= e(number_format((float) ($ponto['valor_bilhetes_perdidos'] ?? 0), 2, ',', '.')) ?>"></label>
   <label class="full" data-ponto-trabalhado>Observação de transporte

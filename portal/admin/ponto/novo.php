@@ -12,6 +12,8 @@ $trajetosPorLoja = ponto_trajetos_ativos_por_loja($pdo);
 $ponto = [
     'data' => date('Y-m-d'),
     'status_dia' => 'trabalhado',
+    'transporte_previsto' => 0,
+    'transporte_recebido' => 0,
     'gasto_transporte' => 0,
     'bilhetes_perdidos' => 0,
     'valor_bilhetes_perdidos' => 0,
@@ -40,9 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $dados = ponto_dados_post();
         $stmt = $pdo->prepare(
             'INSERT INTO pontos_trabalho
-             (data, dia_semana, status_dia, loja_id, trajeto_ida_id, trajeto_volta_id, entrada, cafe_saida, cafe_retorno, almoco_saida, almoco_retorno, saida, transporte_observacao, gasto_transporte, bilhetes_perdidos, valor_bilhetes_perdidos, observacoes)
+             (data, dia_semana, status_dia, loja_id, trajeto_ida_id, trajeto_volta_id, entrada, cafe_saida, cafe_retorno, almoco_saida, almoco_retorno, saida, transporte_observacao, transporte_previsto, transporte_recebido, gasto_transporte, bilhetes_perdidos, valor_bilhetes_perdidos, observacoes)
              VALUES
-             (:data, :dia_semana, :status_dia, :loja_id, :trajeto_ida_id, :trajeto_volta_id, :entrada, :cafe_saida, :cafe_retorno, :almoco_saida, :almoco_retorno, :saida, :transporte_observacao, :gasto_transporte, :bilhetes_perdidos, :valor_bilhetes_perdidos, :observacoes)'
+             (:data, :dia_semana, :status_dia, :loja_id, :trajeto_ida_id, :trajeto_volta_id, :entrada, :cafe_saida, :cafe_retorno, :almoco_saida, :almoco_retorno, :saida, :transporte_observacao, :transporte_previsto, :transporte_recebido, :gasto_transporte, :bilhetes_perdidos, :valor_bilhetes_perdidos, :observacoes)'
         );
         $stmt->execute($dados);
         $novoId = (int) $pdo->lastInsertId();

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/_diagnostico-temporario.php';
 require_once __DIR__ . '/_funcoes.php';
 
 exigir_permissao('resumo.visualizar');

@@ -132,6 +132,7 @@ $ultimoPontoId = (int) ($stmtUltimo->fetchColumn() ?: 0);
                 <td><strong><?= e(ponto_formatar_minutos($calculo['liquido'])) ?></strong></td>
                 <td><?= $diaTrabalhado ? e(ponto_moeda((float) $ponto['gasto_transporte'])) : '-' ?></td>
                 <td class="ponto-table-actions">
+                  <a href="rhid.php?ponto_id=<?= (int) $ponto['id'] ?>">RHID</a>
                   <?php if (usuario_pode('ponto.editar')): ?><a href="editar.php?id=<?= (int) $ponto['id'] ?>">Editar</a><?php endif; ?>
                   <?php if (usuario_pode('ponto.duplicar')): ?><a href="novo.php?duplicar=<?= (int) $ponto['id'] ?>">Duplicar</a><?php endif; ?>
                   <?php if (usuario_pode('ponto.excluir')): ?><a class="danger-link" href="excluir.php?id=<?= (int) $ponto['id'] ?>">Excluir</a><?php endif; ?>

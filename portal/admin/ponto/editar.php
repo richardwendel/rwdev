@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              WHERE id = :id'
         );
         $stmt->execute($dados);
+        ponto_historico($pdo, 'pontos_trabalho', $id, 'edicao', $ponto, $dados);
         registrar_auditoria('ponto', 'ponto_editado', 'pontos_trabalho', $id, $ponto, $dados, 'sucesso', null, 'Registro de ponto editado');
 
         redirect('index.php?mes=' . (int) date('n', strtotime($dados['data'])) . '&ano=' . (int) date('Y', strtotime($dados['data'])));

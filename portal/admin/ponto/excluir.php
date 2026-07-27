@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $stmt = $pdo->prepare('DELETE FROM pontos_trabalho WHERE id = :id');
         $stmt->execute([':id' => $id]);
+        ponto_historico($pdo, 'pontos_trabalho', $id, 'exclusao', $ponto, [], 'Exclusão confirmada pelo administrador');
         registrar_auditoria('ponto', 'ponto_excluido', 'pontos_trabalho', $id, $ponto, [], 'sucesso', null, 'Registro de ponto excluido');
     } catch (Throwable $e) {
         registrar_auditoria('ponto', 'erro_excluir', 'pontos_trabalho', $id, $ponto, [], 'erro', $e->getMessage(), 'Falha ao excluir ponto');

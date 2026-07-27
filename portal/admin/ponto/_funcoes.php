@@ -24,6 +24,11 @@ function ponto_render_nav(string $ativo): void
         'index.php' => ['Registros', 'ponto.visualizar'],
         'novo.php' => ['Novo ponto', 'ponto.criar'],
         'resumo.php' => ['Resumo mensal', 'resumo.visualizar'],
+        'configuracoes.php' => ['Jornadas', 'ponto.visualizar'],
+        'direitos.php' => ['Direitos', 'ponto.visualizar'],
+        'ocorrencias.php' => ['Ocorrências', 'ponto.visualizar'],
+        'competencias.php' => ['Fechamento', 'resumo.visualizar'],
+        'historico.php' => ['Histórico', 'ponto.visualizar'],
         'lojas.php' => ['Lojas', 'lojas.visualizar'],
         'trajetos.php' => ['Trajetos', 'trajetos.visualizar'],
     ];
@@ -426,6 +431,56 @@ function ponto_competencia_fechada(PDO $pdo, string $data): bool
     );
     $stmt->execute([':data' => $data]);
     return (bool) $stmt->fetchColumn();
+}
+
+function ponto_admin_nome(): string
+{
+    $admin = admin_atual() ?? [];
+    return (string) ($admin['nome'] ?? $_SESSION['admin_nome'] ?? 'Administrador');
+}
+
+function ponto_historico(PDO $pdo, string $entidade, ?int $entidadeId, string $acao, array $antes = [], array $depois = [], ?string $justificativa = null): void
+{
+    $jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+    $stmt = $pdo->prepare(
+        'INSERT INTO ponto_historico
+         (entidade, entidade_id, acao, valor_anterior, valor_novo, justificativa, usuario)
+         VALUES (:entidade, :entidade_id, :acao, :anterior, :novo, :justificativa, :usuario)'
+    );
+    $stmt->execute([
+        ':entidade' => $entidade, ':entidade_id' => $entidadeId, ':acao' => $acao,
+        ':anterior' => $antes ? json_encode($antes, $jsonFlags) : null,
+        ':novo' => $depois ? json_encode($depois, $jsonFlags) : null,
+        ':justificativa' => $justificativa, ':usuario' => ponto_admin_nome(),
+    ]);
+}
+
+function ponto_exigir_competencia_aberta(PDO $pdo, string $data): void
+{
+    if (ponto_competencia_fechada($pdo, $data)) {
+        throw new RuntimeException('A competência está fechada. Reabra o mês com justificativa antes desta operação.');
+    }
+}
+
+function ponto_configuracao_sobrepoe(PDO $pdo, string $inicio, ?string $fim, int $ignorarId = 0): bool
+{
+    $fimComparacao = $fim ?: '9999-12-31';
+    $stmt = $pdo->prepare(
+        "SELECT 1 FROM ponto_configuracoes
+         WHERE id <> :id
+           AND vigencia_inicio <= :fim
+           AND COALESCE(vigencia_fim, '9999-12-31') >= :inicio
+         LIMIT 1"
+    );
+    $stmt->execute([':id' => $ignorarId, ':fim' => $fimComparacao, ':inicio' => $inicio]);
+    return (bool) $stmt->fetchColumn();
+}
+
+function ponto_diferenca_horarios(?string $soni, ?string $rhid): ?int
+{
+    $a = ponto_segundos_hora_puro($soni);
+    $b = ponto_segundos_hora_puro($rhid);
+    return ($a === null || $b === null) ? null : intdiv($b - $a, 60);
 }
 
 function ponto_dados_post(): array

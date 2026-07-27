@@ -20,8 +20,19 @@
 
 Execute `php portal/admin/ponto/tests/calculos_test.php`. O teste cobre intervalos em ordens distintas,
 marcações incompletas, feriados, domingos, transporte e os 26 registros esperados em julho.
+Execute também `php portal/admin/ponto/tests/gestao_test.php` para validar sobreposição de vigências,
+comparação de marcações, ciclo de direitos, ocorrências, fechamento, reabertura e histórico.
+
+## Interfaces de gestão
+
+- `configuracoes.php`: jornadas por vigência, sem valor presumido.
+- `rhid.php?ponto_id=ID`: marcações RHID separadas e comparação lado a lado.
+- `direitos.php`: aquisição, agenda, uso e cancelamento de direitos.
+- `ocorrencias.php`: registro e resolução de ocorrências estruturadas.
+- `competencias.php`: revisão, fechamento e reabertura justificada.
+- `historico.php`: consulta filtrável do histórico do módulo.
 
 ## Limitações
 
-Não há integração automática com RHID nem conclusão jurídica automática. PDF/Excel ficam preparados
-para evolução; a primeira saída deve ser HTML imprimível/CSV sem dependências pesadas.
+Não há integração automática com RHID nem conclusão jurídica automática. As marcações do RHID são
+informadas manualmente e nunca substituem o ponto. PDF/Excel continuam preparados para evolução.

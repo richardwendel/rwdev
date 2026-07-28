@@ -106,6 +106,7 @@ $trajetos = $pdo->query(
     'SELECT t.*, l.codigo_loja, l.nome AS loja_nome
      FROM trajetos_trabalho t
      INNER JOIN lojas_trabalho l ON l.id = t.loja_id
+     WHERE t.ativo = 1
      ORDER BY t.ativo DESC, l.codigo_loja, t.nome_trajeto'
 )->fetchAll();
 ?>

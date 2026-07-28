@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/_diagnostico-temporario.php';
 require_once __DIR__ . '/_funcoes.php';
 
 exigir_permissao(isset($_GET['duplicar']) ? 'ponto.duplicar' : 'ponto.criar');

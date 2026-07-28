@@ -1,12 +1,13 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../config/conexao.php';
-require_once __DIR__ . '/../../includes/admin_ui.php';
-require_once __DIR__ . '/../../includes/auditoria.php';
+if (!defined('SONI_PONTO_TESTE') || SONI_PONTO_TESTE !== true) {
+    require_once __DIR__ . '/../../config/conexao.php';
+    require_once __DIR__ . '/../../includes/admin_ui.php';
+    require_once __DIR__ . '/../../includes/auditoria.php';
+    exigir_admin();
+}
 require_once __DIR__ . '/_calculos.php';
-
-exigir_admin();
 
 function ponto_admin_url(string $arquivo = 'index.php'): string
 {
@@ -348,7 +349,7 @@ function ponto_lojas(PDO $pdo, bool $somenteAtivas = true): array
     return $pdo->query($sql)->fetchAll();
 }
 
-function ponto_trajetos_ativos_por_loja(PDO $pdo): array
+function ponto_trajetos_ativos_por_loja(PDO $pdo, ?string $data = null): array
 {
     $trajetos = $pdo->query(
         'SELECT t.id, t.loja_id, l.codigo_loja, t.nome_trajeto, t.tipo_transporte,
@@ -375,7 +376,7 @@ function ponto_trajetos_ativos_por_loja(PDO $pdo): array
             'valor_volta' => (float) $trajeto['valor_volta'],
             'valor_total' => (float) $trajeto['valor_total'],
             'padrao' => (int) $trajeto['padrao_loja'] === 1,
-            'trechos' => ponto_trajeto_trechos($pdo, $id),
+            'trechos' => ponto_trajeto_trechos($pdo, $id, $data),
         ];
     }
 
@@ -389,10 +390,15 @@ function ponto_trajeto_trechos(PDO $pdo, int $trajetoId, ?string $data = null): 
         'SELECT direcao, ordem_trecho, tipo_transporte, descricao, tarifa_unitaria, quantidade, subtotal
          FROM trajeto_trechos_trabalho
          WHERE trajeto_id = :trajeto_id AND ativo = 1
-           AND vigencia_inicio <= :data AND (vigencia_fim IS NULL OR vigencia_fim >= :data)
+           AND vigencia_inicio <= :data_inicio
+           AND (vigencia_fim IS NULL OR vigencia_fim >= :data_fim)
          ORDER BY direcao, ordem_trecho'
     );
-    $stmt->execute([':trajeto_id' => $trajetoId, ':data' => $data]);
+    $stmt->execute([
+        ':trajeto_id' => $trajetoId,
+        ':data_inicio' => $data,
+        ':data_fim' => $data,
+    ]);
     return $stmt->fetchAll();
 }
 
@@ -522,10 +528,14 @@ function ponto_configuracao_vigente(PDO $pdo, string $data): ?array
 {
     $stmt = $pdo->prepare(
         'SELECT * FROM ponto_configuracoes
-         WHERE vigencia_inicio <= :data AND (vigencia_fim IS NULL OR vigencia_fim >= :data)
+         WHERE vigencia_inicio <= :vigencia_inicio
+           AND (vigencia_fim IS NULL OR vigencia_fim >= :vigencia_fim)
          ORDER BY vigencia_inicio DESC, id DESC LIMIT 1'
     );
-    $stmt->execute([':data' => $data]);
+    $stmt->execute([
+        ':vigencia_inicio' => $data,
+        ':vigencia_fim' => $data,
+    ]);
     return $stmt->fetch() ?: null;
 }
 
@@ -533,9 +543,12 @@ function ponto_competencia_fechada(PDO $pdo, string $data): bool
 {
     $stmt = $pdo->prepare(
         "SELECT 1 FROM ponto_competencias
-         WHERE ano = YEAR(:data) AND mes = MONTH(:data) AND situacao = 'fechada' LIMIT 1"
+         WHERE ano = YEAR(:data_ano)
+           AND mes = MONTH(:data_mes)
+           AND situacao = 'fechada'
+         LIMIT 1"
     );
-    $stmt->execute([':data' => $data]);
+    $stmt->execute([':data_ano' => $data, ':data_mes' => $data]);
     return (bool) $stmt->fetchColumn();
 }
 

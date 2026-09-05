@@ -265,60 +265,53 @@
         <div class="agv-consultor-intro">
           <span class="agv-etiqueta">Atendimento humano</span>
           <h2>Converse com Carlos, consultor AGV</h2>
-          <p>Conte com um atendimento direto para organizar os dados do seu veículo e iniciar sua cotação.</p>
+          <p>Informe os dados do veículo e continue o atendimento diretamente pelo WhatsApp.</p>
 
-          <div class="agv-consultor-confianca">
-            <div class="agv-consultor-monograma" aria-hidden="true">C</div>
-            <div>
-              <strong>Do formulário ao WhatsApp</strong>
-              <span>Sua solicitação é registrada e a conversa continua diretamente com Carlos.</span>
-            </div>
-          </div>
+          <ul class="agv-consultor-pontos">
+            <li>Atendimento direto com Carlos</li>
+            <li>Solicitação registrada antes do WhatsApp</li>
+            <li>Dados organizados para a cotação</li>
+          </ul>
         </div>
 
         <form class="agv-form-cotacao" id="agvCotacaoForm" novalidate>
           <div class="agv-form-cabecalho">
-            <span>Cotação AGV</span>
             <h3>Solicite sua cotação</h3>
-            <p>Leva menos de um minuto. Depois, o atendimento continua pelo WhatsApp do Carlos.</p>
+            <p>Preencha os dados do veículo. Depois, o atendimento continua pelo WhatsApp do Carlos.</p>
           </div>
 
           <div class="agv-form-grid">
-            <label class="agv-campo agv-campo--completo">
+            <label class="agv-campo agv-campo-largo">
               <span>Nome completo</span>
               <input type="text" name="nome" autocomplete="name" maxlength="150" required>
               <small data-erro-campo="nome"></small>
             </label>
 
-            <div class="agv-form-linha">
-              <label class="agv-campo">
-                <span>WhatsApp</span>
-                <input type="tel" name="whatsapp" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="(11) 99999-9999" required>
-                <small data-erro-campo="whatsapp"></small>
-              </label>
+            <label class="agv-campo">
+              <span>WhatsApp</span>
+              <input type="tel" name="whatsapp" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="(11) 99999-9999" required>
+              <small data-erro-campo="whatsapp"></small>
+            </label>
 
-              <label class="agv-campo">
-                <span>Cidade</span>
-                <input type="text" name="cidade" autocomplete="address-level2" maxlength="120" required>
-                <small data-erro-campo="cidade"></small>
-              </label>
-            </div>
+            <label class="agv-campo">
+              <span>Cidade</span>
+              <input type="text" name="cidade" autocomplete="address-level2" maxlength="120" required>
+              <small data-erro-campo="cidade"></small>
+            </label>
 
-            <div class="agv-form-linha agv-form-linha--veiculo">
-              <label class="agv-campo">
-                <span>Veículo/modelo</span>
-                <input type="text" name="veiculo" autocomplete="off" maxlength="160" placeholder="Ex.: Honda Civic" required>
-                <small data-erro-campo="veiculo"></small>
-              </label>
+            <label class="agv-campo">
+              <span>Veículo/modelo</span>
+              <input type="text" name="veiculo" autocomplete="off" maxlength="160" placeholder="Ex.: Honda Civic" required>
+              <small data-erro-campo="veiculo"></small>
+            </label>
 
-              <label class="agv-campo">
-                <span>Ano</span>
-                <input type="text" name="ano" inputmode="numeric" maxlength="4" placeholder="2022" required>
-                <small data-erro-campo="ano"></small>
-              </label>
-            </div>
+            <label class="agv-campo">
+              <span>Ano</span>
+              <input type="text" name="ano" inputmode="numeric" maxlength="4" placeholder="2022" required>
+              <small data-erro-campo="ano"></small>
+            </label>
 
-            <label class="agv-campo agv-campo--completo">
+            <label class="agv-campo agv-campo-largo">
               <span>Placa do veículo</span>
               <input type="text" name="placa" autocapitalize="characters" autocomplete="off" maxlength="8" placeholder="ABC-1234 ou ABC1D23" required>
               <small data-erro-campo="placa"></small>
@@ -329,7 +322,7 @@
               <input type="text" name="website" autocomplete="off" tabindex="-1">
             </label>
 
-            <div class="agv-privacidade">
+            <div class="agv-privacidade agv-campo-largo">
               <label>
                 <input type="checkbox" name="privacidade_aceita" required>
                 <span><strong>Autorizo o uso dos meus dados.</strong> Eles serão utilizados para solicitar a cotação, encaminhar o atendimento ao Carlos/AGV e permitir o acompanhamento da solicitação pela RWDEV.</span>

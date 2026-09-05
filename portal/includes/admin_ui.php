@@ -18,6 +18,7 @@ function admin_menu_itens(): array
         ['permissao' => 'solicitacoes.visualizar', 'href' => 'solicitacoes.php', 'rotulo' => '📋 Solicitacoes', 'mobile_rotulo' => '📋 Solicitações'],
         ['permissao' => 'depoimentos.visualizar', 'href' => 'depoimentos.php', 'rotulo' => '💬 Depoimentos'],
         ['permissao' => 'diagnostico.visualizar', 'href' => 'diagnostico-metricas.php', 'rotulo' => '📊 Diagnostico', 'mobile_rotulo' => '📊 Diagnóstico'],
+        ['permissao' => 'dashboard.visualizar', 'href' => 'agv-leads.php', 'rotulo' => '🚗 Leads AGV', 'perfil' => 'superadministrador'],
         ['permissao' => 'ponto.visualizar', 'href' => 'ponto/index.php', 'rotulo' => '⏱️ Soni Ponto'],
         ['permissao' => 'documentos.visualizar', 'href' => 'documentos-trabalho/index.php', 'rotulo' => '📄 Documentos'],
         ['permissao' => 'admins.visualizar', 'href' => 'administradores.php', 'rotulo' => '🛡️ Administradores'],

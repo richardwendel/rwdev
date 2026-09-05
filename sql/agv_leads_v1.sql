@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS agv_leads (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  codigo VARCHAR(20) DEFAULT NULL,
+  nome VARCHAR(150) NOT NULL,
+  whatsapp VARCHAR(15) NOT NULL,
+  cidade VARCHAR(120) NOT NULL,
+  veiculo VARCHAR(160) NOT NULL,
+  ano SMALLINT UNSIGNED NOT NULL,
+  placa VARCHAR(8) NOT NULL,
+  origem VARCHAR(50) NOT NULL DEFAULT 'RWDEV - Página AGV',
+  status VARCHAR(40) NOT NULL DEFAULT 'Novo',
+  privacidade_aceita_em DATETIME NOT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_agv_leads_codigo (codigo),
+  KEY idx_agv_leads_created_at (created_at),
+  KEY idx_agv_leads_status (status),
+  KEY idx_agv_leads_placa (placa)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

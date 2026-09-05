@@ -47,6 +47,7 @@ portal/uploads/ponto-reembolsos/*
 # Dumps reais; migrations do SONI PONTO permanecem versionadas.
 sql/*.sql
 !sql/soni_ponto_migration_*.sql
+!sql/agv_leads_v1.sql
 **/u724577237_rwdev_portal*.sql
 **/*dump*.sql
 **/*backup*.sql

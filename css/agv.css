@@ -134,28 +134,41 @@ body.agv-page {
 .agv-galeria-item:hover img { transform: scale(1.025); }
 .agv-galeria-item span { color: var(--agv-azul-noite); display: block; font-size: .85rem; font-weight: 800; padding: 16px 18px; }
 
-.agv-consultor { background: var(--agv-azul-noite); padding: 74px 0; }
-.agv-consultor-card { align-items: center; color: #fff; display: grid; gap: 32px; grid-template-columns: auto 1fr; }
-.agv-consultor-monograma { align-items: center; background: var(--agv-dourado); border: 8px solid rgba(255,255,255,.1); border-radius: 50%; color: var(--agv-azul-noite); display: flex; font-size: 2.3rem; font-weight: 900; height: 100px; justify-content: center; width: 100px; }
-.agv-consultor h2 { color: #fff; font-size: clamp(2rem, 3.5vw, 3.2rem); }
-.agv-consultor p { color: rgba(255,255,255,.67); margin: 0; }
-.agv-consultor .agv-etiqueta { margin-bottom: 13px; }
-.agv-form-cotacao { background: #fff; border-radius: 24px; box-shadow: 0 24px 70px rgba(0,0,0,.2); grid-column: 1 / -1; padding: 34px; }
-.agv-form-grid { display: grid; gap: 22px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.agv-campo { color: var(--agv-azul-noite); display: grid; font-size: .9rem; font-weight: 800; gap: 8px; }
-.agv-campo input { background: var(--agv-gelo); border: 1px solid var(--agv-borda); border-radius: 12px; color: var(--agv-azul-noite); font: inherit; font-weight: 600; min-height: 50px; padding: 12px 14px; width: 100%; }
-.agv-campo input:focus { border-color: var(--agv-azul-claro); box-shadow: 0 0 0 3px rgba(14,124,255,.16); outline: 0; }
+.agv-consultor { background: radial-gradient(circle at 10% 14%, rgba(21,88,219,.28), transparent 34%), var(--agv-azul-noite); padding: 96px 0; }
+.agv-consultor-card { align-items: center; color: #fff; display: grid; gap: clamp(48px, 7vw, 88px); grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); }
+.agv-consultor-intro { max-width: 420px; }
+.agv-consultor-monograma { align-items: center; background: var(--agv-dourado); border: 5px solid rgba(255,255,255,.1); border-radius: 50%; color: var(--agv-azul-noite); display: flex; flex: 0 0 auto; font-size: 1.35rem; font-weight: 900; height: 62px; justify-content: center; width: 62px; }
+.agv-consultor h2 { color: #fff; font-size: clamp(2.35rem, 4vw, 4rem); line-height: 1.02; margin-bottom: 24px; }
+.agv-consultor-intro > p { color: rgba(255,255,255,.72); font-size: 1.05rem; line-height: 1.75; margin: 0; max-width: 390px; }
+.agv-consultor .agv-etiqueta { margin-bottom: 18px; }
+.agv-consultor-confianca { align-items: center; border-top: 1px solid rgba(255,255,255,.14); display: flex; gap: 18px; margin-top: 36px; padding-top: 28px; }
+.agv-consultor-confianca div:last-child { display: grid; gap: 6px; }
+.agv-consultor-confianca strong { color: #fff; font-size: .95rem; }
+.agv-consultor-confianca span { color: rgba(255,255,255,.62); font-size: .84rem; line-height: 1.55; }
+.agv-form-cotacao { background: #fff; border: 1px solid rgba(255,255,255,.5); border-radius: 28px; box-shadow: 0 32px 90px rgba(0,0,0,.3); min-width: 0; padding: clamp(32px, 4vw, 48px); }
+.agv-form-cabecalho { border-bottom: 1px solid var(--agv-borda); margin-bottom: 30px; padding-bottom: 26px; }
+.agv-form-cabecalho > span { color: var(--agv-azul); display: block; font-size: .72rem; font-weight: 900; letter-spacing: .11em; margin-bottom: 9px; text-transform: uppercase; }
+.agv-form-cabecalho h3 { color: var(--agv-azul-noite); font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.08; margin-bottom: 10px; }
+.agv-form-cabecalho p { color: var(--agv-muted); font-size: .92rem; line-height: 1.55; margin: 0; max-width: 560px; }
+.agv-form-grid { display: grid; gap: 20px; }
+.agv-form-linha { display: grid; gap: 18px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.agv-form-linha--veiculo { grid-template-columns: minmax(0, 1.45fr) minmax(130px, .55fr); }
+.agv-campo { color: var(--agv-azul-noite); display: grid; font-size: .9rem; font-weight: 800; gap: 9px; min-width: 0; }
+.agv-campo input { background: #f8faff; border: 1px solid #cfd9eb; border-radius: 13px; color: var(--agv-azul-noite); font: inherit; font-size: 1rem; font-weight: 600; min-height: 58px; padding: 15px 17px; transition: border-color .2s ease, box-shadow .2s ease, background .2s ease; width: 100%; }
+.agv-campo input:hover { border-color: #aebddb; }
+.agv-campo input:focus { background: #fff; border-color: var(--agv-azul-vivo); box-shadow: 0 0 0 4px rgba(21,88,219,.14); outline: 0; }
 .agv-campo input[aria-invalid="true"] { border-color: #c62d42; }
-.agv-campo small, .agv-privacidade > small { color: #b21f35; font-size: .78rem; font-weight: 700; min-height: 1.2em; }
+.agv-campo small, .agv-privacidade > small { color: #b21f35; font-size: .8rem; font-weight: 700; line-height: 1.35; min-height: 1.1em; }
 .agv-form-armadilha { height: 1px; left: -10000px; overflow: hidden; position: absolute; width: 1px; }
-.agv-privacidade { background: var(--agv-gelo); border: 1px solid var(--agv-borda); border-radius: 16px; color: var(--agv-texto); grid-column: 1 / -1; padding: 20px; }
-.agv-privacidade p { color: var(--agv-azul-noite); font-size: .9rem; font-weight: 800; }
-.agv-privacidade ul { margin: 10px 0 16px 20px; }
-.agv-privacidade li { font-size: .86rem; line-height: 1.7; }
-.agv-privacidade label { align-items: flex-start; color: var(--agv-azul-noite); cursor: pointer; display: flex; font-size: .86rem; font-weight: 800; gap: 10px; }
-.agv-privacidade input { accent-color: var(--agv-azul); flex: 0 0 auto; height: 18px; margin-top: 2px; width: 18px; }
-.agv-form-rodape { align-items: center; display: flex; gap: 22px; justify-content: space-between; margin-top: 24px; }
-.agv-form-mensagem { color: var(--agv-texto) !important; font-size: .88rem; font-weight: 700; min-height: 1.5em; }
+.agv-privacidade { background: var(--agv-gelo); border: 1px solid var(--agv-borda); border-radius: 15px; color: var(--agv-texto); padding: 17px 18px 14px; }
+.agv-privacidade label { align-items: flex-start; color: #40506c; cursor: pointer; display: flex; font-size: .82rem; font-weight: 500; gap: 12px; line-height: 1.55; }
+.agv-privacidade label strong { color: var(--agv-azul-noite); }
+.agv-privacidade input { accent-color: var(--agv-azul); flex: 0 0 auto; height: 20px; margin-top: 1px; width: 20px; }
+.agv-privacidade > small { display: block; margin-left: 32px; margin-top: 5px; }
+.agv-form-rodape { display: grid; gap: 12px; margin-top: 22px; }
+.agv-form-rodape .agv-botao { font-size: .94rem; min-height: 60px; text-align: center; width: 100%; }
+.agv-form-rodape .agv-botao:focus-visible { outline: 3px solid rgba(245,189,33,.38); outline-offset: 3px; }
+.agv-form-mensagem { color: var(--agv-texto) !important; font-size: .88rem; font-weight: 700; min-height: 1.25em; text-align: center; }
 .agv-form-mensagem.erro { color: #b21f35 !important; }
 .agv-form-mensagem.sucesso { color: #087a3a !important; }
 .agv-form-cotacao button:disabled { cursor: wait; opacity: .72; }
@@ -186,7 +199,7 @@ body.agv-page {
   .agv-hero-grid { gap: 42px; }
   .agv-coberturas-grid { grid-template-columns: repeat(2, 1fr); }
   .agv-confianca article { padding: 24px 18px; }
-  .agv-consultor-card { grid-template-columns: auto 1fr; }
+  .agv-consultor-card { gap: 40px; grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr); }
 }
 
 @media (max-width: 860px) {
@@ -212,9 +225,11 @@ body.agv-page {
   .agv-passos-grid article + article { border-left: 0; padding-left: 0; }
   .agv-assistencia-grid { gap: 48px; }
   .agv-assistencia-imagem { max-width: 560px; }
-  .agv-consultor-card { grid-template-columns: 1fr; text-align: center; }
-  .agv-consultor-monograma { margin: 0 auto; }
-  .agv-form-cotacao { padding: 28px; text-align: left; }
+  .agv-consultor { padding: 82px 0; }
+  .agv-consultor-card { gap: 42px; grid-template-columns: 1fr; text-align: left; }
+  .agv-consultor-intro { max-width: 660px; }
+  .agv-consultor-intro > p { max-width: 620px; }
+  .agv-form-cotacao { padding: 36px; text-align: left; width: 100%; }
   .agv-faq-grid { gap: 42px; }
 }
 
@@ -238,10 +253,17 @@ body.agv-page {
   .agv-card-com-imagem h3 { font-size: 1.55rem; }
   .agv-galeria-cabecalho { align-items: start; display: grid; gap: 22px; }
   .agv-galeria-item { flex-basis: 80vw; }
-  .agv-form-grid { grid-template-columns: 1fr; }
-  .agv-form-cotacao { padding: 24px 18px; width: 100%; }
-  .agv-form-rodape { align-items: stretch; flex-direction: column; }
-  .agv-form-rodape .agv-botao { width: 100%; }
+  .agv-consultor { padding: 70px 0; }
+  .agv-consultor h2 { font-size: 2.45rem; }
+  .agv-consultor-confianca { align-items: flex-start; }
+  .agv-consultor-monograma { height: 54px; width: 54px; }
+  .agv-form-cotacao { border-radius: 22px; padding: 28px 20px; width: 100%; }
+  .agv-form-cabecalho { margin-bottom: 26px; padding-bottom: 22px; }
+  .agv-form-cabecalho h3 { font-size: 1.85rem; }
+  .agv-form-linha, .agv-form-linha--veiculo { gap: 20px; grid-template-columns: 1fr; }
+  .agv-campo input { min-height: 56px; }
+  .agv-privacidade { padding: 16px; }
+  .agv-form-rodape .agv-botao { min-height: 58px; width: 100%; }
   .agv-rodape .container { align-items: start; flex-direction: column; gap: 18px; }
 }
 

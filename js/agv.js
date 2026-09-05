@@ -161,7 +161,7 @@ if (formularioCotacao) {
 
       if (botaoEnviar) {
         botaoEnviar.disabled = false;
-        botaoEnviar.textContent = "Salvar e falar com Carlos";
+        botaoEnviar.textContent = "Solicitar cotação e falar com Carlos";
       }
     }
   });
